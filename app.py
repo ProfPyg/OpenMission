@@ -17,7 +17,7 @@ from propagator import (Re, mu, J2,
                         repeat_cycle)
 from access import computeAccess
 from geo_data import listCountries, buildROIGrid, load_shapefile
-from styles import _CSS, _BG_SVG, _WATERMARK_HTML, emblem_html, _USER_GUIDE_LINK
+from styles import _CSS, _BG_SVG, _WATERMARK_HTML, emblem_html
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Page config  (must be first Streamlit call)
@@ -90,7 +90,6 @@ def _raan_drift_deg_day(alt_km: float, inc_deg: float, e: float = 0.001) -> floa
 # Design system — injected from shared styles.py
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(_CSS,            unsafe_allow_html=True)
-st.markdown(_USER_GUIDE_LINK, unsafe_allow_html=True)
 st.markdown(_BG_SVG,         unsafe_allow_html=True)
 st.markdown(_WATERMARK_HTML, unsafe_allow_html=True)
 
@@ -99,6 +98,11 @@ st.markdown(_WATERMARK_HTML, unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(emblem_html("/ SSO Coverage Analysis", variant="orbit"), unsafe_allow_html=True)
+    st.link_button(
+        "📘 User Guide",
+        "https://github.com/ProfPyg/OpenMission/blob/main/OpenMission_User_Guide.pdf",
+        use_container_width=True,
+    )
     st.divider()
 
     # ── 1. Constellation ─────────────────────────────────────────────────────
