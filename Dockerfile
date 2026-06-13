@@ -43,4 +43,6 @@ EXPOSE 7860
 CMD ["streamlit", "run", "app.py", \
      "--server.port=7860", \
      "--server.address=0.0.0.0", \
-     "--server.headless=true"]
+     "--server.headless=true", \
+     "--server.enableCORS=false", \
+     "--server.enableXsrfProtection=false"]
