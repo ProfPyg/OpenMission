@@ -124,13 +124,13 @@ div[style*="letter-spacing"] {
 [data-testid="stSidebarNavLink"] {
     display: flex !important;
     align-items: center !important;
-    padding: 9px 12px !important;
+    padding: 12px 14px !important;
     border-radius: 4px !important;
     border-left: 3px solid #e8001c !important;
     background: transparent !important;
     text-decoration: none !important;
     font-family: 'Space Mono', monospace !important;
-    font-size: 11px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     letter-spacing: 0.15em !important;
     text-transform: uppercase !important;
@@ -604,8 +604,8 @@ for _n, (_fn, _anim) in _icons.items():
 {_sel}::before {{
     content: "";
     flex: 0 0 auto;
-    width: 22px; height: 22px;
-    margin-right: 11px;
+    width: 26px; height: 26px;
+    margin-right: 12px;
     background-image: url("{_uri_default}");
     background-size: contain;
     background-repeat: no-repeat;

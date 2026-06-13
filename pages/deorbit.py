@@ -333,13 +333,11 @@ with st.sidebar:
     # ── 1. Satellite Parameters ───────────────────────────────────────────────
     st.markdown("#### Satellite Parameters")
     dry_mass = st.number_input("Dry mass (kg)", min_value=0.1, max_value=10000.0,
-                               value=st.session_state["do_dry_mass"],
                                step=0.1, format="%.2f", key="do_dry_mass")
     area = st.number_input("Cross-sectional area (m²)", min_value=0.001, max_value=100.0,
-                           value=st.session_state["do_area"],
                            step=0.001, format="%.4f", key="do_area")
     cd   = st.slider("Drag coefficient Cd", min_value=1.5, max_value=3.0,
-                     value=float(st.session_state["do_cd"]), step=0.05, key="do_cd")
+                     step=0.05, key="do_cd")
     # Peek at propulsion state so the wet-mass chip stays accurate on every run
     _prop_peek = (st.session_state.get("do_prop_mass", 0.5)
                   if st.session_state.get("do_propulsion", False) else 0.0)
@@ -352,7 +350,6 @@ with st.sidebar:
     # ── 2. Initial Orbit ──────────────────────────────────────────────────────
     st.markdown("#### Initial Orbit")
     altitude = st.number_input("Altitude (km)", min_value=150, max_value=500,
-                               value=min(st.session_state["do_altitude"], 500),
                                step=10, key="do_altitude")
     if altitude == 500:
         st.warning(
@@ -372,17 +369,13 @@ with st.sidebar:
     # ── 3. Propulsion ─────────────────────────────────────────────────────────
     st.markdown("#### Propulsion")
     use_propulsion = st.toggle("Enable propulsion",
-                               value=st.session_state["do_propulsion"],
                                key="do_propulsion")
     if use_propulsion:
         prop_mass = st.number_input("Propellant mass (kg)", min_value=0.001, max_value=500.0,
-                                    value=st.session_state["do_prop_mass"],
                                     step=0.01, format="%.3f", key="do_prop_mass")
         thrust_mN = st.number_input("Thrust T (mN)", min_value=0.01, max_value=1000.0,
-                                    value=st.session_state["do_thrust_mN"],
                                     step=0.1, format="%.2f", key="do_thrust_mN")
         isp = st.number_input("Specific impulse Isp (s)", min_value=1.0, max_value=10000.0,
-                              value=st.session_state["do_isp"],
                               step=1.0, format="%.0f", key="do_isp")
         _strategy_opts = ["Two-burn circularization", "Continuous thrust"]
         _strategy_saved = st.session_state["do_strategy"]
