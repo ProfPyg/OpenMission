@@ -953,34 +953,58 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
 # static/OpenMission_User_Guide.pdf. Streamlit serves static/ under app/static/.
 # Render in app.py with: st.markdown(_USER_GUIDE_LINK, unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
-_USER_GUIDE_LINK = """
-<a href="https://github.com/ProfPyg/OpenMission/blob/main/OpenMission_User_Guide.pdf"
-   target="_blank" rel="noopener" class="om-guide-link">User Guide</a>
+_USER_GUIDE_URL = "https://github.com/ProfPyg/OpenMission/blob/main/OpenMission_User_Guide.pdf"
+
+# Sidebar User Guide link — themed SVG book icon (blue structure + red accent),
+# slim outline pill that fills red on hover. Rendered inside st.sidebar so it
+# lives below the emblem and away from the app header (which intercepts clicks).
+_USER_GUIDE_LINK = f"""
+<a href="{_USER_GUIDE_URL}" target="_blank" rel="noopener" class="om-guide-link">
+  <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
+       xmlns="http://www.w3.org/2000/svg" class="om-guide-book">
+    <path d="M3 4.2 C3 3.5 3.5 3.2 4.2 3.2 L11 4.4 L11 20.4 L4.2 19.2
+             C3.5 19.1 3 18.7 3 18 Z" fill="#4a9eff"/>
+    <path d="M21 4.2 C21 3.5 20.5 3.2 19.8 3.2 L13 4.4 L13 20.4 L19.8 19.2
+             C20.5 19.1 21 18.7 21 18 Z" fill="#4a9eff" opacity="0.78"/>
+    <line x1="12" y1="4.4" x2="12" y2="20.4" stroke="#e8001c" stroke-width="1.6"
+          stroke-linecap="round"/>
+  </svg>
+  <span>User Guide</span>
+</a>
 <style>
-.om-guide-link {
-    position: fixed;
-    top: 0.55rem;
-    right: 1.1rem;
-    z-index: 1000;
+.om-guide-link {{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 2px 0 4px 0;
+    padding: 6px 12px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #4a9eff;
     text-decoration: none;
-    padding: 6px 13px;
-    border: 1px solid #4a9eff;
-    border-radius: 6px;
-    background: rgba(9, 13, 28, 0.72);
+    border: 1px solid rgba(74, 158, 255, 0.55);
+    border-radius: 7px;
+    background: transparent;
     transition: all 0.2s ease;
-}
-.om-guide-link:hover {
+}}
+.om-guide-link .om-guide-book {{ transition: transform 0.45s ease; }}
+.om-guide-link:hover {{
     color: #ffffff;
     background: #e8001c;
     border-color: #e8001c;
-}
+}}
+/* interactive book: flips on hover, and recolors to white to read on red */
+.om-guide-link:hover .om-guide-book {{ transform: rotateY(180deg); }}
+.om-guide-link:hover .om-guide-book path {{ fill: #ffffff; }}
+.om-guide-link:hover .om-guide-book line {{ stroke: #ffffff; }}
 </style>
 """
+
 
 
