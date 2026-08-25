@@ -213,8 +213,12 @@ with st.sidebar:
     st.divider()
     _helper_src = _load_helper_module()
     if _helper_src:
-        st.caption("The generated script imports this module — download it "
-                   "into the same folder.")
+        st.caption(
+            "The generated script imports this module — download it into the "
+            "same folder. Running it needs **pywin32** on that machine "
+            "(`pip install pywin32`) plus a licensed STK install; the app "
+            "itself needs neither."
+        )
         st.download_button(
             "\u2b07  stk_helpers.py",
             _helper_src,

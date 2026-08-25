@@ -1,0 +1,11 @@
+# Dependencies for RUNNING a generated STK script on a Windows machine.
+#
+# Deliberately NOT part of the app's requirements.txt: pywin32 is
+# Windows-only, and the Streamlit app never imports stk_helpers -- it only
+# serves the file for download. Adding it to requirements.txt would break the
+# Linux Docker / Hugging Face build.
+#
+#     pip install -r requirements-stk.txt
+#
+# STK itself must also be installed and licensed on that machine.
+pywin32>=306
