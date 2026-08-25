@@ -482,18 +482,44 @@ class StkSession(object):
             true_anomaly_deg=true_anomaly_deg)
         return path
 
+    #: Single-satellite argument names that a caller may reasonably pass to
+    #: new_walker by analogy with new_satellite. Walker derives these per
+    #: satellite, so they are re-interpreted as the constellation's STARTING
+    #: offsets rather than rejected -- passing them through would collide
+    #: ("got multiple values for keyword argument 'raan_deg'").
+    _WALKER_ALIASES = {
+        "raan_deg": "raan0_deg",
+        "true_anomaly_deg": "true_anom0_deg",
+    }
+
     def new_walker(self, prefix, total_sats, num_planes, phase_f,
                    sma_km, inc_deg, **kwargs):
         """Create a Walker Delta constellation. Returns a list of paths.
 
-        Extra keyword arguments pass through to :meth:`new_satellite`
-        (propagator, ecc, coord_system, central_body, ...).
+        RAAN and true anomaly are COMPUTED per satellite from the T/P/F
+        geometry -- do not pass them. To rotate the whole constellation, pass
+        ``raan0_deg`` and/or ``true_anom0_deg``.
+
+        Any other keyword argument is forwarded to :meth:`new_satellite`
+        (``propagator``, ``ecc``, ``arg_perigee_deg``, ``coord_system``,
+        ``central_body``, ``step_sec``, ...).
         """
+        for single, offset in self._WALKER_ALIASES.items():
+            if single in kwargs:
+                value = kwargs.pop(single)
+                sys.stderr.write(
+                    "[info] new_walker computes %s per satellite; treating "
+                    "%s=%s as the constellation offset %s instead.\n"
+                    % (single, single, value, offset))
+                kwargs.setdefault(offset, value)
+
+        raan0 = kwargs.pop("raan0_deg", 0.0)
+        true_anom0 = kwargs.pop("true_anom0_deg", 0.0)
+
         paths = []
         for index, _plane, raan, true_anom in walker_delta_elements(
                 total_sats, num_planes, phase_f,
-                raan0_deg=kwargs.pop("raan0_deg", 0.0),
-                true_anom0_deg=kwargs.pop("true_anom0_deg", 0.0)):
+                raan0_deg=raan0, true_anom0_deg=true_anom0):
             paths.append(self.new_satellite(
                 "%s%d" % (prefix, index + 1), sma_km=sma_km, inc_deg=inc_deg,
                 raan_deg=raan, true_anomaly_deg=true_anom, **kwargs))

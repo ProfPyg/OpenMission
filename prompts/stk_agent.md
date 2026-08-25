@@ -49,7 +49,9 @@ Satellites — `sma_km` is the SEMI-MAJOR AXIS, not altitude:
                                 coord_system="J2000",
                                 central_body=None)
     sats = session.new_walker(prefix, total_sats, num_planes, phase_f,
-                              sma_km, inc_deg, **kwargs)
+                              sma_km, inc_deg,
+                              propagator=..., ecc=..., central_body=...,
+                              raan0_deg=0.0, true_anom0_deg=0.0)
     session.set_hpop_gravity(sat, grv_file, max_degree, max_order)
     session.propagate(sat) / session.set_epoch(sat, epoch_utcg)
     session.orbit_radius_km(sat)                 # sanity-check a satellite
@@ -103,7 +105,10 @@ Every helper returns the STK object PATH it created (e.g.
 - The Simple transmitter/receiver models have no antenna object — they are
   characterised by EIRP alone. Do not try to set an antenna pattern on them.
 - Walker T/P/F: RAAN spacing 360/P, in-plane spacing 360/(T/P), phase step
-  F·360/T. Use `new_walker`; do not recompute it by hand.
+  F·360/T. Use `new_walker`; do not recompute it by hand. It DERIVES each
+  satellite's RAAN and true anomaly, so never pass `raan_deg=` or
+  `true_anomaly_deg=` to it -- those belong to `new_satellite`. To rotate the
+  whole constellation, pass `raan0_deg=` / `true_anom0_deg=`.
 - STK "Inertial" is ECI-style; "LVLH" is z = nadir, y = −orbit normal (not
   "VVLH", a different axis ordering). J2000 vs ICRF differ by an
   arcsecond-level bias — keep whichever the user's existing data uses.

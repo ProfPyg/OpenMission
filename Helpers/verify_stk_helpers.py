@@ -207,6 +207,15 @@ def main():
             lambda: session.new_walker("WalkSat", total_sats=4, num_planes=4,
                                        phase_f=1, sma_km=sma, inc_deg=97.4))
 
+        # Regression: a generated script passed raan_deg= to new_walker (the
+        # name new_satellite uses) and got "multiple values for keyword
+        # argument". new_walker must absorb that, not explode.
+        results.check(
+            "new_walker tolerates single-satellite argument names",
+            lambda: session.new_walker("AliasSat", total_sats=2, num_planes=2,
+                                       phase_f=1, sma_km=sma, inc_deg=97.4,
+                                       raan_deg=45.0))
+
         results.check("two-body propagator name accepted",
                       lambda: session.new_satellite("TwoBodySat", sma_km=sma,
                                                     inc_deg=45.0, raan_deg=10.0,
