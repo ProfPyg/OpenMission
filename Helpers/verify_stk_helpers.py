@@ -146,6 +146,24 @@ def _assert_prompt_matches_api():
     return True
 
 
+def _assert_stk_home(session):
+    home = session.directory("STKHome")
+    if not home:
+        raise AssertionError("GetDirectory / STKHome returned nothing")
+    print("        STKHome: %s" % home)
+    return home
+
+
+def _assert_gravity_file(session, filename):
+    path = session.find_data_file(filename)
+    if not path:
+        raise AssertionError(
+            "%s not found; searched %s"
+            % (filename, ", ".join(getattr(session, "_last_search", [])[:3]) or "nowhere"))
+    print("        %s -> %s" % (filename, path))
+    return path
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
@@ -238,6 +256,14 @@ def main():
                       lambda: session.new_satellite("TwoBodySat", sma_km=sma,
                                                     inc_deg=45.0, raan_deg=10.0,
                                                     propagator="TwoBody"))
+
+        # --- STK's own data files -----------------------------------------
+        # A generated script passes a bare filename; if resolution breaks,
+        # every HPOP scenario fails with a confusing "does not exist".
+        results.check("STKHome directory is reported",
+                      lambda: _assert_stk_home(session))
+        results.check("lunar gravity file GL0420A.grv resolves",
+                      lambda: _assert_gravity_file(session, "GL0420A.grv"))
 
         # --- sensors ------------------------------------------------------
         cam = results.check(

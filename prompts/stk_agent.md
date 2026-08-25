@@ -95,9 +95,13 @@ Every helper returns the STK object PATH it created (e.g.
 - Each satellite carries its OWN central body — one scenario can mix Earth
   and Moon orbiters via `central_body=`. It is not a scenario-wide setting.
 - `"J2Perturbation"` needs no gravity file. `"HPOP"` is high-fidelity;
-  configure it with `set_hpop_gravity`. The lunar `GL0420A.grv` file accepts
-  degree/order 48–420 only — use 48 as the safe minimum, higher only when the
-  user asks for fidelity (it costs propagation speed).
+  configure it with `set_hpop_gravity`. Pass the gravity file as a BARE
+  FILENAME (`"GL0420A.grv"`), never a path — the helper asks STK where its
+  data folders are and resolves it. You cannot know the install path, and
+  guessing one produces a "file does not exist" error the user cannot fix.
+  The lunar `GL0420A.grv` accepts degree/order 48–420 only — use 48 as the
+  safe minimum, higher only when the user asks for fidelity (it costs
+  propagation speed).
 - Sensor patterns take HALF-angles. A camera quoted as a 2.22° × 1.66° full
   FOV becomes `add_sensor_rectangular(sat, name, 1.11, 0.83)`. A "30° conic
   sensor" is ambiguous — if the user means a 30° half-angle, pass 30.

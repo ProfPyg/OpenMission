@@ -648,6 +648,79 @@ class StkSession(object):
             return None
         return (x * x + y * y + z * z) ** 0.5
 
+    # -- locating STK's own data files -------------------------------------
+    def directory(self, which="STKHome"):
+        """Return one of STK's own directories, or None.
+
+        Uses the Connect ``GetDirectory`` command, so the answer comes from
+        the running STK rather than a guessed install path. Useful values:
+        "STKHome", "Config", "Database", "UserFolder".
+        """
+        try:
+            result = self.root.ExecuteCommand("GetDirectory / %s" % which)
+        except Exception:
+            return None
+        for accessor in (lambda r: r.Item(0), lambda r: r[0]):
+            try:
+                value = str(accessor(result)).strip()
+                if value:
+                    return value
+            except Exception:
+                continue
+        return None
+
+    #: Where gravity files live relative to STK's home directory. Ordered
+    #: most-likely first; central-body subfolders are appended at runtime.
+    _GRAVITY_SUBDIRS = (
+        os.path.join("STKData", "CentralBodies"),
+        os.path.join("STKData", "CentralBodies", "Earth"),
+        os.path.join("STKData", "CentralBodies", "Moon"),
+        os.path.join("STKData", "CentralBodies", "Mars"),
+        "STKData",
+    )
+
+    def find_data_file(self, filename, central_body=None):
+        """Resolve a bare STK data filename (e.g. "GL0420A.grv") to a path.
+
+        A generated script cannot know where STK keeps its gravity files --
+        the install root differs per machine and per version -- so asking the
+        caller for an absolute path guarantees a "file does not exist" error
+        the caller had no way to avoid. This asks STK where it lives and
+        searches the standard data folders underneath.
+
+        Returns an absolute path, or None if nothing matched.
+        """
+        if os.path.isabs(filename) and os.path.isfile(filename):
+            return filename
+
+        home = self.directory("STKHome")
+        roots = [home] if home else []
+        # Fall back to the usual install locations if GetDirectory is
+        # unavailable on this build.
+        roots += [r"C:\Program Files\AGI\STK 12", r"C:\Program Files\AGI\STK 11",
+                  r"C:\Program Files (x86)\AGI\STK 11"]
+
+        searched = []
+        for root_dir in roots:
+            if not root_dir or not os.path.isdir(root_dir):
+                continue
+            subdirs = list(self._GRAVITY_SUBDIRS)
+            if central_body:
+                subdirs.insert(0, os.path.join("STKData", "CentralBodies", str(central_body)))
+            for subdir in subdirs:
+                candidate = os.path.join(root_dir, subdir, filename)
+                searched.append(candidate)
+                if os.path.isfile(candidate):
+                    return candidate
+            # last resort: walk the data tree once
+            data_root = os.path.join(root_dir, "STKData")
+            if os.path.isdir(data_root):
+                for dirpath, _dirnames, filenames in os.walk(data_root):
+                    if filename in filenames:
+                        return os.path.join(dirpath, filename)
+        self._last_search = searched
+        return None
+
     def set_hpop_gravity(self, sat_path, grv_file, max_degree, max_order):
         """Configure the HPOP central-body gravity field.
 
@@ -658,9 +731,23 @@ class StkSession(object):
         ``GL0420A.grv`` accepts 48 to 420, and STK raises a com_error outside
         that range. Higher degree = slower propagation.
         """
+        # Resolve a bare filename against STK's own data folders. The caller
+        # (often a generated script) has no way to know the install path.
+        resolved = self.find_data_file(str(grv_file))
+        if resolved is None:
+            searched = getattr(self, "_last_search", [])
+            raise StkError(
+                "Gravity file '%s' was not found in this STK installation.\n"
+                "  STKHome reported as: %s\n"
+                "  Looked in:\n%s\n"
+                "  Pass an absolute path to set_hpop_gravity, or use a "
+                "propagator that needs no gravity file (J2Perturbation)."
+                % (grv_file, self.directory("STKHome") or "unknown",
+                   "\n".join("    %s" % s for s in searched[:8]) or "    (no STK root found)"))
+
         try:
             gravity = self.obj(sat_path).Propagator.ForceModel.CentralBodyGravity
-            gravity.File = str(grv_file)
+            gravity.File = resolved
             gravity.MaxDegree = int(max_degree)
             gravity.MaxOrder = int(max_order)
         except pywintypes.com_error as exc:
