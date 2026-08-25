@@ -1365,9 +1365,23 @@ class StkSession(object):
                 rows.append((name, None, None))
         return rows
 
-    def write_access_csv(self, rows, to_name, out_dir=None, filename="access_summary.csv"):
-        """Write an access summary to CSV in a script-relative directory."""
+    def write_access_csv(self, rows, to_name, out_dir=None, filename=None):
+        """Write an access summary to CSV. Returns the file path.
+
+        The default filename includes ``to_name``, so calling this once per
+        ground station produces one file per station. It used to default to a
+        fixed "access_summary.csv", which silently overwrote itself on every
+        call -- a script reporting three stations kept only the last, while
+        printing that it had written three.
+
+        Pass ``filename`` explicitly to combine several targets in one file.
+        """
+        if not filename:
+            safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in str(to_name))
+            filename = "access_%s.csv" % (safe or "target")
         out_file = os.path.join(self.output_dir(out_dir), filename)
+        if os.path.exists(out_file):
+            sys.stderr.write("[warn] overwriting %s\n" % out_file)
         with open(out_file, "w") as handle:
             handle.write("Object,Target,NumPasses,TotalDuration_s\n")
             for name, count, total in rows:

@@ -54,14 +54,21 @@ _HELPER_PATH = Path(__file__).resolve().parent.parent / "Helpers" / "stk_helpers
 
 
 @st.cache_data(show_spinner=False)
-def _load_prompt() -> str:
-    """Read the system prompt from disk.
+def _read_text(path_str: str, _mtime: float) -> str:
+    """Read a file, cached on its modification time.
 
-    Cached so the file is not re-read on every Streamlit rerun; clear the
-    cache (or restart) after editing the prompt.
+    The mtime is part of the cache key, so editing the prompt takes effect on
+    the next rerun without restarting Streamlit. A plain cache meant prompt
+    edits were silently ignored until a restart -- and a stale prompt looks
+    exactly like a model that ignored your instructions.
     """
+    return Path(path_str).read_text(encoding="utf-8")
+
+
+def _load_prompt() -> str:
+    """Read the system prompt from disk (picks up edits automatically)."""
     try:
-        return _PROMPT_PATH.read_text(encoding="utf-8").strip()
+        return _read_text(str(_PROMPT_PATH), _PROMPT_PATH.stat().st_mtime).strip()
     except OSError as exc:
         st.error(
             f"Could not read the system prompt at `{_PROMPT_PATH}`: {exc}. "
@@ -70,11 +77,14 @@ def _load_prompt() -> str:
         return ""
 
 
-@st.cache_data(show_spinner=False)
 def _load_helper_module() -> str:
-    """Read stk_helpers.py so the user can download it beside the script."""
+    """Read stk_helpers.py so the user can download it beside the script.
+
+    Also mtime-keyed: a bundle downloaded after the helper is patched must
+    contain the patched helper, not a cached copy.
+    """
     try:
-        return _HELPER_PATH.read_text(encoding="utf-8")
+        return _read_text(str(_HELPER_PATH), _HELPER_PATH.stat().st_mtime)
     except OSError:
         return ""
 
