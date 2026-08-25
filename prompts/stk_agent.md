@@ -48,6 +48,8 @@ Satellites — `sma_km` is the SEMI-MAJOR AXIS, not altitude:
                                 propagator="J2Perturbation",
                                 coord_system="J2000",
                                 central_body=None)
+    geo = session.new_geo_satellite(name, longitude_deg)   # parked over a longitude
+    session.subsatellite_longitude_deg(geo)                # confirm where it sits
     sats = session.new_walker(prefix, total_sats, num_planes, phase_f,
                               sma_km, inc_deg,
                               propagator=..., ecc=..., central_body=...,
@@ -92,6 +94,13 @@ Every helper returns the STK object PATH it created (e.g.
 
 ## Domain facts worth applying
 
+- For a GEOSTATIONARY satellite always use `new_geo_satellite(name,
+  longitude_deg)`, never `new_satellite` with a 42164 km semi-major axis. A
+  hand-placed GEO ends up over a longitude decided by the epoch — effectively
+  random — so a relay meant to serve Europe reports zero access to a European
+  ground station and it looks like physics rather than a mistake. Pick a
+  longitude that can actually see the ground stations in the request (roughly
+  within 70 deg of them) and say so in a comment.
 - Each satellite carries its OWN central body — one scenario can mix Earth
   and Moon orbiters via `central_body=`. It is not a scenario-wide setting.
 - `"J2Perturbation"` needs no gravity file. `"HPOP"` is high-fidelity;

@@ -70,7 +70,9 @@ from __future__ import annotations
 
 import functools
 import os
+import re as _re
 import sys
+from datetime import datetime as _datetime
 
 try:
     import win32com.client
@@ -85,7 +87,8 @@ except ImportError as _exc:  # pragma: no cover
 
 
 __all__ = ["StkSession", "StkError", "DEFAULT_PROGIDS", "EARTH_RADIUS_KM",
-           "MOON_RADIUS_KM", "altitude_to_sma", "walker_delta_elements"]
+           "MOON_RADIUS_KM", "GEO_SMA_KM", "altitude_to_sma",
+           "walker_delta_elements", "gmst_deg", "parse_utcg"]
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +120,55 @@ _UNIT_PREFERENCES = (
     ("Angle", "deg"),
     ("Time", "sec"),
 )
+
+
+#: Semi-major axis of a geostationary orbit (radius, not altitude).
+GEO_SMA_KM = 42164.137
+
+_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def parse_utcg(epoch):
+    """Parse an STK UTCG string ("1 Jul 2026 00:00:00.000") to a datetime."""
+    text = str(epoch).strip()
+    match = _re.match(
+        r"^(\d{1,2})\s+([A-Za-z]{3})[a-z]*\s+(\d{4})\s+"
+        r"(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)$", text)
+    if not match:
+        raise ValueError("not a UTCG date/time: %r" % epoch)
+    day, month_name, year, hour, minute, second = match.groups()
+    try:
+        month = _MONTHS.index(month_name[:3].title()) + 1
+    except ValueError:
+        raise ValueError("unknown month in %r" % epoch)
+    whole = int(float(second))
+    micro = int(round((float(second) - whole) * 1e6))
+    return _datetime(int(year), month, int(day), int(hour), int(minute), whole, micro)
+
+
+def gmst_deg(epoch):
+    """Greenwich Mean Sidereal Time in degrees for a UTCG epoch.
+
+    Standard IAU 1982 series. UT1-UTC is ignored (< 0.9 s, i.e. < 0.004 deg
+    of Earth rotation), which is far below what matters for placing a
+    geostationary slot.
+    """
+    when = epoch if isinstance(epoch, _datetime) else parse_utcg(epoch)
+    year, month = when.year, when.month
+    if month <= 2:
+        year, month = year - 1, month + 12
+    a = year // 100
+    b = 2 - a + a // 4
+    day_fraction = (when.hour + when.minute / 60.0
+                    + (when.second + when.microsecond / 1e6) / 3600.0) / 24.0
+    julian_day = (int(365.25 * (year + 4716)) + int(30.6001 * (month + 1))
+                  + when.day + day_fraction + b - 1524.5)
+    d = julian_day - 2451545.0
+    t = d / 36525.0
+    gmst = (280.46061837 + 360.98564736629 * d
+            + 0.000387933 * t * t - (t ** 3) / 38710000.0)
+    return gmst % 360.0
 
 
 class StkError(RuntimeError):
@@ -298,6 +350,23 @@ class StkSession(object):
                 "Enum '%s' is not defined in this STK installation's type "
                 "library (%d enum values were read). Either the name is wrong "
                 "or this STK version calls it something else." % (name, len(self._enums)))
+
+    def find_enum(self, preferred, *fragments):
+        """Return an enum VALUE by preferred name, else by name fragments.
+
+        STK enum names are not identical across versions, so a helper that
+        needs one should describe it rather than hardcode a single spelling.
+        Returns None when nothing matches, so callers can fall back.
+        """
+        if getattr(self, "_enums", None) is None:
+            self._enums = self._load_enums()
+        if preferred in self._enums:
+            return self._enums[preferred]
+        for name in sorted(self._enums):
+            low = name.lower()
+            if all(f.lower() in low for f in fragments):
+                return self._enums[name]
+        return None
 
     def has_enums(self):
         """True if enum values could be read from the type library."""
@@ -515,6 +584,52 @@ class StkSession(object):
         "raan_deg": "raan0_deg",
         "true_anomaly_deg": "true_anom0_deg",
     }
+
+    def new_geo_satellite(self, name, longitude_deg, **kwargs):
+        """Create a geostationary satellite parked over a given longitude.
+
+        Placing a GEO by hand is a trap: with inclination 0 and true anomaly
+        0 the satellite sits whereever Earth's rotation happens to put it at
+        the epoch, which is effectively a random longitude. A relay "over
+        Europe" then reports zero access to a European ground station and it
+        looks like a physics result rather than a mis-placement.
+
+        Sub-satellite longitude = right ascension - GMST, and for an
+        equatorial circular orbit with RAAN and argument of perigee at zero
+        the right ascension IS the true anomaly. So the true anomaly needed
+        is (longitude + GMST at epoch), which is what this computes.
+
+        ``longitude_deg`` is east-positive.
+        """
+        epoch = kwargs.pop("epoch", None) or kwargs.get("start") or getattr(self, "_start", None)
+        if not epoch:
+            raise StkError("new_geo_satellite needs an epoch: call "
+                           "set_time_period() first, or pass epoch=.")
+        true_anomaly = (float(longitude_deg) + gmst_deg(epoch)) % 360.0
+        kwargs.setdefault("ecc", 0.0)
+        kwargs.setdefault("arg_perigee_deg", 0.0)
+        return self.new_satellite(
+            name, sma_km=GEO_SMA_KM, inc_deg=0.0, raan_deg=0.0,
+            true_anomaly_deg=true_anomaly, epoch=epoch, **kwargs)
+
+    def subsatellite_longitude_deg(self, sat_path, when=None):
+        """Sub-satellite longitude in degrees east, or None.
+
+        Used to confirm a GEO actually ended up where it was asked to be.
+        """
+        when = when or getattr(self, "_start", None)
+        if not when:
+            return None
+        try:
+            provider = self.obj(sat_path).DataProviders.Item("LLA State")
+            group = provider.Group.Item("Fixed") if hasattr(provider, "Group") else provider
+            result = group.Exec(when, when, 60.0)
+            if result.DataSets.Count == 0:
+                return None
+            longitude = float(result.DataSets.GetDataSetByName("Lon").GetValues()[0])
+        except Exception:
+            return None
+        return ((longitude + 180.0) % 360.0) - 180.0
 
     def new_walker(self, prefix, total_sats, num_planes, phase_f,
                    sma_km, inc_deg, **kwargs):
@@ -844,9 +959,54 @@ class StkSession(object):
                  label="az/el pointing", fatal=False)
 
     def point_at_target(self, sensor_path, target_path):
-        """Slew a sensor to track another object."""
-        self.cmd("Point %s Targeted Track %s" % (sensor_path, target_path),
-                 label="targeted pointing", fatal=False)
+        """Slew a sensor to track another object.
+
+        Connect's ``Point ... Targeted Track`` form was REJECTED on STK 11,
+        so the object-model route is primary: set the pointing type to
+        targeted (enum resolved from this install's type library) and add the
+        target. Connect forms are kept as fallbacks.
+
+        Raises :class:`StkError` if nothing works -- silently leaving a sensor
+        unpointed produces zero access intervals later, which reads as a
+        physics result rather than a failure.
+        """
+        attempts = []
+        pointing_enum = self.find_enum("eSnPtTargeted", "snpt", "targeted")
+        if pointing_enum is not None:
+            try:
+                sensor = self.obj(sensor_path)
+                sensor.SetPointingType(pointing_enum)
+                targets = sensor.Pointing.Targets
+                # Targets.Add wants a class-qualified path; accepted spelling
+                # varies, so try the common ones.
+                for candidate in (target_path.lstrip("*/"), target_path,
+                                  target_path.replace("*/", "")):
+                    try:
+                        targets.Add(candidate)
+                        return True
+                    except Exception as exc:
+                        attempts.append("    [Targets.Add %r] %s" % (candidate, exc))
+            except Exception as exc:
+                attempts.append("    [SetPointingType] %s" % exc)
+        else:
+            attempts.append("    [object model] no targeted-pointing enum in this type library")
+
+        for template in ("Point %s Targeted Track %s",
+                         "Point %s Targeted %s",
+                         "Point %s Targeted AddObject %s"):
+            command = template % (sensor_path, target_path)
+            try:
+                self.root.ExecuteCommand(command)
+                return True
+            except pywintypes.com_error as exc:
+                attempts.append("    [%s] %s" % (command.split()[2], self._com_reason(exc)))
+
+        raise StkError(
+            "Could not point %s at %s -- every route was rejected.\n"
+            "  Attempts:\n%s\n"
+            "  An unpointed sensor reports zero access, which looks like a "
+            "physics result rather than a failure, so this raises instead."
+            % (sensor_path, target_path, "\n".join(attempts)))
 
     # -- RF chain -----------------------------------------------------------
     @staticmethod

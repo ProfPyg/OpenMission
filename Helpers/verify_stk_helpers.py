@@ -164,6 +164,33 @@ def _assert_gravity_file(session, filename):
     return path
 
 
+def _assert_gmst():
+    """GMST at the J2000 epoch is 280.46061837 deg by definition."""
+    value = stk.gmst_deg("1 Jan 2000 12:00:00.000")
+    if abs(value - 280.46061837) > 1e-3:
+        raise AssertionError("GMST at J2000 came out as %.6f, expected 280.460618" % value)
+    # and it must repeat after one sidereal day
+    later = stk.gmst_deg("2 Jan 2000 11:56:04.100")
+    if abs(((later - value + 180) % 360) - 180) > 0.05:
+        raise AssertionError("GMST did not repeat after a sidereal day (%.4f vs %.4f)"
+                             % (later, value))
+    return value
+
+
+def _assert_geo_longitude(session, longitude_deg, tol_deg=1.5):
+    path = session.new_geo_satellite("GeoProbe", longitude_deg)
+    actual = session.subsatellite_longitude_deg(path)
+    if actual is None:
+        raise AssertionError("could not read the sub-satellite longitude back")
+    error = ((actual - longitude_deg + 180) % 360) - 180
+    print("        asked for %.2f deg, parked at %.2f deg" % (longitude_deg, actual))
+    if abs(error) > tol_deg:
+        raise AssertionError(
+            "GEO parked at %.2f deg, asked for %.2f (off by %.2f) -- check the "
+            "sidereal-time conversion" % (actual, longitude_deg, error))
+    return path
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
@@ -265,6 +292,16 @@ def main():
         results.check("lunar gravity file GL0420A.grv resolves",
                       lambda: _assert_gravity_file(session, "GL0420A.grv"))
 
+        # --- GEO placement -------------------------------------------------
+        # A GEO placed by hand lands at an epoch-dependent longitude, which
+        # silently produces zero access to the ground station it was meant to
+        # serve. Check the satellite actually parks where it was asked to.
+        results.check("sidereal time matches the J2000 anchor",
+                      _assert_gmst)
+        geo = results.check(
+            "GEO parks over the requested longitude",
+            lambda: _assert_geo_longitude(session, -3.7))
+
         # --- sensors ------------------------------------------------------
         cam = results.check(
             "add rectangular sensor",
@@ -272,6 +309,14 @@ def main():
             requires={"satellite": sat})
         results.check("nadir pointing", lambda: session.point_nadir(cam),
                       requires={"sensor": cam})
+        # Connect's Point ... Targeted Track was rejected on STK 11; the
+        # helper falls back to the object model. If both fail the sensor is
+        # left unpointed and reports zero access, so this must not be silent.
+        results.check(
+            "targeted pointing (sensor tracks another object)",
+            lambda: session.point_at_target(
+                session.add_sensor_conic(sat, "TrackCam", 3.0), geo),
+            requires={"satellite": sat, "target": geo})
         results.check("add conic sensor",
                       lambda: session.add_sensor_conic(sat, "ConicCam", 22.5, 0.1),
                       requires={"satellite": sat})
