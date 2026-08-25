@@ -300,6 +300,29 @@ hr { border: none !important; border-top: 1px solid #1e2847 !important; margin: 
     0%, 100% { opacity: 1; }
     50%      { opacity: 0.55; }
 }
+
+/* Claude starburst payload (STK Agent emblem): a slow shine — the arms
+   flare and turn slightly, with a red glow breathing underneath. Kept off
+   the 1:1 second beat of om-sat-pulse so the two never look synced.
+   transform-box: fill-box is required for transform-origin to mean the
+   star's own centre inside the SVG rather than the viewBox origin. */
+@keyframes om-star-shine {
+    0%, 100% {
+        opacity: 0.9;
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 1px rgba(232, 0, 28, 0.5));
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.28) rotate(22deg);
+        filter: drop-shadow(0 0 4px rgba(232, 0, 28, 0.95));
+    }
+}
+.om-claude-star {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: om-star-shine 1.7s ease-in-out infinite;
+}
 .om-sat {
     animation: om-sat-pulse 2.2s ease-in-out infinite;
 }
@@ -839,6 +862,8 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
                   a live ground track draws on during the front pass
         "decay" — satellite spirals into Earth with burn-up flash
         "pass"  — same orbital motion, with echoing ground-station pings
+        "agent" — as "pass", but the payload is the Claude starburst,
+                  shining as it orbits (STK Agent page)
     """
     subtitle_line = (
         f'<div class="om-brand-page-subtitle">'
@@ -888,6 +913,36 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
     # Two synced satellite copies: "back" is drawn before the (filled)
     # globe so it is occluded while passing behind Earth; "front" is
     # drawn on top. Visibility swaps at the orbit extremes (0% / 50%).
+    # The orbiting payload: a satellite bus for most variants, the Claude
+    # starburst for "agent". Rays are generated so the eight arms stay
+    # symmetric, cardinals longer than diagonals -- the same construction as
+    # the nav icon, so the two read as the same mark.
+    if variant == "agent":
+        _rays = []
+        for _angle in range(0, 360, 45):
+            _length = 5.4 if _angle % 90 == 0 else 3.8
+            _rad = _radians(_angle)
+            _rays.append(
+                f'<line x1="0" y1="0" x2="{_length * _cos(_rad):.2f}" '
+                f'y2="{-_length * _sin(_rad):.2f}"/>'
+            )
+        _payload = (
+            '<g class="om-claude-star">'
+            '<g stroke="#e8001c" stroke-width="1.7" stroke-linecap="round">'
+            + "".join(_rays) +
+            '</g>'
+            '<circle cx="0" cy="0" r="1.5" fill="#e8001c"/>'
+            '</g>'
+        )
+    else:
+        _payload = """
+<rect x="-2" y="-2" width="4" height="4" rx="0.8"
+      fill="#e8001c" stroke="#c0001a" stroke-width="0.6"/>
+<rect x="-7.5" y="-1" width="4.5" height="2" rx="0.4"
+      fill="#e8001c" opacity="0.85"/>
+<rect x="3" y="-1" width="4.5" height="2" rx="0.4"
+      fill="#e8001c" opacity="0.85"/>"""
+
     def _sat_copy(side: str) -> str:
         return f"""
 <g class="om-orb-{side}">
@@ -898,14 +953,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
 <g transform="translate(22 0)">
 <g class="om-counter">
 <g transform="scale(1 2.75)">
-<g class="om-sat">
-<rect x="-2" y="-2" width="4" height="4" rx="0.8"
-      fill="#e8001c" stroke="#c0001a" stroke-width="0.6"/>
-<rect x="-7.5" y="-1" width="4.5" height="2" rx="0.4"
-      fill="#e8001c" opacity="0.85"/>
-<rect x="3" y="-1" width="4.5" height="2" rx="0.4"
-      fill="#e8001c" opacity="0.85"/>
-</g>
+<g class="om-sat">{_payload}</g>
 </g>
 </g>
 </g>
@@ -931,7 +979,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
     _ping_extra = ("""
 <circle class="om-beacon-3" cx="28" cy="31.5" r="1.5"
         fill="none" stroke="#e8001c" stroke-width="0.6" opacity="0"/>"""
-                   if variant == "pass" else "")
+                   if variant in ("pass", "agent") else "")
 
     # Live ground track: the trace draws itself on the globe under the
     # satellite during the front pass (= the beacon), with a moving
@@ -960,7 +1008,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
         fill="none" stroke="#e8001c" stroke-width="0.7" opacity="0"/>
 <circle class="om-beacon-2" cx="28" cy="31.5" r="1.5"
         fill="none" stroke="#e8001c" stroke-width="0.6" opacity="0"/>{_ping_extra}
-</g>""" if variant == "pass" else ""
+</g>""" if variant in ("pass", "agent") else ""
 
     return _collapse_html(f"""
 <div class="om-brand-container">

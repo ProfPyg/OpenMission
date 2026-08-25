@@ -187,7 +187,7 @@ def _build_prompt(user_request: str, stk_progid: str = "") -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        f'<div class="custom-sidebar-header">{emblem_html("/ STK Agent", variant="pass")}</div>',
+        f'<div class="custom-sidebar-header">{emblem_html("/ STK Agent", variant="agent")}</div>',
         unsafe_allow_html=True,
     )
     st.divider()
