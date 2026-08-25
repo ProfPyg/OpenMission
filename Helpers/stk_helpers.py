@@ -68,6 +68,7 @@ per feature, so a broken helper is caught before it reaches a user.
 
 from __future__ import annotations
 
+import functools
 import os
 import sys
 
@@ -160,6 +161,29 @@ def walker_delta_elements(total_sats: int, num_planes: int, phase_f: int,
         raan = (raan0_deg + plane * raan_step) % 360.0
         true_anom = (true_anom0_deg + slot * in_plane_step + plane * phase_step) % 360.0
         yield index, plane, raan, true_anom
+
+
+def _accept_aliases(**aliases):
+    """Accept alternative spellings for keyword arguments.
+
+    A generated script is written from a prompt, and a prompt can drift from
+    the real signature. Where a shorter or longer spelling is an obvious
+    synonym, accept it rather than failing with "unexpected keyword
+    argument" -- the caller's intent is unambiguous. Check_prompt_api.py
+    keeps the documentation honest; this keeps a stale caller working.
+
+    ``_accept_aliases(short_name="canonical_name")``
+    """
+    def decorate(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for alias, canonical in aliases.items():
+                if alias in kwargs and canonical not in kwargs:
+                    kwargs[canonical] = kwargs.pop(alias)
+            return func(*args, **kwargs)
+        wrapper._aliases = aliases
+        return wrapper
+    return decorate
 
 
 # ---------------------------------------------------------------------------
@@ -668,6 +692,8 @@ class StkSession(object):
         self.cmd("New / %s/Sensor %s" % (parent_path, actual), label="create sensor")
         return path
 
+    @_accept_aliases(angular_res_deg="angular_resolution_deg",
+                     sat="parent_path", sat_path="parent_path")
     def add_sensor_conic(self, parent_path, name, half_angle_deg,
                          angular_resolution_deg=0.1):
         """Add a simple conic sensor -- a visible FOV cone in the 3D window.
@@ -695,6 +721,9 @@ class StkSession(object):
                            "route said: %s" % (path, first))
         return path
 
+    @_accept_aliases(half_across_deg="half_angle_across_deg",
+                     half_along_deg="half_angle_along_deg",
+                     sat="parent_path", sat_path="parent_path")
     def add_sensor_rectangular(self, parent_path, name,
                                half_angle_across_deg, half_angle_along_deg):
         """Add a rectangular sensor. Both arguments are HALF-angles.
@@ -762,6 +791,8 @@ class StkSession(object):
                              % (antenna_model, path, exc))
             return False
 
+    @_accept_aliases(sat="parent_path", sat_path="parent_path",
+                     gs="parent_path", facility="parent_path")
     def add_transmitter(self, parent_path, name, freq_ghz, eirp_dbw,
                         data_rate_kbps=None, antenna_model="Isotropic"):
         """Mount a Simple Transmitter Model on a satellite or facility.
@@ -798,6 +829,8 @@ class StkSession(object):
             raise StkError("Failed to configure transmitter %s: %s" % (path, exc))
         return path
 
+    @_accept_aliases(sat="parent_path", sat_path="parent_path",
+                     gs="parent_path", facility="parent_path")
     def add_receiver(self, parent_path, name, freq_ghz=None,
                      antenna_model="Isotropic", auto_select_frequency=True):
         """Mount a Simple Receiver Model on a satellite or facility.

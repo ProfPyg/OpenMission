@@ -63,8 +63,10 @@ default), "TwoBody", "J4Perturbation", "HPOP", "SGP4".
 
 Sensors (visual FOV geometry):
 
-    cam = session.add_sensor_conic(sat, name, half_angle_deg, angular_res_deg=0.1)
-    cam = session.add_sensor_rectangular(sat, name, half_across_deg, half_along_deg)
+    cam = session.add_sensor_conic(sat, name, half_angle_deg,
+                                   angular_resolution_deg=0.1)
+    cam = session.add_sensor_rectangular(sat, name,
+                                         half_angle_across_deg, half_angle_along_deg)
     session.point_nadir(cam)
     session.point_az_el(cam, az_deg, el_deg)
     session.point_at_target(cam, target_path)

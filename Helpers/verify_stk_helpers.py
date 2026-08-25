@@ -134,12 +134,30 @@ def _assert_api(session):
     return len(EXPECTED_API)
 
 
+def _assert_prompt_matches_api():
+    """The prompt must not document anything stk_helpers.py lacks."""
+    import check_prompt_api
+    problems = check_prompt_api.check(
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     "prompts", "stk_agent.md"),
+        stk)
+    if problems:
+        raise AssertionError("; ".join(problems))
+    return True
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
     print("=" * 68)
 
     results = Results()
+
+    # --- prompt/API agreement (no STK needed) -----------------------------
+    # Runs first because a drifted prompt breaks every generated script
+    # regardless of whether the module itself works.
+    results.check("prompt documents only real functions and keywords",
+                  _assert_prompt_matches_api)
 
     # --- connection -------------------------------------------------------
     session = results.check("attach to running STK", stk.StkSession.attach)
