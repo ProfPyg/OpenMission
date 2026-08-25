@@ -152,6 +152,7 @@ div[style*="letter-spacing"] {
 [data-testid="stSidebarNavItems"] > li:nth-child(1) [data-testid="stSidebarNavLink"]::after { content: "COVERAGE"; }
 [data-testid="stSidebarNavItems"] > li:nth-child(2) [data-testid="stSidebarNavLink"]::after { content: "LIFETIME"; }
 [data-testid="stSidebarNavItems"] > li:nth-child(3) [data-testid="stSidebarNavLink"]::after { content: "PASS PREDICTION"; }
+[data-testid="stSidebarNavItems"] > li:nth-child(4) [data-testid="stSidebarNavLink"]::after { content: "STK AGENT"; }
 
 /* ── Primary button — mission red ── */
 [data-testid="baseButton-primary"],
@@ -527,6 +528,7 @@ hr { border: none !important; border-top: 1px solid #1e2847 !important; margin: 
 # The whole ::before box is transformed (flip / spin / ping); the SVG itself
 # is static, which is why the motion fits the meaning of each page.
 # ─────────────────────────────────────────────────────────────────────────────
+from math import cos as _cos, radians as _radians, sin as _sin
 from urllib.parse import quote as _quote
 
 # ── Coverage: tilted red orbit ring around a blue globe ──────────────────────
@@ -583,6 +585,45 @@ def _svg_pass(struct: str, accent: str) -> str:
         f'</svg>'
     )
 
+# ── STK Agent: STK globe + rising orbit, with the Claude burst as payload ────
+def _svg_stk_agent(struct: str, accent: str) -> str:
+    """Globe and orbit arc (STK) carrying the Claude starburst.
+
+    Rays are generated rather than hand-written so the eight arms stay
+    exactly symmetric; cardinal arms run longer than the diagonals, which is
+    what stops it reading as a generic asterisk. Deliberately simpler than
+    COVERAGE's icon -- at 26px an extra ellipse turns the whole thing to
+    mush.
+    """
+    cx, cy = 17.9, 6.6
+    rays = []
+    for _angle in range(0, 360, 45):
+        _length = 4.4 if _angle % 90 == 0 else 3.1
+        _rad = _radians(_angle)
+        rays.append(
+            f'<line x1="{cx}" y1="{cy}" '
+            f'x2="{cx + _length * _cos(_rad):.2f}" y2="{cy - _length * _sin(_rad):.2f}"/>'
+        )
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+        # globe, lower-left
+        f'<circle cx="8.6" cy="15.0" r="5.2" fill="none" stroke="{struct}" stroke-width="1.5"/>'
+        f'<ellipse cx="8.6" cy="15.0" rx="2.15" ry="5.2" fill="none" stroke="{struct}" '
+        f'stroke-width="0.9" opacity="0.8"/>'
+        f'<line x1="3.4" y1="15.0" x2="13.8" y2="15.0" stroke="{struct}" '
+        f'stroke-width="0.9" opacity="0.8"/>'
+        # orbit arc rising from the limb to the payload
+        f'<path d="M3.0 12.0 A9.2 9.2 0 0 1 14.2 4.6" fill="none" stroke="{struct}" '
+        f'stroke-width="1.25" stroke-linecap="round" opacity="0.9"/>'
+        # Claude burst
+        f'<g stroke="{accent}" stroke-width="1.95" stroke-linecap="round">'
+        + "".join(rays) +
+        f'</g>'
+        f'<circle cx="{cx}" cy="{cy}" r="1.35" fill="{accent}"/>'
+        f'</svg>'
+    )
+
+
 def _uri(svg: str) -> str:
     """Inline SVG → CSS-safe data URI (only # needs hard encoding in url())."""
     return "data:image/svg+xml," + _quote(svg, safe="")
@@ -593,6 +634,7 @@ _icons = {
     1: (_svg_coverage, "om-icon-spin"),
     2: (_svg_lifetime, "om-icon-flip"),
     3: (_svg_pass,     "om-icon-ping"),
+    4: (_svg_stk_agent, "om-icon-burst"),
 }
 
 _nav_icon_rules = []
@@ -633,6 +675,10 @@ _NAV_ICON_CSS = """
 @keyframes om-icon-ping {
     0%, 100% { transform: scale(1); }
     45%      { transform: scale(1.18); }
+}
+@keyframes om-icon-burst {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50%      { transform: scale(1.13) rotate(9deg); }
 }
 """ + "\n".join(_nav_icon_rules) + "\n</style>\n"
 
