@@ -1,0 +1,362 @@
+"""
+verify_stk_helpers.py -- smoke test for stk_helpers.py
+
+WHAT THIS IS FOR
+----------------
+This is the piece that makes the STK agent reliable. The prompt and the
+helper module both make claims about STK's API; this script is the only
+thing that checks those claims against a REAL STK install.
+
+Run it:
+
+* after any edit to ``stk_helpers.py``
+* after any change to the agent prompt
+* once on each new STK version / machine you intend to support
+
+It builds a throwaway scenario, exercises every helper, prints PASS/FAIL per
+feature, and closes the scenario WITHOUT saving. Nothing in the user's own
+work is touched.
+
+    python verify_stk_helpers.py
+
+Exit code 0 = every check passed. Non-zero = at least one failed, and the
+summary names which. Any FAIL line is a bug in the helper module (or a
+genuine difference in that STK version) -- fix it there, not in the
+generated mission scripts.
+
+REQUIREMENTS
+------------
+Windows, pywin32, STK open. STK does NOT need a scenario open; this script
+creates its own. If a scenario IS open, the script refuses to run rather
+than risk polluting it -- close it first.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+import traceback
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import stk_helpers as stk  # noqa: E402
+
+
+SCENARIO_NAME = "STKHelpersSmokeTest"
+START = "1 Jul 2026 00:00:00.000"
+STOP = "1 Jul 2026 06:00:00.000"
+
+
+PASS, FAIL, SKIP = "PASS", "FAIL", "SKIP"
+
+
+class Results(object):
+    """Collects PASS/FAIL/SKIP per feature.
+
+    SKIP matters as much as FAIL here: when a helper fails, everything that
+    needed its output is reported as SKIPPED rather than failed. Otherwise a
+    single root-cause bug prints as a dozen failures and buries the one line
+    you actually need to read.
+    """
+
+    def __init__(self):
+        self.rows = []
+
+    def check(self, label, func, requires=None):
+        """Run ``func``; record the outcome. Returns its value, or None.
+
+        ``requires`` is a dict of ``{name: value}`` that must all be
+        non-None; if any is None the check is SKIPPED, naming what was
+        missing.
+        """
+        missing = [name for name, value in (requires or {}).items() if value is None]
+        if missing:
+            detail = "needs %s" % ", ".join(missing)
+            self.rows.append((label, SKIP, detail))
+            print("  SKIP  %-44s (%s)" % (label, detail))
+            return None
+        try:
+            value = func()
+        except Exception as exc:
+            # Keep the FULL text: the first line names the failure, but the
+            # lines under it carry STK's own reason for each attempted route,
+            # which is what actually identifies the bug.
+            detail = str(exc).strip()
+            self.rows.append((label, FAIL, detail))
+            lines = detail.splitlines()
+            print("  FAIL  %-44s %s" % (label, lines[0]))
+            for line in lines[1:]:
+                print("        %s" % line)
+            return None
+        self.rows.append((label, PASS, ""))
+        print("  PASS  %s" % label)
+        return value
+
+    def _of(self, status):
+        return [row for row in self.rows if row[1] == status]
+
+    def summary(self):
+        failed, skipped = self._of(FAIL), self._of(SKIP)
+        passed = self._of(PASS)
+        print("\n" + "=" * 72)
+        print("RESULT: %d passed, %d failed, %d skipped (of %d checks)"
+              % (len(passed), len(failed), len(skipped), len(self.rows)))
+        if failed:
+            print("\nREAL FAILURES -- fix these in stk_helpers.py:")
+            for label, _status, detail in failed:
+                print("  * %s" % label)
+                for line in detail.splitlines():
+                    print("      %s" % line)
+        if skipped:
+            print("\nSkipped (blocked by a failure above, not bugs of their own):")
+            for label, _status, detail in skipped:
+                print("  - %-44s %s" % (label, detail))
+        print("=" * 72)
+        return len(failed)
+
+
+EXPECTED_API = (
+    "attach", "launch", "cmd", "obj", "exists", "unique_path", "enum",
+    "ensure_scenario", "set_time_period", "set_units", "rewind",
+    "save_scenario", "close_scenario", "new_satellite", "new_walker",
+    "set_hpop_gravity", "propagate", "set_epoch", "orbit_radius_km",
+    "add_sensor_conic", "add_sensor_rectangular", "point_nadir",
+    "point_az_el", "point_at_target", "add_transmitter", "add_receiver",
+    "new_facility", "new_planet", "set_min_elevation", "compute_access",
+    "access_summary", "write_access_csv",
+)
+
+
+def _assert_api(session):
+    missing = [name for name in EXPECTED_API if not hasattr(session, name)]
+    if missing:
+        raise AssertionError("stk_helpers is missing: %s" % ", ".join(missing))
+    return len(EXPECTED_API)
+
+
+def main():
+    print("=" * 68)
+    print("stk_helpers smoke test")
+    print("=" * 68)
+
+    results = Results()
+
+    # --- connection -------------------------------------------------------
+    session = results.check("attach to running STK", stk.StkSession.attach)
+    if session is None:
+        print("\nCannot continue without an STK connection. Open STK and re-run.")
+        return 2
+    print("        (connected via ProgID: %s)" % session.progid)
+    try:
+        enum_count = len(session._load_enums())
+        print("        (%d enum values read from this STK's type library)" % enum_count)
+    except Exception as exc:
+        print("        (could not read enums from the type library: %s)" % exc)
+
+    open_scenario = session.scenario_name
+    if open_scenario is not None:
+        print("\nREFUSING TO RUN: scenario '%s' is already open.\n"
+              "This test creates and then discards its own scenario; close "
+              "yours first so nothing of yours is affected." % open_scenario)
+        return 2
+
+    # --- API surface ------------------------------------------------------
+    # Catches an edit that silently drops a helper (this exact regression
+    # happened once: new_walker was removed by a careless block replacement
+    # and only surfaced as a confusing AttributeError mid-run).
+    results.check("helper API surface is complete",
+                  lambda: _assert_api(session))
+
+    # --- scenario ---------------------------------------------------------
+    results.check("create scenario",
+                  lambda: session.ensure_scenario(SCENARIO_NAME))
+    results.check("set unit preferences", session.set_units)
+    results.check("set analysis time period",
+                  lambda: session.set_time_period(START, STOP))
+
+    try:
+        # --- satellites ---------------------------------------------------
+        sma = stk.altitude_to_sma(500.0)
+
+        sat = results.check(
+            "create satellite + classical state (J2Perturbation)",
+            lambda: session.new_satellite("SmokeSat", sma_km=sma, inc_deg=97.4,
+                                          raan_deg=0.0))
+
+        if sat is not None:
+            print("        (SetState form accepted by this STK build: %s)"
+                  % getattr(session, "_classical_form", "?"))
+
+        results.check(
+            "ephemeris is real (position query returns data)",
+            lambda: _assert_has_ephemeris(session, sat), requires={"satellite": sat})
+
+        results.check(
+            "orbit radius reads back at the right scale (no unit error)",
+            lambda: _assert_radius(session, sat, sma), requires={"satellite": sat})
+
+        results.check("unique_path avoids collisions",
+                      lambda: _assert_unique(session, "*/Satellite/SmokeSat"))
+
+        results.check(
+            "Walker element generator (4/4/1 -> RAANs 0/90/180/270)",
+            _assert_walker_math)
+
+        walker = results.check(
+            "create Walker constellation (4/4/1)",
+            lambda: session.new_walker("WalkSat", total_sats=4, num_planes=4,
+                                       phase_f=1, sma_km=sma, inc_deg=97.4))
+
+        results.check("two-body propagator name accepted",
+                      lambda: session.new_satellite("TwoBodySat", sma_km=sma,
+                                                    inc_deg=45.0, raan_deg=10.0,
+                                                    propagator="TwoBody"))
+
+        # --- sensors ------------------------------------------------------
+        cam = results.check(
+            "add rectangular sensor",
+            lambda: session.add_sensor_rectangular(sat, "RectCam", 1.11, 0.83),
+            requires={"satellite": sat})
+        results.check("nadir pointing", lambda: session.point_nadir(cam),
+                      requires={"sensor": cam})
+        results.check("add conic sensor",
+                      lambda: session.add_sensor_conic(sat, "ConicCam", 22.5, 0.1),
+                      requires={"satellite": sat})
+
+        # --- RF -----------------------------------------------------------
+        results.check(
+            "add transmitter (.Eirp casing + SetEmbeddedModel method)",
+            lambda: session.add_transmitter(sat, "SmokeTX", freq_ghz=0.437,
+                                            eirp_dbw=0.0, data_rate_kbps=19.2),
+            requires={"satellite": sat})
+
+        # --- ground -------------------------------------------------------
+        gs = results.check(
+            "create facility at geodetic position",
+            lambda: session.new_facility("SmokeGS", 78.229772, 15.407786, 0.458))
+        results.check("facility position round-trips",
+                      lambda: _assert_position(session, gs, 78.229772, 15.407786),
+                      requires={"facility": gs})
+        # NOTE: no freq_ghz here. A receiver's frequency is read-only in
+        # STK -- it is derived from the transmitter on the other end of the
+        # link. Verified by discover_stk_api.py.
+        results.check("add receiver",
+                      lambda: session.add_receiver(gs, "SmokeRX"),
+                      requires={"facility": gs})
+        results.check("min elevation constraint",
+                      lambda: session.set_min_elevation(gs, 5.0),
+                      requires={"facility": gs})
+
+        # --- analysis -----------------------------------------------------
+        results.check("compute access satellite -> facility",
+                      lambda: _assert_access(session, sat, gs),
+                      requires={"satellite": sat, "facility": gs})
+        rows = results.check(
+            "access summary over several satellites",
+            lambda: session.access_summary(walker or [sat], gs),
+            requires={"satellites": walker or sat, "facility": gs})
+        results.check("write access CSV",
+                      lambda: _assert_csv(session, rows or [], "SmokeGS"),
+                      requires={"access rows": rows})
+
+        # --- optional / environment dependent -----------------------------
+        print("\n  -- optional features (a FAIL here only limits scope) --")
+        results.check("add planet object (Earth reference)",
+                      lambda: session.new_planet("Earth"))
+        results.check("satellite on an alternate central body (Moon)",
+                      lambda: session.new_satellite(
+                          "MoonSat", sma_km=stk.altitude_to_sma(100.0, stk.MOON_RADIUS_KM),
+                          inc_deg=90.0, raan_deg=0.0, central_body="Moon"))
+
+    finally:
+        # Always clean up, even if a check blew up unexpectedly.
+        try:
+            session.close_scenario()
+            print("\n  (smoke-test scenario closed without saving)")
+        except Exception:
+            print("\n  [warn] could not close the smoke-test scenario; "
+                  "close '%s' manually." % SCENARIO_NAME)
+
+    return 1 if results.summary() else 0
+
+
+# ---------------------------------------------------------------------------
+# Assertions -- each raises with a clear message on failure
+# ---------------------------------------------------------------------------
+def _assert_has_ephemeris(session, sat_path):
+    """A satellite with no ephemeris silently returns nothing downstream."""
+    provider = session.obj(sat_path).DataProviders.Item("Cartesian Position")
+    group = provider.Group.Item("ICRF") if hasattr(provider, "Group") else provider
+    result = group.Exec(START, STOP, 3600.0)
+    count = result.DataSets.Count
+    if count == 0:
+        raise AssertionError("satellite has no ephemeris -- SetState did not propagate")
+    return count
+
+
+def _assert_radius(session, sat_path, expected_sma_km, tol_frac=0.05):
+    """Catches a silent unit error: an orbit accepted but 1000x wrong."""
+    radius = session.orbit_radius_km(sat_path)
+    if radius is None:
+        raise AssertionError("no ephemeris -- could not read a position")
+    if abs(radius - expected_sma_km) > tol_frac * expected_sma_km:
+        raise AssertionError(
+            "orbit radius read back as %.1f km, expected ~%.1f km -- the "
+            "distance unit is being misinterpreted" % (radius, expected_sma_km))
+    return radius
+
+
+def _assert_unique(session, base_path):
+    if not session.exists(base_path):
+        raise AssertionError("expected %s to exist by now" % base_path)
+    candidate = session.unique_path(base_path)
+    if candidate == base_path:
+        raise AssertionError("unique_path returned an already-taken path")
+    return candidate
+
+
+def _assert_walker_math():
+    rows = list(stk.walker_delta_elements(4, 4, 1))
+    raans = [round(r[2], 6) for r in rows]
+    if raans != [0.0, 90.0, 180.0, 270.0]:
+        raise AssertionError("expected RAANs 0/90/180/270, got %s" % raans)
+    anomalies = [round(r[3], 6) for r in rows]
+    if anomalies != [0.0, 90.0, 180.0, 270.0]:
+        raise AssertionError("expected f=1 phasing 0/90/180/270, got %s" % anomalies)
+    return raans
+
+
+def _assert_position(session, gs_path, lat, lon, tol=1e-4):
+    position = session.obj(gs_path).Position
+    got_lat, got_lon, _alt = position.QueryPlanetodetic()
+    if abs(got_lat - lat) > tol or abs(got_lon - lon) > tol:
+        raise AssertionError("facility position mismatch: set (%.6f, %.6f), "
+                             "read back (%.6f, %.6f) -- check unit preferences"
+                             % (lat, lon, got_lat, got_lon))
+    return got_lat, got_lon
+
+
+def _assert_access(session, sat_path, gs_path):
+    count, total, _intervals = session.compute_access(sat_path, gs_path)
+    if count == 0:
+        raise AssertionError(
+            "zero access intervals -- plausible for a short window, but check "
+            "the orbit actually propagated and the ground station is placed")
+    if total <= 0:
+        raise AssertionError("access intervals have zero total duration")
+    return count, total
+
+
+def _assert_csv(session, rows, target_name):
+    path = session.write_access_csv(rows, target_name, filename="smoke_access.csv")
+    if not os.path.isfile(path) or os.path.getsize(path) == 0:
+        raise AssertionError("CSV not written to %s" % path)
+    return path
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except Exception:
+        traceback.print_exc()
+        sys.exit(2)
