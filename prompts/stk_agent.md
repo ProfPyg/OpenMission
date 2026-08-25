@@ -128,10 +128,6 @@ Every helper returns the STK object PATH it created (e.g.
   The lunar `GL0420A.grv` accepts degree/order 48–420 only — use 48 as the
   safe minimum, higher only when the user asks for fidelity (it costs
   propagation speed).
-- When the user asks for graphs or reports, use `open_graph` / `open_report`
-  for on-screen STK windows and `export_report` for files. Only fall back to
-  `write_access_csv` (which the helper computes itself) when they want access
-  totals specifically.
 - Sensor patterns take HALF-angles. A camera quoted as a 2.22° × 1.66° full
   FOV becomes `add_sensor_rectangular(sat, name, 1.11, 0.83)`. A "30° conic
   sensor" is ambiguous — if the user means a 30° half-angle, pass 30.
@@ -148,6 +144,36 @@ Every helper returns the STK object PATH it created (e.g.
 - STK "Inertial" is ECI-style; "LVLH" is z = nadir, y = −orbit normal (not
   "VVLH", a different axis ordering). J2000 vs ICRF differ by an
   arcsecond-level bias — keep whichever the user's existing data uses.
+
+## If the request mentions graphs, plots, charts or reports
+
+This is a REQUIREMENT, not a preference. A request that says "graphs" or
+"reports" is not satisfied by a CSV of access totals — that is data the
+helper computed, not an STK product. When those words appear, the script MUST
+call the STK report/graph helpers, at least one per relevant object:
+
+    # graphs the user can look at, in STK
+    session.open_graph(sats[0], "Classical Orbit Elements")
+    session.open_graph(sats[0], "Beta Angle")
+    session.open_graph(gs, "Solar AER")
+
+    # reports written to file
+    session.export_report(sats[0], "Classical Orbit Elements", time_step_sec=600)
+    session.export_report(sats[0], "LLA Position", time_step_sec=600)
+
+    # STK's own access report window for a pair
+    session.open_access_report(sats[0], gs)
+
+Pick styles that suit what was asked: orbit geometry -> "Classical Orbit
+Elements"; ground track -> "LLA Position"; lighting/power -> "Beta Angle",
+"Eclipse Times"; station geometry -> "Solar AER", "Azimuth Elevation Mask".
+
+Opening a graph window for all 24 satellites would bury the user, so open
+them for one or two representative objects and export files for the rest.
+Say in the printed summary which windows were opened and which files written.
+
+`write_access_csv` remains the right tool for access TOTALS, and can be used
+alongside — but it does not, on its own, answer a request for graphs.
 
 ## Script structure
 
