@@ -12,8 +12,10 @@ back. Manual copy/paste, zero extra billing.
 """
 from __future__ import annotations
 
+import io
 import json
 import re
+import zipfile
 from pathlib import Path
 
 import streamlit as st
@@ -166,6 +168,98 @@ def _extract_code(text: str) -> str:
     """Pull the first fenced code block out of a pasted reply, if any."""
     m = re.search(r"```(?:python)?\s*\n(.*?)```", text, re.DOTALL)
     return m.group(1).strip() if m else text.strip()
+
+
+_RUN_INSTRUCTIONS = """\
+HOW TO RUN THIS SCENARIO
+========================
+
+1. Unzip this folder anywhere. Keep the two .py files TOGETHER -- the script
+   imports stk_helpers from its own directory and will not start without it.
+
+2. Install pywin32 (once per machine):
+
+       pip install -r requirements-stk.txt
+
+3. Open STK and load (or leave empty) the scenario you want to build into.
+
+4. Run the script:
+
+       python {script_name}
+
+WHAT IS IN HERE
+---------------
+  {script_name}
+      Your generated scenario. Every mission number is a named constant at
+      the top -- edit those to tweak the scenario, no STK knowledge needed.
+
+  stk_helpers.py
+      The STK interface layer. Handles the COM details and is verified
+      against a real STK install by its own test suite. Do not edit unless
+      you know why; the script depends on it.
+
+  requirements-stk.txt
+      The one Python dependency (pywin32). STK itself must be installed and
+      licensed separately.
+
+TROUBLESHOOTING
+---------------
+  "No module named stk_helpers"
+      The two .py files are not in the same folder.
+
+  "Could not attach to a running STK instance"
+      STK is not open, or its ProgID is unusual -- the error lists every one
+      tried; pass yours as StkSession.attach(progids=["..."]).
+
+  "No module named win32com"
+      Step 2 was skipped.
+"""
+
+
+def _safe_script_name(name: str) -> str:
+    """Turn user input into a safe .py filename.
+
+    Path separators are flattened to underscores rather than split on: a
+    user typing "Walker 6/3/2" means all of it as a name, and Path().stem
+    would silently keep only "2". Flattening also removes any traversal
+    ("../../x" cannot escape), which matters because this name goes into a
+    zip entry.
+    """
+    raw = re.sub(r"[\\/]+", "_", str(name or "").strip())
+    # drop a trailing extension, whatever it is, so "report.txt" does not
+    # become "report.txt.py"
+    head, _dot, tail = raw.rpartition(".")
+    if head and tail.isalnum() and len(tail) <= 4:
+        raw = head
+    stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", raw).strip("._-")
+    stem = re.sub(r"_{2,}", "_", stem) or "stk_scenario"
+    return f"{stem}.py"
+
+
+def _build_bundle(script: str, script_name: str) -> bytes:
+    """Zip the script together with everything needed to run it.
+
+    Shipping the script alone is the single most common way this goes wrong:
+    it imports stk_helpers from its own directory, so a user who downloads
+    only the script gets ImportError before STK is ever contacted. Bundling
+    removes the failure instead of documenting it.
+    """
+    helper_source = _load_helper_module()
+    requirements = ""
+    req_path = Path(__file__).resolve().parent.parent / "Helpers" / "requirements-stk.txt"
+    try:
+        requirements = req_path.read_text(encoding="utf-8")
+    except OSError:
+        requirements = "pywin32>=306\n"
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(script_name, script)
+        if helper_source:
+            archive.writestr("stk_helpers.py", helper_source)
+        archive.writestr("requirements-stk.txt", requirements)
+        archive.writestr("README.txt", _RUN_INSTRUCTIONS.format(script_name=script_name))
+    return buffer.getvalue()
 
 
 def _build_prompt(user_request: str, stk_progid: str = "") -> str:
@@ -330,24 +424,49 @@ script = st.session_state["stk_agent_script"]
 if script:
     st.divider()
     st.markdown("### Generated script")
-    dl_col, _ = st.columns([1, 2])
+
+    name_col, dl_col = st.columns([1, 1])
+    with name_col:
+        chosen_name = st.text_input(
+            "File name",
+            value=st.session_state.get("stk_agent_name", "stk_scenario.py"),
+            help="Name the script whatever suits the study — the bundle is "
+                 "named to match.",
+        )
+    script_name = _safe_script_name(chosen_name)
+    st.session_state["stk_agent_name"] = script_name
+
     with dl_col:
+        st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
         st.download_button(
-            "\u2b07  Download script (.py)",
-            script,
-            file_name="stk_generated_scenario.py",
-            mime="text/x-python",
+            "\u2b07  Download bundle (.zip)",
+            _build_bundle(script, script_name),
+            file_name=f"{Path(script_name).stem}.zip",
+            mime="application/zip",
             type="primary",
             use_container_width=True,
         )
+
     st.caption(
-        "Save it beside **stk_helpers.py** (sidebar download), open STK, then "
-        "run it. Review it first — check central-body assignments, "
-        "gravity-file paths and object names against your own scenario "
-        "before running against a live session."
+        f"The zip contains **{script_name}**, **stk_helpers.py** (which the "
+        "script imports — they must stay in the same folder), the pywin32 "
+        "requirement, and a README with the run steps. Open STK, then run "
+        f"`python {script_name}`."
     )
+
     with st.expander("View the script", expanded=False):
         st.code(script, language="python")
+    with st.expander("Just the script, without the bundle", expanded=False):
+        st.caption(
+            "Only useful if you already have stk_helpers.py in the folder you "
+            "are saving into — the script will not run without it."
+        )
+        st.download_button(
+            "Download script only (.py)",
+            script,
+            file_name=script_name,
+            mime="text/x-python",
+        )
 
 # ── References ────────────────────────────────────────────────────────────────
 st.markdown("---")
