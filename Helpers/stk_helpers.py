@@ -646,24 +646,35 @@ class StkSession(object):
             name, sma_km=GEO_SMA_KM, inc_deg=0.0, raan_deg=0.0,
             true_anomaly_deg=true_anomaly, epoch=epoch, **kwargs)
 
-    def subsatellite_longitude_deg(self, sat_path, when=None):
-        """Sub-satellite longitude in degrees east, or None.
+    def subsatellite_point(self, sat_path, when=None):
+        """Sub-satellite ``(latitude_deg, longitude_deg)``, or ``(None, None)``.
 
-        Used to confirm a GEO actually ended up where it was asked to be.
+        Longitude is normalised to -180..180. Handy for putting a facility
+        directly under a satellite, which makes a pointing test deterministic
+        instead of depending on whether the ground track happens to pass
+        anything during the analysis window.
         """
         when = when or getattr(self, "_start", None)
         if not when:
-            return None
+            return None, None
         try:
             provider = self.obj(sat_path).DataProviders.Item("LLA State")
             group = provider.Group.Item("Fixed") if hasattr(provider, "Group") else provider
             result = group.Exec(when, when, 60.0)
             if result.DataSets.Count == 0:
-                return None
+                return None, None
+            latitude = float(result.DataSets.GetDataSetByName("Lat").GetValues()[0])
             longitude = float(result.DataSets.GetDataSetByName("Lon").GetValues()[0])
         except Exception:
-            return None
-        return ((longitude + 180.0) % 360.0) - 180.0
+            return None, None
+        return latitude, ((longitude + 180.0) % 360.0) - 180.0
+
+    def subsatellite_longitude_deg(self, sat_path, when=None):
+        """Sub-satellite longitude in degrees east, or None.
+
+        Used to confirm a GEO actually ended up where it was asked to be.
+        """
+        return self.subsatellite_point(sat_path, when)[1]
 
     def new_walker(self, prefix, total_sats, num_planes, phase_f,
                    sma_km, inc_deg, **kwargs):
@@ -981,9 +992,26 @@ class StkSession(object):
                            "model route said: %s" % (path, first))
         return path
 
+    #: Body-frame elevation that points a sensor at the ground.
+    #:
+    #: MEASURED, not assumed: probe_pointing_reports.py builds a 45 deg cone,
+    #: points it each way, and computes SENSOR-to-facility access. At -90 the
+    #: sensor saw nothing (staring at space); at +90 it saw the ground. This
+    #: was wrong in every scenario built before it was measured, and no test
+    #: caught it because all access checks were satellite-to-facility, which
+    #: is pointing-independent.
+    NADIR_ELEVATION_DEG = 90.0
+
     def point_nadir(self, sensor_path):
-        """Point a sensor along nadir (elevation -90 deg in the body frame)."""
-        self.cmd("Point %s Fixed AzEl 0.0 -90.0 Rotate" % sensor_path,
+        """Point a sensor at the ground.
+
+        Verify with :meth:`compute_access` from the SENSOR (not its parent
+        satellite) to a facility: a satellite-to-facility access ignores
+        sensor pointing entirely and will look identical whichever way the
+        sensor faces.
+        """
+        self.cmd("Point %s Fixed AzEl 0.0 %.1f Rotate"
+                 % (sensor_path, self.NADIR_ELEVATION_DEG),
                  label="nadir pointing", fatal=False)
 
     def point_az_el(self, sensor_path, az_deg, el_deg, about_boresight="Rotate"):
@@ -1179,6 +1207,108 @@ class StkSession(object):
         """Apply a minimum elevation-angle access constraint."""
         self.cmd("SetConstraint %s ElevationAngle Min %.6f" % (path, float(min_elev_deg)),
                  label="min elevation constraint", fatal=False)
+
+    # -- STK's own reports and graphs ---------------------------------------
+    #
+    # Syntax measured by probe_report_styles.py on STK 11:
+    #   report window : ReportCreate <path> Type Display Style "<style>"
+    #   report to file: ReportCreate <path> Type Export  Style "<style>"
+    #                                      File "<file>" TimeStep <sec>
+    #   graph window  : GraphCreate  <path> Type Display Style "<style>"
+    # "Type Graph" and a bare "Graph" command are both rejected.
+    #
+    # Style names must match STK's own exactly. "Classical Elements" is
+    # rejected; the real name is "Classical Orbit Elements". Rather than let
+    # a caller guess, report_styles() enumerates what this install has and
+    # the helpers below check against it, suggesting near matches on a miss.
+
+    @staticmethod
+    def _object_type(path):
+        """'*/Satellite/Sat1/Sensor/Cam' -> 'Sensor'."""
+        parts = [p for p in str(path).split("/") if p and p != "*"]
+        return parts[-2] if len(parts) >= 2 else ""
+
+    def report_styles(self, object_type):
+        """Style names this install offers for an object type, sorted.
+
+        Read from STK's own style files (.rst) under STKHome, so the list is
+        whatever this machine actually has, including any custom styles.
+        """
+        cache = getattr(self, "_style_cache", None)
+        if cache is None:
+            cache = self._style_cache = {}
+        key = str(object_type).lower()
+        if key in cache:
+            return cache[key]
+
+        home = self.directory("STKHome")
+        names = set()
+        if home and os.path.isdir(home):
+            for dirpath, _dirnames, filenames in os.walk(home):
+                if os.path.basename(dirpath).lower() != key:
+                    continue
+                for filename in filenames:
+                    stem, ext = os.path.splitext(filename)
+                    if ext.lower() == ".rst":
+                        names.add(stem)
+        cache[key] = sorted(names)
+        return cache[key]
+
+    def _check_style(self, path, style):
+        """Raise a helpful error if a style name is not one this STK has."""
+        object_type = self._object_type(path)
+        available = self.report_styles(object_type)
+        if not available or style in available:
+            return style
+        lowered = style.lower()
+        near = [s for s in available if lowered in s.lower() or s.lower() in lowered]
+        raise StkError(
+            "'%s' is not a %s report style in this STK installation.%s\n"
+            "  %d styles are available; list them with "
+            "session.report_styles(%r)."
+            % (style, object_type,
+               ("\n  Did you mean: %s?" % ", ".join(near[:4])) if near else "",
+               len(available), object_type))
+
+    def open_report(self, path, style):
+        """Open one of STK's own report windows on an object."""
+        self._check_style(path, style)
+        self.cmd('ReportCreate %s Type Display Style "%s"' % (path, style),
+                 label="open report '%s'" % style)
+        return style
+
+    def open_graph(self, path, style):
+        """Open one of STK's own graph windows on an object.
+
+        Same style names as reports -- STK draws the style's data as a graph
+        rather than a table.
+        """
+        self._check_style(path, style)
+        self.cmd('GraphCreate %s Type Display Style "%s"' % (path, style),
+                 label="open graph '%s'" % style)
+        return style
+
+    def export_report(self, path, style, filename=None, time_step_sec=60,
+                      out_dir=None):
+        """Write one of STK's own reports to a file. Returns the file path."""
+        self._check_style(path, style)
+        out_dir = out_dir or os.path.join(
+            os.path.dirname(os.path.abspath(sys.argv[0] or __file__)), "stk_output")
+        os.makedirs(out_dir, exist_ok=True)
+        if not filename:
+            safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in style)
+            filename = "%s_%s.csv" % (path.rsplit("/", 1)[-1], safe)
+        out_file = os.path.join(out_dir, filename)
+        self.cmd('ReportCreate %s Type Export Style "%s" File "%s" TimeStep %g'
+                 % (path, style, out_file, float(time_step_sec)),
+                 label="export report '%s'" % style)
+        return out_file
+
+    def open_access_report(self, from_path, to_path):
+        """Open STK's access report window for one object pair."""
+        self.cmd('ReportCreate %s Type Display Style "Access" AccessObject %s'
+                 % (from_path, to_path), label="access report")
+        return True
 
     # -- analysis -----------------------------------------------------------
     def compute_access(self, from_path, to_path):

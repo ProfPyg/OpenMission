@@ -80,6 +80,23 @@ have both):
                                  data_rate_kbps=None)
     rx = session.add_receiver(parent, name)
 
+STK's own reports and graphs (real STK windows and files, not something the
+script computes itself):
+
+    session.open_report(path, style)          # STK report window
+    session.open_graph(path, style)           # STK graph window
+    session.export_report(path, style, filename=None, time_step_sec=60)
+    session.open_access_report(from_path, to_path)
+    session.report_styles("Satellite")        # what this install offers
+
+Style names must match STK's exactly. Useful satellite styles: "Classical
+Orbit Elements", "LLA Position", "Cartesian Position", "Beta Angle",
+"Inertial Position Velocity", "Eclipse Times", "Ascending Node", "Apogee",
+"Attitude Quaternions". Note it is "Classical Orbit Elements" -- "Classical
+Elements" is rejected. Facility styles include "LLA Position", "Solar AER",
+"Lighting Times"; sensor styles include "Boresight AzEl", "Swath Points".
+An unknown name raises with the near matches listed.
+
 Ground assets and analysis:
 
     gs = session.new_facility(name, lat_deg, lon_deg, alt_km=0.0)
@@ -111,6 +128,10 @@ Every helper returns the STK object PATH it created (e.g.
   The lunar `GL0420A.grv` accepts degree/order 48–420 only — use 48 as the
   safe minimum, higher only when the user asks for fidelity (it costs
   propagation speed).
+- When the user asks for graphs or reports, use `open_graph` / `open_report`
+  for on-screen STK windows and `export_report` for files. Only fall back to
+  `write_access_csv` (which the helper computes itself) when they want access
+  totals specifically.
 - Sensor patterns take HALF-angles. A camera quoted as a 2.22° × 1.66° full
   FOV becomes `add_sensor_rectangular(sat, name, 1.11, 0.83)`. A "30° conic
   sensor" is ambiguous — if the user means a 30° half-angle, pass 30.

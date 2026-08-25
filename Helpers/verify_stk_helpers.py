@@ -194,6 +194,64 @@ def _assert_geo_longitude(session, longitude_deg, tol_deg=0.15):
     return path
 
 
+def _assert_sensor_sees_ground(session, sat_path):
+    """A nadir sensor must see the ground; an inverted one sees nothing.
+
+    The facility is placed at the sub-satellite point at the start of the
+    window, so the sensor is looking straight at it from t=0. An earlier
+    version put the facility at (0, 0) and failed for a satellite whose
+    ground track never went near it in six hours -- testing luck rather than
+    pointing.
+    """
+    latitude, longitude = session.subsatellite_point(sat_path)
+    if latitude is None:
+        raise AssertionError("could not read the sub-satellite point")
+    gs = session.new_facility("NadirProofGS", latitude, longitude, 0.0)
+    cam = session.add_sensor_conic(sat_path, "NadirProof", 45.0)
+    session.point_nadir(cam)
+    count, seconds, _ = session.compute_access(cam, gs)
+    print("        facility placed under the satellite at %.2f, %.2f; "
+          "sensor -> ground: %d passes, %.0f s" % (latitude, longitude, count, seconds))
+    if count == 0:
+        raise AssertionError(
+            "a nadir sensor saw a facility directly beneath it zero times -- it "
+            "is pointing at space. Check StkSession.NADIR_ELEVATION_DEG "
+            "(measured as +90 on STK 11 by probe_pointing_reports.py).")
+    return count
+
+
+def _assert_styles(session):
+    styles = session.report_styles("Satellite")
+    if len(styles) < 10:
+        raise AssertionError("only %d satellite styles found; expected ~100"
+                             % len(styles))
+    if "Classical Orbit Elements" not in styles:
+        raise AssertionError("'Classical Orbit Elements' missing from %d styles"
+                             % len(styles))
+    print("        %d satellite styles available" % len(styles))
+    return len(styles)
+
+
+def _assert_bad_style(session, sat_path):
+    """A wrong style must fail with a suggestion, not a bare STK error."""
+    try:
+        session.open_report(sat_path, "Classical Elements")
+    except stk.StkError as exc:
+        if "Did you mean" not in str(exc):
+            raise AssertionError("rejected, but without a suggestion: %s" % exc)
+        return True
+    raise AssertionError("'Classical Elements' was accepted; it should not be")
+
+
+def _assert_export(session, sat_path):
+    path = session.export_report(sat_path, "Classical Orbit Elements",
+                                 time_step_sec=600)
+    if not os.path.isfile(path) or os.path.getsize(path) < 100:
+        raise AssertionError("report file missing or empty: %s" % path)
+    print("        wrote %d bytes to %s" % (os.path.getsize(path), os.path.basename(path)))
+    return path
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
@@ -312,6 +370,14 @@ def main():
             requires={"satellite": sat})
         results.check("nadir pointing", lambda: session.point_nadir(cam),
                       requires={"sensor": cam})
+        # The check that was missing: every other access here is
+        # satellite-to-facility, which ignores pointing, so an inverted
+        # sensor looked identical to a correct one. Access FROM THE SENSOR
+        # is the only thing that proves it faces the ground.
+        results.check(
+            "a nadir sensor actually sees the ground",
+            lambda: _assert_sensor_sees_ground(session, sat),
+            requires={"satellite": sat})
         # Connect's Point ... Targeted Track was rejected on STK 11; the
         # helper falls back to the object model. If both fail the sensor is
         # left unpointed and reports zero access, so this must not be silent.
@@ -330,6 +396,20 @@ def main():
             lambda: session.add_transmitter(sat, "SmokeTX", freq_ghz=0.437,
                                             eirp_dbw=0.0, data_rate_kbps=19.2),
             requires={"satellite": sat})
+
+        # --- STK reports and graphs ---------------------------------------
+        results.check("report styles are discoverable",
+                      lambda: _assert_styles(session),
+                      requires={"satellite": sat})
+        results.check("a wrong style name is rejected helpfully",
+                      lambda: _assert_bad_style(session, sat),
+                      requires={"satellite": sat})
+        results.check("export an STK report to file",
+                      lambda: _assert_export(session, sat),
+                      requires={"satellite": sat})
+        results.check("open an STK graph window",
+                      lambda: session.open_graph(sat, "Classical Orbit Elements"),
+                      requires={"satellite": sat})
 
         # --- ground -------------------------------------------------------
         gs = results.check(
