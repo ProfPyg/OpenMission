@@ -794,7 +794,7 @@ class StkSession(object):
     @_accept_aliases(sat="parent_path", sat_path="parent_path",
                      gs="parent_path", facility="parent_path")
     def add_transmitter(self, parent_path, name, freq_ghz, eirp_dbw,
-                        data_rate_kbps=None, antenna_model="Isotropic"):
+                        data_rate_kbps=None, antenna_model=None):
         """Mount a Simple Transmitter Model on a satellite or facility.
 
         Two STK gotchas are handled here so callers cannot get them wrong:
@@ -832,7 +832,7 @@ class StkSession(object):
     @_accept_aliases(sat="parent_path", sat_path="parent_path",
                      gs="parent_path", facility="parent_path")
     def add_receiver(self, parent_path, name, freq_ghz=None,
-                     antenna_model="Isotropic", auto_select_frequency=True):
+                     antenna_model=None, auto_select_frequency=True):
         """Mount a Simple Receiver Model on a satellite or facility.
 
         NOTE ON FREQUENCY (verified against STK 11 by discover_stk_api.py):
