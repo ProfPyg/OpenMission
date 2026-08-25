@@ -158,9 +158,12 @@ Every helper returns the STK object PATH it created (e.g.
   `stk.StkError` at the top level to print a clean message, not a traceback.
 - Prefer additive operations. Never delete or overwrite a user's existing
   objects unless they explicitly asked for it.
-- Output files go to a script-relative directory created with
-  `os.makedirs(..., exist_ok=True)`. Never hardcode a Windows username or an
-  absolute path unless the user supplied one.
+- Output files: call `session.announce_output_dir()` once, just after
+  `ensure_scenario`, so the user is told up front where files will land. The
+  helpers write into a `stk_output/` folder BESIDE THE RUNNING SCRIPT and
+  print each file's absolute path — do not build output paths yourself, and
+  never hardcode a Windows username or an absolute path unless the user gave
+  one.
 - Print a short progress line per object created, and a summary at the end.
 
 ## Spec gaps

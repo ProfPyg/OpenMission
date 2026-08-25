@@ -484,6 +484,23 @@ class StkSession(object):
             path = "%s_%d" % (base_path, suffix)
         return path
 
+    def output_dir(self, out_dir=None):
+        """The folder files are written to, created if needed.
+
+        Beside the RUNNING SCRIPT, not beside stk_helpers.py -- so a script
+        run from an unzipped bundle writes into that bundle. Printed once per
+        session by :meth:`announce_output_dir` so nobody has to go looking.
+        """
+        resolved = out_dir or os.path.join(
+            os.path.dirname(os.path.abspath(sys.argv[0] or __file__)), "stk_output")
+        os.makedirs(resolved, exist_ok=True)
+        return resolved
+
+    def announce_output_dir(self):
+        """Print where output files will be written."""
+        print("[output] files will be written to: %s" % self.output_dir())
+        return self.output_dir()
+
     # -- scenario -----------------------------------------------------------
     def set_units(self):
         """Pin the unit preferences Connect commands are interpreted in."""
@@ -1292,16 +1309,14 @@ class StkSession(object):
                       out_dir=None):
         """Write one of STK's own reports to a file. Returns the file path."""
         self._check_style(path, style)
-        out_dir = out_dir or os.path.join(
-            os.path.dirname(os.path.abspath(sys.argv[0] or __file__)), "stk_output")
-        os.makedirs(out_dir, exist_ok=True)
         if not filename:
             safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in style)
             filename = "%s_%s.csv" % (path.rsplit("/", 1)[-1], safe)
-        out_file = os.path.join(out_dir, filename)
+        out_file = os.path.join(self.output_dir(out_dir), filename)
         self.cmd('ReportCreate %s Type Export Style "%s" File "%s" TimeStep %g'
                  % (path, style, out_file, float(time_step_sec)),
                  label="export report '%s'" % style)
+        print("[file] %s" % out_file)
         return out_file
 
     def open_access_report(self, from_path, to_path):
@@ -1352,10 +1367,7 @@ class StkSession(object):
 
     def write_access_csv(self, rows, to_name, out_dir=None, filename="access_summary.csv"):
         """Write an access summary to CSV in a script-relative directory."""
-        out_dir = out_dir or os.path.join(
-            os.path.dirname(os.path.abspath(sys.argv[0] or __file__)), "stk_output")
-        os.makedirs(out_dir, exist_ok=True)
-        out_file = os.path.join(out_dir, filename)
+        out_file = os.path.join(self.output_dir(out_dir), filename)
         with open(out_file, "w") as handle:
             handle.write("Object,Target,NumPasses,TotalDuration_s\n")
             for name, count, total in rows:
@@ -1363,4 +1375,5 @@ class StkSession(object):
                     handle.write("%s,%s,ERROR,ERROR\n" % (name, to_name))
                 else:
                     handle.write("%s,%s,%d,%.3f\n" % (name, to_name, count, total))
+        print("[file] %s" % out_file)
         return out_file
