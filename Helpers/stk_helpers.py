@@ -88,7 +88,8 @@ except ImportError as _exc:  # pragma: no cover
 
 __all__ = ["StkSession", "StkError", "DEFAULT_PROGIDS", "EARTH_RADIUS_KM",
            "MOON_RADIUS_KM", "GEO_SMA_KM", "altitude_to_sma",
-           "walker_delta_elements", "gmst_deg", "parse_utcg"]
+           "walker_delta_elements", "gmst_deg", "parse_utcg",
+           "precession_ra_deg", "julian_centuries"]
 
 
 # ---------------------------------------------------------------------------
@@ -145,6 +146,35 @@ def parse_utcg(epoch):
     whole = int(float(second))
     micro = int(round((float(second) - whole) * 1e6))
     return _datetime(int(year), month, int(day), int(hour), int(minute), whole, micro)
+
+
+def julian_centuries(epoch):
+    """Julian centuries from J2000.0 for a UTCG epoch."""
+    when = epoch if isinstance(epoch, _datetime) else parse_utcg(epoch)
+    year, month = when.year, when.month
+    if month <= 2:
+        year, month = year - 1, month + 12
+    a = year // 100
+    b = 2 - a + a // 4
+    day_fraction = (when.hour + when.minute / 60.0
+                    + (when.second + when.microsecond / 1e6) / 3600.0) / 24.0
+    julian_day = (int(365.25 * (year + 4716)) + int(30.6001 * (month + 1))
+                  + when.day + day_fraction + b - 1524.5)
+    return (julian_day - 2451545.0) / 36525.0
+
+
+def precession_ra_deg(epoch):
+    """Accumulated general precession in right ascension since J2000, degrees.
+
+    GMST is measured from the equinox OF DATE, but orbital elements here are
+    given in J2000. The two frames drift apart by about 46.1 arcsec per year
+    in right ascension, so by 2026 they differ by roughly a third of a
+    degree. At geostationary radius a third of a degree is ~250 km of
+    along-track position -- small enough to look like rounding, large enough
+    to matter when parking a satellite in an assigned slot.
+    """
+    t = julian_centuries(epoch)
+    return (4612.16 * t + 1.39656 * t * t) / 3600.0
 
 
 def gmst_deg(epoch):
@@ -605,7 +635,11 @@ class StkSession(object):
         if not epoch:
             raise StkError("new_geo_satellite needs an epoch: call "
                            "set_time_period() first, or pass epoch=.")
-        true_anomaly = (float(longitude_deg) + gmst_deg(epoch)) % 360.0
+        # GMST is referenced to the equinox of date; the elements are J2000.
+        # Subtracting the accumulated precession puts the satellite over the
+        # requested longitude instead of ~0.34 deg east of it (in 2026).
+        true_anomaly = (float(longitude_deg) + gmst_deg(epoch)
+                        - precession_ra_deg(epoch)) % 360.0
         kwargs.setdefault("ecc", 0.0)
         kwargs.setdefault("arg_perigee_deg", 0.0)
         return self.new_satellite(

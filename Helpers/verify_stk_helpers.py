@@ -177,17 +177,20 @@ def _assert_gmst():
     return value
 
 
-def _assert_geo_longitude(session, longitude_deg, tol_deg=1.5):
+def _assert_geo_longitude(session, longitude_deg, tol_deg=0.15):
     path = session.new_geo_satellite("GeoProbe", longitude_deg)
     actual = session.subsatellite_longitude_deg(path)
     if actual is None:
         raise AssertionError("could not read the sub-satellite longitude back")
     error = ((actual - longitude_deg + 180) % 360) - 180
-    print("        asked for %.2f deg, parked at %.2f deg" % (longitude_deg, actual))
+    print("        asked for %.3f deg, parked at %.3f deg (off by %.3f)"
+          % (longitude_deg, actual, error))
     if abs(error) > tol_deg:
         raise AssertionError(
-            "GEO parked at %.2f deg, asked for %.2f (off by %.2f) -- check the "
-            "sidereal-time conversion" % (actual, longitude_deg, error))
+            "GEO parked at %.3f deg, asked for %.3f (off by %.3f deg) -- check "
+            "the sidereal-time conversion. An error near 0.34 deg means the "
+            "J2000-to-equinox-of-date precession correction is missing."
+            % (actual, longitude_deg, error))
     return path
 
 
