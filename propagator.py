@@ -162,79 +162,6 @@ def gmst(dt: datetime) -> float:
 
 
 # ---------------------------------------------------------------------------
-# J2 secular propagator
-# ---------------------------------------------------------------------------
-
-def propagateJ2(
-    a: float,
-    e: float,
-    i_deg: float,
-    RAAN0_deg: float,
-    argp0_deg: float,
-    M0_deg: float,
-    t_sec,
-) -> np.ndarray:
-    """
-    J2 secular analytical propagation (Brouwer first-order secular terms).
-
-    Parameters
-    ----------
-    a         : semi-major axis [km]
-    e         : eccentricity
-    i_deg     : inclination [deg]
-    RAAN0_deg : initial RAAN [deg]
-    argp0_deg : initial argument of perigee [deg]
-    M0_deg    : initial mean anomaly [deg]
-    t_sec     : elapsed time from epoch — scalar or 1-D array [s]
-
-    Returns
-    -------
-    ECI position [km] — shape (3,) for scalar t_sec, (N, 3) for array t_sec
-    """
-    scalar_in = np.isscalar(t_sec)
-    t = np.atleast_1d(np.asarray(t_sec, dtype=float))
-
-    i     = np.radians(i_deg)
-    RAAN0 = np.radians(RAAN0_deg)
-    argp0 = np.radians(argp0_deg)
-    M0    = np.radians(M0_deg)
-
-    p = a * (1.0 - e**2)
-    n = np.sqrt(mu / a**3)              # mean motion [rad/s]
-
-    # Secular J2 drift rates [rad/s]
-    k        = 1.5 * n * J2 * (Re / p)**2
-    RAAN_dot = -k * np.cos(i)
-    argp_dot = 0.5 * k * (5.0 * np.cos(i)**2 - 1.0)
-
-    RAAN_t = RAAN0 + RAAN_dot * t
-    argp_t = argp0 + argp_dot * t
-    M_t    = (M0 + n * t) % (2.0 * np.pi)
-
-    E_t  = _kepler_solve(M_t, e)
-    nu_t = 2.0 * np.arctan2(
-        np.sqrt(1.0 + e) * np.sin(E_t / 2.0),
-        np.sqrt(1.0 - e) * np.cos(E_t / 2.0),
-    )
-    r_t  = a * (1.0 - e * np.cos(E_t))
-
-    x_p = r_t * np.cos(nu_t)
-    y_p = r_t * np.sin(nu_t)
-
-    # Vectorised DCM: R3(−Ω) · R1(−i) · R3(−ω) applied to [x_p, y_p, 0]ᵀ
-    ci = np.cos(i);  si = np.sin(i)
-    cr = np.cos(RAAN_t);  sr = np.sin(RAAN_t)
-    cw = np.cos(argp_t);  sw = np.sin(argp_t)
-
-    pos = np.empty((len(t), 3))
-    pos[:, 0] = (cr * cw - sr * sw * ci) * x_p + (-cr * sw - sr * cw * ci) * y_p
-    pos[:, 1] = (sr * cw + cr * sw * ci) * x_p + (-sr * sw + cr * cw * ci) * y_p
-    pos[:, 2] = (sw * si) * x_p + (cw * si) * y_p
-
-    return pos[0] if scalar_in else pos
-
-
-# ---------------------------------------------------------------------------
 # Elevation angle
 # ---------------------------------------------------------------------------
 
@@ -306,11 +233,15 @@ if __name__ == "__main__":
     g = gmst(epoch)
     print(f"gmst(epoch)                 = {np.degrees(g):.4f}°  ({g:.6f} rad)")
 
-    # Quick propagateJ2 smoke-test: t=0 → position should be ~Re+500 km from origin
-    pos0 = propagateJ2(Re + 500, 0.001, inc, raan, 0.0, 0.0, 0.0)
-    print(f"propagateJ2 |r| at t=0      = {np.linalg.norm(pos0):.2f} km  expected ~{Re+500:.2f} km")
 
-    # elevAngle smoke-test: satellite directly overhead Athens (38°N, 24°E)
-    pos_t = propagateJ2(Re + 500, 0.001, inc, raan, 0.0, 0.0, 0.0)
-    el = elevAngle(pos_t, 38.0, 24.0, g)
-    print(f"elevAngle (Athens, overhead approx) = {el:.2f}°")
+    # elevAngle smoke-test: place a satellite exactly overhead Athens
+    # (38 N, 24 E) by construction, so the expected answer is known -- it
+    # used to reuse a position from propagateJ2, which no longer exists.
+    _lat, _lon = np.radians(38.0), np.radians(24.0) + g
+    _overhead = (Re + 500.0) * np.array([
+        np.cos(_lat) * np.cos(_lon),
+        np.cos(_lat) * np.sin(_lon),
+        np.sin(_lat),
+    ])
+    el = elevAngle(_overhead, 38.0, 24.0, g)
+    print(f"elevAngle (Athens, overhead)= {el:.2f}°   expected 90.00°")

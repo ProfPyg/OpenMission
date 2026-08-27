@@ -97,7 +97,7 @@ st.markdown(_WATERMARK_HTML, unsafe_allow_html=True)
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown(emblem_html("/ SSO Coverage Analysis", variant="orbit"), unsafe_allow_html=True)
+    st.markdown(emblem_html("/ Coverage Analysis", variant="orbit"), unsafe_allow_html=True)
     st.markdown(_USER_GUIDE_LINK, unsafe_allow_html=True)
     st.divider()
 
@@ -118,14 +118,13 @@ with st.sidebar:
     sma          = Re + altitude
     period_min   = orbPeriod(altitude)
     sso_inc      = sso_inclination(altitude)
-    drift        = _raan_drift_deg_day(altitude, sso_inc)
 
     st.caption(
         f"SMA **{sma:.1f} km** · Period **{period_min:.2f} min** · "
-        f"J2 drift **{drift:+.4f} °/day** · e = {eccentricity}"
+        f"e = {eccentricity}"
     )
 
-    auto_sso = st.toggle("Auto SSO inclination", value=True)
+    auto_sso = st.toggle("Sun-synchronous inclination", value=True)
     if auto_sso:
         inclination = sso_inc
         st.caption(f"Inclination: **{inclination:.4f}°**  (J2-derived SSO)")
@@ -135,12 +134,30 @@ with st.sidebar:
             value=float(f"{sso_inc:.4f}"), step=0.001, format="%.4f"
         )
 
+    # Drift depends on the inclination actually being used. It used to be
+    # computed from sso_inc regardless, so a non-SSO orbit still displayed
+    # the sun-synchronous rate (~-0.9856 deg/day) while propagating at its
+    # real one — the propagation was right, the number shown was not.
+    drift = _raan_drift_deg_day(altitude, inclination, eccentricity)
+    st.caption(f"J2 RAAN drift: **{drift:+.4f} °/day**")
+
     # Epoch — needed here for RAAN ↔ LTAN conversion
     _ecol1, _ecol2 = st.columns(2)
     start_date = _ecol1.date_input("Epoch date (UTC)", value=date(2026, 3, 2))
     start_time = _ecol2.time_input("Epoch time (UTC)", value=dtime(8, 23, 0), step=60)
     epoch = datetime(start_date.year, start_date.month, start_date.day,
                      start_time.hour, start_time.minute, start_time.second)
+
+    # LTAN is a stable description only for a sun-synchronous orbit: off SSO
+    # the plane drifts (about -5 deg/day at 51.6 deg), so the local time set
+    # here is true at epoch and steadily less true afterwards. Say so rather
+    # than letting the label imply a property the orbit does not have.
+    if abs(inclination - sso_inc) > 0.5:
+        st.caption(
+            f":orange[LTAN drifts at this inclination] — the plane moves "
+            f"{drift:+.2f} °/day, so LTAN holds only at epoch. It still sets "
+            f"RAAN correctly."
+        )
 
     # Recompute RAAN when epoch changes (LTAN is kept as-is)
     if epoch != st.session_state["_prev_epoch"]:
@@ -422,13 +439,13 @@ res = st.session_state["results"]
 
 if res is None:
     # ── Welcome / no-results screen ──────────────────────────────────────────
-    st.markdown("## OpenMission — SSO Constellation Access Analyser")
+    st.markdown("## OpenMission — Constellation Access Analyser")
     st.markdown(
         "Configure your constellation in the sidebar, then press "
         "**▶ Run Analysis**."
     )
     st.info(
-        "**Quick-start defaults:** 3 planes × 3 satellites, 500 km SSO, "
+        "**Quick-start defaults:** 3 planes × 3 satellites, 500 km sun-synchronous, "
         "LTAN 10.5 h, Greece ROI (5 × 10 grid), Helmos + Psachna ground "
         "stations, 7-day simulation at 60 s steps."
     )

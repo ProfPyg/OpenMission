@@ -130,6 +130,50 @@ def _metrics_from_merged(
 # Public API (Upgraded to Skyfield & SGP4)
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Kozai mean motion
+# ---------------------------------------------------------------------------
+# SGP4's `no_kozai` argument is a KOZAI mean motion, not the Keplerian one.
+# Passing sqrt(mu/a^3) makes SGP4 apply its J2 correction to a value that
+# already assumed no J2, so the satellite ends up about 1.5 km ABOVE the
+# requested altitude -- a consistent bias, not noise. Consequences: the
+# period runs ~2 s long per orbit (about 3 minutes of along-track phase over
+# a week), and an exact repeat ground track designed for the requested
+# altitude never closes.
+#
+# SGP4 recovers the semi-major axis from no_kozai as:
+#     a1 = (ke / no_kozai) ^ (2/3)
+#     d1 = 1.5 * k2 * (3cos^2 i - 1) / (a1^2 * (1-e^2)^1.5)
+#     a0 = a1 * (1 - d1/3 - d1^2 - (134/81) d1^3)
+# so this inverts it: find the no_kozai whose recovered a0 is the semi-major
+# axis actually wanted. Two fixed-point iterations converge to millimetres.
+
+_SGP4_KE = 60.0 / sqrt(6378.137 ** 3 / 398600.5)   # earth radii^1.5 / minute
+_SGP4_RE = 6378.137
+_SGP4_K2 = 0.5 * 1.082616e-3
+
+
+def kozai_mean_motion(a_km: float, e: float, i_rad: float) -> float:
+    """Mean motion (rad/min) that makes SGP4 fly the requested semi-major axis.
+
+    Returns the Keplerian value if the correction fails to converge, which is
+    still better than crashing and no worse than the previous behaviour.
+    """
+    a_target = a_km / _SGP4_RE                       # earth radii
+    no = _SGP4_KE / (a_target ** 1.5)                # first guess: Keplerian
+    for _ in range(8):
+        a1 = (_SGP4_KE / no) ** (2.0 / 3.0)
+        d1 = (1.5 * _SGP4_K2 * (3.0 * np.cos(i_rad) ** 2 - 1.0)
+              / (a1 * a1 * (1.0 - e * e) ** 1.5))
+        a0 = a1 * (1.0 - d1 / 3.0 - d1 * d1 - (134.0 / 81.0) * d1 ** 3)
+        error = a0 - a_target
+        if abs(error) < 1e-12:
+            break
+        # a0 scales as no^(-2/3): nudge the mean motion to close the error
+        no *= (1.0 + 1.5 * error / a_target)
+    return float(no)
+
+
 def computeAccess(
     satellites: list[dict],
     gs_list:    list[dict],
@@ -158,9 +202,12 @@ def computeAccess(
     for idx, s in enumerate(satellites):
         satrec = Satrec()
 
-        # SGP4 initialization expects mean motion in radians per minute
-        # Derived cleanly from semi-major axis (a) using fundamental standard mu
-        mean_motion_rad_min = 60.0 * sqrt(_MU_KM3_S2 / (s['a'] ** 3))
+        # SGP4 expects a KOZAI mean motion in radians per minute. Deriving it
+        # as sqrt(mu/a^3) (the Keplerian value) put every satellite ~1.5 km
+        # too high; kozai_mean_motion inverts SGP4's own correction so the
+        # propagated orbit matches the requested semi-major axis.
+        mean_motion_rad_min = kozai_mean_motion(
+            s['a'], s['e'], np.radians(s['i_deg']))
 
         # Fix: use total_seconds()/86400 for sub-day precision, not integer .days + 1
         epoch_days = (startTime - datetime(1949, 12, 31)).total_seconds() / 86400.0

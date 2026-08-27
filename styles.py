@@ -903,7 +903,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
   </svg>
   <div>
     <div class="om-brand-title">Open<span>Mission</span></div>
-    <div class="om-brand-subtitle">SSO Earth Observation Analysis</div>
+    <div class="om-brand-subtitle">Earth Observation Mission Analysis</div>
     {subtitle_line}
   </div>
 </div>
@@ -1035,7 +1035,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
   </svg>
   <div>
     <div class="om-brand-title">Open<span>Mission</span></div>
-    <div class="om-brand-subtitle">SSO Earth Observation Analysis</div>
+    <div class="om-brand-subtitle">Earth Observation Mission Analysis</div>
     {subtitle_line}
   </div>
 </div>
