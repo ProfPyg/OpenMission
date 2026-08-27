@@ -564,6 +564,134 @@ class StkSession(object):
         """Close the open scenario WITHOUT saving. Used by the smoke test."""
         self.cmd("Unload / *", label="close scenario", fatal=False)
 
+    # -- graphics windows ---------------------------------------------------
+    #
+    # STK's 3D and 2D windows open centred on Earth whatever the scenario
+    # contains, so a lunar mission is drawn as a set of objects around the
+    # wrong body -- correct data, unreadable picture. The Connect syntax for
+    # re-centring is not something to guess at, so several documented-looking
+    # forms are tried and the winner cached.
+
+    #: 'VO * CentralBody <body>' was the form STK 11 accepted (probe_views.py);
+    #: the rest stay as fallbacks for other builds.
+    _VIEW_FORMS_3D = (
+        'VO * CentralBody {body}',
+        'VO */ CentralBody {body}',
+        'VO * SetCentralBody {body}',
+        'Window3D * CentralBody {body}',
+    )
+    #: No 2D form was accepted on STK 11 with '*'; the '*/' variants are
+    #: tried too since that spelling worked for VO.
+    _VIEW_FORMS_2D = (
+        'Map */ CentralBody {body}',
+        'Map * CentralBody {body}',
+        'Map */1 CentralBody {body}',
+        'Window2D * CentralBody {body}',
+    )
+    _VIEW_NEW_3D = (
+        'New / */Window3D {body}',
+        'Window3D * New CentralBody {body}',
+        'VO * Window New CentralBody {body}',
+    )
+
+    def set_view_central_body(self, body, three_d=True, two_d=True):
+        """Re-centre the 3D view on a central body. The 2D map does not move.
+
+        MEASURED on STK 11 (probe_views.py, probe_views2.py):
+
+        * 3D  -- ``VO * CentralBody <body>`` works, confirmed by eye.
+        * 2D  -- sixteen Connect spellings were rejected and no object-model
+                 route was found. The 2D map appears to follow the SCENARIO's
+                 central body, which is fixed when the scenario is created,
+                 so a lunar scenario built in an Earth scenario keeps an
+                 Earth map. Untested hypothesis, recorded in CAPABILITIES.md.
+
+        Returns ``{"3D": bool, "2D": bool}``. Failure is reported, not
+        raised: a scenario with the right objects and an awkward camera is
+        still correct, just harder to read.
+        """
+        result = {"3D": False, "2D": False}
+        body = str(body)
+
+        if three_d:
+            cached = getattr(self, "_view_form_3d", None)
+            forms = (cached,) if cached else self._VIEW_FORMS_3D
+            for template in forms:
+                if self.cmd(template.format(body=body), fatal=False):
+                    self._view_form_3d = template
+                    result["3D"] = True
+                    break
+
+        if two_d:
+            cached = getattr(self, "_view_form_2d", None)
+            forms = (cached,) if cached else self._VIEW_FORMS_2D
+            for template in forms:
+                if self.cmd(template.format(body=body), fatal=False):
+                    self._view_form_2d = template
+                    result["2D"] = True
+                    break
+
+        if result["3D"] and not result["2D"] and two_d:
+            print("[view] 3D re-centred on %s; the 2D map stays on the "
+                  "scenario's body (a known STK 11 limitation)." % body)
+        elif not (result["3D"] or result["2D"]):
+            sys.stderr.write(
+                "[warn] could not re-centre any view on %s -- the scenario is "
+                "correct but the windows show the default body. Change it by "
+                "hand in STK.\n" % body)
+        else:
+            print("[view] re-centred on %s (3D: %s, 2D: %s)"
+                  % (body, result["3D"], result["2D"]))
+        return result
+
+    def central_bodies_in_use(self):
+        """Central bodies of the objects in the scenario, most common first.
+
+        The SCENARIO object is excluded. It reports Earth whatever it
+        contains, so counting it made a scenario holding a single lunar
+        orbiter come back as [("Earth", 1), ("Moon", 1)] -- a tie that
+        focus_on_scenario_body() then resolved towards Earth, which is
+        exactly backwards for a lunar mission.
+        """
+        counts = {}
+        try:
+            names = str(self.root.ExecuteCommand("AllInstanceNames /").Item(0)).split()
+        except Exception:
+            return []
+        for path in names:
+            parts = [p for p in path.split("/") if p and p != "*"]
+            if len(parts) < 2 or parts[-2].lower() == "scenario":
+                continue
+            body = None
+            for getter in ("CentralBodyName", "CentralBody"):
+                try:
+                    body = str(getattr(self.obj(path), getter))
+                    break
+                except Exception:
+                    continue
+            if body:
+                counts[body] = counts.get(body, 0) + 1
+        return sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+
+    def focus_on_scenario_body(self, prefer_non_earth=True):
+        """Re-centre the views on whichever body the scenario is really about.
+
+        With ``prefer_non_earth`` (the default), any non-Earth body wins over
+        Earth even if Earth has more objects: a lunar mission usually keeps
+        Earth in the scenario as a reference, and centring on Earth would
+        show the mission as a dot beside it.
+        """
+        bodies = self.central_bodies_in_use()
+        if not bodies:
+            return None
+        body = bodies[0][0]
+        if prefer_non_earth:
+            others = [name for name, _count in bodies if name.lower() != "earth"]
+            if others:
+                body = others[0]
+        self.set_view_central_body(body)
+        return body
+
     # -- satellites ---------------------------------------------------------
     def new_satellite(self, name, sma_km, inc_deg, raan_deg,
                       ecc=0.0, arg_perigee_deg=0.0, true_anomaly_deg=0.0,
@@ -631,6 +759,186 @@ class StkSession(object):
         "raan_deg": "raan0_deg",
         "true_anomaly_deg": "true_anom0_deg",
     }
+
+    #: SetState TLE argument forms, probed in order and cached like the
+    #: classical ones. STK 11 rejected the TimePeriod form for classical
+    #: elements, so do not assume it works here either.
+    _TLE_FORMS = (
+        ("UseScenarioInterval",
+         'SetState {path} TLE "{line1}" "{line2}" UseScenarioInterval {step:g}'),
+        ("TimePeriod",
+         'SetState {path} TLE "{line1}" "{line2}" TimePeriod "{start}" "{stop}" {step:g}'),
+        ("bare",
+         'SetState {path} TLE "{line1}" "{line2}"'),
+    )
+
+    def new_satellite_from_tle(self, name, line1, line2, step_sec=60.0,
+                               start=None, stop=None):
+        """Create a satellite propagated by SGP4 from a two-line element set.
+
+        SGP4 is the model a TLE is defined against -- feeding TLE-derived
+        elements to a Keplerian propagator is a different orbit -- so this
+        always uses SGP4.
+
+        Two routes are tried, because Connect's SetState TLE forms were
+        rejected on STK 11 (and the one that was accepted produced no
+        ephemeris):
+
+          1. object model: set the SGP4 propagator, load the TLE from a
+             temporary file via the propagator's CommonTasks, set the
+             ephemeris interval to the scenario, propagate.
+          2. Connect SetState TLE forms, then an explicit Propagate.
+
+        Both are verified the same way: there must be ephemeris at BOTH ends
+        of the scenario window. A TLE that propagates only ~1.5 h from its
+        epoch is a known trap, and shows up later as "no passes" rather than
+        as an error.
+        """
+        line1, line2 = str(line1).strip(), str(line2).strip()
+        for index, line in ((1, line1), (2, line2)):
+            if not line.startswith("%d " % index) or len(line) < 60:
+                raise StkError(
+                    "TLE line %d does not look like a TLE (got %r). Expected a "
+                    "69-character line starting with '%d '." % (index, line[:30], index))
+        ssc = line1[2:7].strip()
+
+        start = start or getattr(self, "_start", None)
+        stop = stop or getattr(self, "_stop", None)
+        path = self.unique_path("*/Satellite/%s" % name)
+        actual = path.rsplit("/", 1)[-1]
+        self.cmd("New / */Satellite %s" % actual, label="create satellite")
+
+        attempts = []
+
+        # ---- route 1: object model with a temporary TLE file -------------
+        tle_file = os.path.join(self.output_dir(), "_tle_%s.tle" % ssc)
+        try:
+            with open(tle_file, "w") as handle:
+                handle.write("%s\n%s\n" % (line1, line2))
+        except OSError as exc:
+            attempts.append("    [object model] could not write a TLE file: %s" % exc)
+            tle_file = None
+
+        if tle_file:
+            try:
+                satellite = self.obj(path)
+                sgp4 = self.find_enum("ePropagatorSGP4", "propagator", "sgp4")
+                if sgp4 is None:
+                    raise StkError("no SGP4 propagator enum in this type library")
+                satellite.SetPropagatorType(sgp4)
+                propagator = satellite.Propagator
+                loaded = False
+                for method, args in (("AddSegsFromFile", (ssc, tle_file)),
+                                     ("AddSegsFromFile", (str(int(ssc)), tle_file))):
+                    try:
+                        getattr(propagator.CommonTasks, method)(*args)
+                        loaded = True
+                        break
+                    except Exception as exc:
+                        attempts.append("    [object model %s%r] %s" % (method, args, exc))
+                if loaded:
+                    # make the ephemeris span the scenario, not the TLE epoch
+                    try:
+                        scenario = self.root.CurrentScenario
+                        interval = scenario.Vgt.EventIntervals.Item("AnalysisInterval")
+                        propagator.EphemerisInterval.SetImplicitInterval(interval)
+                    except Exception:
+                        try:
+                            propagator.EphemerisInterval.SetExplicitInterval(start, stop)
+                        except Exception:
+                            pass
+                    try:
+                        propagator.Step = float(step_sec)
+                    except Exception:
+                        pass
+                    propagator.Propagate()
+                    if self._tle_ephemeris_ok(path, start, stop, attempts, "object model"):
+                        self._tle_form = "ObjectModel/AddSegsFromFile"
+                        return path
+            except StkError as exc:
+                attempts.append("    [object model] %s" % str(exc).splitlines()[0])
+            except Exception as exc:
+                attempts.append("    [object model] %s" % exc)
+
+        # ---- route 2: Connect SetState, then propagate explicitly --------
+        fields = dict(path=path, line1=line1, line2=line2,
+                      step=float(step_sec), start=start or "", stop=stop or "")
+        for form_name, template in self._TLE_FORMS:
+            if "{start}" in template and not (start and stop):
+                continue
+            try:
+                self.root.ExecuteCommand(template.format(**fields))
+            except pywintypes.com_error as exc:
+                attempts.append("    [%s] %s" % (form_name, self._com_reason(exc)))
+                continue
+            try:
+                self.obj(path).Propagator.Propagate()
+            except Exception:
+                pass
+            if self._tle_ephemeris_ok(path, start, stop, attempts, form_name):
+                self._tle_form = form_name
+                return path
+
+        raise StkError(
+            "Could not build %s from its TLE.\n  Attempts:\n%s\n"
+            "  The TLE parsed as satellite %s. Check it is current and "
+            "well-formed (69 characters per line)."
+            % (path, "\n".join(attempts), ssc or "?"))
+
+    def _tle_ephemeris_ok(self, path, start, stop, attempts, label):
+        """Ephemeris must exist at both ends of the scenario window."""
+        if self.orbit_radius_km(path) is None:
+            attempts.append("    [%s] accepted but produced no ephemeris" % label)
+            return False
+        if stop and self.orbit_radius_km(path, when=stop) is None:
+            attempts.append(
+                "    [%s] propagated, but no ephemeris at the end of the window "
+                "(%s) -- the ~1.5 h TLE propagation limit" % (label, stop))
+            return False
+        return True
+
+    def next_pass(self, from_path, to_path, after=None):
+        """The next access interval starting at or after ``after``.
+
+        Returns ``(start_utcg, stop_utcg, duration_s)``, or ``None`` if there
+        is no pass in the scenario's analysis window -- which usually means
+        the window is too short rather than that no pass exists.
+        """
+        after = after or getattr(self, "_start", None)
+        count, _total, intervals = self.compute_access(from_path, to_path)
+        if not count:
+            return None
+        after_seconds = float(self.root.ConversionUtility.ConvertDate("UTCG", "EpSec", after))
+        for start_time, stop_time in intervals:
+            begins = float(self.root.ConversionUtility.ConvertDate("UTCG", "EpSec", start_time))
+            ends = float(self.root.ConversionUtility.ConvertDate("UTCG", "EpSec", stop_time))
+            if ends >= after_seconds:
+                return start_time, stop_time, ends - max(begins, after_seconds)
+        return None
+
+    def pass_details(self, from_path, to_path, when_start, when_stop, step_sec=10.0):
+        """Peak elevation and range for one pass, from STK's AER data.
+
+        Reported so a pass can be checked against another tool: two
+        predictions agreeing on start time but not on peak elevation usually
+        means different masks or a different station position.
+        """
+        try:
+            provider = self.obj(from_path).DataProviders.Item("AER Data")
+            group = provider.Group.Item("Default") if hasattr(provider, "Group") else provider
+            result = group.ExecElements(when_start, when_stop, step_sec,
+                                        ["Time", "Azimuth", "Elevation", "Range"]) \
+                if hasattr(group, "ExecElements") else group.Exec(when_start, when_stop, step_sec)
+            datasets = result.DataSets
+            elevations = [float(v) for v in datasets.GetDataSetByName("Elevation").GetValues()]
+            ranges = [float(v) for v in datasets.GetDataSetByName("Range").GetValues()]
+        except Exception:
+            return None
+        if not elevations:
+            return None
+        peak = max(elevations)
+        return {"peak_elevation_deg": peak,
+                "min_range_km": min(ranges) if ranges else None}
 
     def new_geo_satellite(self, name, longitude_deg, **kwargs):
         """Create a geostationary satellite parked over a given longitude.
@@ -785,12 +1093,20 @@ class StkSession(object):
             if radius is None:
                 attempts.append("    [%s] accepted but produced no ephemeris" % name)
                 continue
-            # Circular-ish sanity band: radius must be within 20% of the
-            # requested semi-major axis. A unit error is off by ~1000x.
-            if abs(radius - float(sma_km)) > 0.2 * float(sma_km):
+            # The radius must lie between perigee and apogee, with 20% slack
+            # for the epoch not being exactly at either. Using a band around
+            # the semi-major axis instead would reject every eccentric orbit:
+            # a Molniya at perigee sits at ~0.26a, which is a correct orbit,
+            # not a unit error. A real unit error is off by ~1000x and still
+            # fails this.
+            eccentricity = min(abs(float(ecc)), 0.95)
+            perigee = float(sma_km) * (1.0 - eccentricity) * 0.8
+            apogee = float(sma_km) * (1.0 + eccentricity) * 1.2
+            if not (perigee <= radius <= apogee):
                 attempts.append(
                     "    [%s] accepted but orbit radius read back as %.1f km, "
-                    "expected ~%.1f km (unit mismatch)" % (name, radius, sma_km))
+                    "outside the %.1f-%.1f km perigee/apogee band for a=%.1f e=%.3f"
+                    % (name, radius, perigee, apogee, sma_km, eccentricity))
                 continue
 
             self._classical_form = name
@@ -1195,6 +1511,341 @@ class StkSession(object):
             raise StkError("Failed to configure receiver %s: %s" % (path, exc))
         return path
 
+    # -- constraints (verified accepted by probe_capabilities.py) -----------
+    #: Constraint names this STK accepted. LightingSunElevAngle was rejected.
+    KNOWN_CONSTRAINTS = ("ElevationAngle", "Range", "Altitude",
+                         "SunElevationAngle", "Lighting")
+
+    def set_constraint(self, path, constraint, minimum=None, maximum=None,
+                       value=None):
+        """Apply an access constraint.
+
+        Examples::
+
+            session.set_constraint(gs, "ElevationAngle", minimum=5)
+            session.set_constraint(gs, "Range", maximum=2000)      # km
+            session.set_constraint(sat, "Lighting", value="DirectSun")
+
+        Only min-elevation was wrapped before, which quietly made every study
+        optimistic: passes counted regardless of range, lighting or sun angle.
+        """
+        if constraint not in self.KNOWN_CONSTRAINTS:
+            sys.stderr.write(
+                "[info] '%s' is not among the constraints verified on this STK "
+                "(%s); trying it anyway.\n"
+                % (constraint, ", ".join(self.KNOWN_CONSTRAINTS)))
+        applied = False
+        if value is not None:
+            applied |= self.cmd("SetConstraint %s %s %s" % (path, constraint, value),
+                                label="constraint %s" % constraint, fatal=False)
+        if minimum is not None:
+            applied |= self.cmd("SetConstraint %s %s Min %.6f" % (path, constraint, float(minimum)),
+                                label="constraint %s min" % constraint, fatal=False)
+        if maximum is not None:
+            applied |= self.cmd("SetConstraint %s %s Max %.6f" % (path, constraint, float(maximum)),
+                                label="constraint %s max" % constraint, fatal=False)
+        if not applied:
+            raise StkError(
+                "No form of the '%s' constraint was accepted on %s. Verified "
+                "constraint names on this STK: %s."
+                % (constraint, path, ", ".join(self.KNOWN_CONSTRAINTS)))
+        return True
+
+    # -- area targets, coverage, chains, attitude ---------------------------
+    #
+    # Built against member names read from the type library by
+    # probe_object_model.py, not guessed Connect syntax -- every Connect form
+    # tried for these was rejected. The object model exposes:
+    #   AreaTarget : CommonTasks.SetAreaTypePattern / SetAreaTypeEllipse
+    #   Coverage   : Grid.BoundsType/Bounds/Resolution, AssetList.Add,
+    #                ComputeAccesses
+    #   FOM        : SetDefinitionType, Definition, DefinitionSupportedTypes
+    #   Chain      : Objects.Add, ComputeAccess
+    #   Attitude   : Attitude.Basic.SetProfileType, ProfileSupportedTypes
+
+    def _supported(self, obj, property_name):
+        """Values from a *SupportedTypes property, as a list of ints.
+
+        The property comes back as a nested sequence on STK 11 -- a tuple of
+        tuples rather than a flat list of ints -- so flatten before
+        converting. Assuming flat gave "int() argument must be ... not
+        'tuple'".
+        """
+        try:
+            raw = getattr(obj, property_name)
+        except Exception:
+            return []
+
+        values = []
+
+        def flatten(item, depth=0):
+            if depth > 4:
+                return
+            if isinstance(item, (list, tuple)):
+                for element in item:
+                    flatten(element, depth + 1)
+                return
+            try:
+                values.append(int(item))
+            except (TypeError, ValueError):
+                pass
+
+        flatten(raw)
+        return values
+
+    def _enum_choice(self, wanted, supported, *fragments):
+        """Resolve a friendly name to an enum value the object supports.
+
+        Raises listing what IS supported, so a wrong name is a one-line fix
+        rather than a hunt through STK's documentation.
+        """
+        value = self.find_enum(wanted, *fragments) if fragments else self.find_enum(wanted)
+        if value is None:
+            value = self.find_enum(wanted, wanted.replace("e", "", 1).lower())
+        if value is not None and (not supported or value in supported):
+            return value
+        names = []
+        if getattr(self, "_enums", None):
+            for name, val in sorted(self._enums.items()):
+                if val in supported and any(f.lower() in name.lower() for f in (fragments or [""])):
+                    names.append("%s (%d)" % (name, val))
+        raise StkError(
+            "'%s' is not a supported option here.%s"
+            % (wanted,
+               ("\n  Supported: %s" % ", ".join(names[:12])) if names
+               else "\n  Supported enum values: %s" % supported))
+
+    def new_area_target(self, name, boundary, central_body=None):
+        """Create an area target (region of interest) from lat/lon points.
+
+        ``boundary`` is a sequence of ``(latitude_deg, longitude_deg)``.
+        """
+        path = self.unique_path("*/AreaTarget/%s" % name)
+        actual = path.rsplit("/", 1)[-1]
+        command = "New / */AreaTarget %s" % actual
+        if central_body:
+            self.cmd("%s CentralBody %s" % (command, central_body), fatal=False) or \
+                self.cmd(command, label="create area target")
+        else:
+            self.cmd(command, label="create area target")
+        points = [(float(lat), float(lon)) for lat, lon in boundary]
+        if len(points) < 3:
+            raise StkError("an area target needs at least 3 boundary points")
+        try:
+            self.obj(path).CommonTasks.SetAreaTypePattern(points)
+        except Exception as exc:
+            raise StkError("Failed to set the area-target boundary on %s: %s"
+                           % (path, exc))
+        return path
+
+    def new_area_target_ellipse(self, name, lat_deg, lon_deg,
+                                semi_major_km, semi_minor_km, bearing_deg=0.0,
+                                central_body=None):
+        """Create an elliptical area target centred on a point.
+
+        STK takes the CENTRE from the object's position and the ellipse from
+        its axes, so the position is set first and SetAreaTypeEllipse is
+        given only (semi-major, semi-minor, bearing). Passing the centre to
+        SetAreaTypeEllipse raises "takes from 1 to 4 positional arguments but
+        6 were given"; several argument orders are tried so a build with a
+        different signature still works.
+        """
+        path = self.unique_path("*/AreaTarget/%s" % name)
+        actual = path.rsplit("/", 1)[-1]
+        created = False
+        if central_body:
+            created = self.cmd("New / */AreaTarget %s CentralBody %s" % (actual, central_body),
+                               fatal=False)
+        if not created:
+            self.cmd("New / */AreaTarget %s" % actual, label="create area target")
+            if central_body:
+                sys.stderr.write(
+                    "[warn] could not set central body '%s' on %s; it will use "
+                    "the scenario's body.\n" % (central_body, actual))
+
+        # centre first -- the ellipse is defined about the object's position
+        self.cmd("SetPosition %s Geodetic %.9f %.9f 0.0"
+                 % (path, float(lat_deg), float(lon_deg)),
+                 label="area target centre", fatal=False)
+
+        common = self.obj(path).CommonTasks
+        attempts = []
+        for description, args in (
+                ("(semi_major, semi_minor, bearing)",
+                 (float(semi_major_km), float(semi_minor_km), float(bearing_deg))),
+                ("(semi_major, semi_minor)",
+                 (float(semi_major_km), float(semi_minor_km))),
+                ("(lat, lon, semi_major, semi_minor)",
+                 (float(lat_deg), float(lon_deg), float(semi_major_km),
+                  float(semi_minor_km)))):
+            try:
+                common.SetAreaTypeEllipse(*args)
+                return path
+            except Exception as exc:
+                attempts.append("    %s -> %s" % (description, str(exc).splitlines()[0]))
+
+        raise StkError(
+            "Could not set an elliptical area on %s.\n  Attempts:\n%s\n"
+            "  Use new_area_target() with explicit boundary points instead."
+            % (path, "\n".join(attempts)))
+
+    def new_chain(self, name, members, compute=True):
+        """Create a chain (e.g. satellite -> relay -> ground) and compute it.
+
+        ``members`` is an ordered list of object paths. A chain models the
+        end-to-end link, which is not the same as two separate accesses:
+        the relay leg and the downlink must overlap in time.
+        """
+        path = self.unique_path("*/Chain/%s" % name)
+        actual = path.rsplit("/", 1)[-1]
+        self.cmd("New / */Chain %s" % actual, label="create chain")
+        chain = self.obj(path)
+        for member in members:
+            trimmed = member.lstrip("*/")
+            added = False
+            for candidate in (trimmed, member):
+                for method in ("Add", "AddObject"):
+                    try:
+                        getattr(chain.Objects, method)(candidate)
+                        added = True
+                        break
+                    except Exception:
+                        continue
+                if added:
+                    break
+            if not added:
+                raise StkError("Could not add %s to chain %s" % (member, path))
+        if compute:
+            try:
+                chain.ComputeAccess()
+            except Exception as exc:
+                raise StkError("Chain %s built but ComputeAccess failed: %s" % (path, exc))
+        return path
+
+    def new_coverage(self, name, lat_min, lat_max, lon_min, lon_max,
+                     resolution_deg=2.0, assets=(), compute=True):
+        """Create a coverage definition over a lat/lon box and assign assets."""
+        path = self.unique_path("*/CoverageDefinition/%s" % name)
+        actual = path.rsplit("/", 1)[-1]
+        self.cmd("New / */CoverageDefinition %s" % actual, label="create coverage")
+        cov = self.obj(path)
+        try:
+            grid = cov.Grid
+            grid.BoundsType = self._enum_choice(
+                "eBoundsLatLonRegion", self._supported(grid, "BoundsTypeSupportedTypes"),
+                "bounds", "latlon")
+            bounds = grid.Bounds
+            for attribute, value in (("MinLatitude", lat_min), ("MaxLatitude", lat_max),
+                                     ("MinLongitude", lon_min), ("MaxLongitude", lon_max)):
+                try:
+                    setattr(bounds, attribute, float(value))
+                except Exception:
+                    pass
+            grid.ResolutionType = self._enum_choice(
+                "eResolutionLatLon", self._supported(grid, "ResolutionTypeSupportedTypes"),
+                "resolution", "latlon")
+            grid.Resolution.LatLon = float(resolution_deg)
+        except StkError:
+            raise
+        except Exception as exc:
+            raise StkError("Failed to configure the coverage grid on %s: %s" % (path, exc))
+
+        for asset in assets:
+            trimmed = asset.lstrip("*/")
+            for candidate in (trimmed, asset):
+                try:
+                    cov.AssetList.Add(candidate)
+                    break
+                except Exception:
+                    continue
+        if compute:
+            try:
+                cov.ComputeAccesses()
+            except Exception as exc:
+                raise StkError("Coverage %s defined but ComputeAccesses failed: %s"
+                               % (path, exc))
+        return path
+
+    def add_figure_of_merit(self, coverage_path, name, definition="Revisit Time"):
+        """Add a figure of merit to a coverage definition.
+
+        ``definition`` is a friendly name such as "Revisit Time", "Coverage
+        Time", "Response Time", "Number of Accesses". An unsupported one
+        raises with the supported list.
+        """
+        path = self.unique_path("%s/FigureOfMerit/%s" % (coverage_path, name))
+        actual = path.rsplit("/", 1)[-1]
+        self.cmd("New / %s/FigureOfMerit %s" % (coverage_path, actual),
+                 label="create figure of merit")
+        fom = self.obj(path)
+        fragments = [w for w in str(definition).replace("_", " ").split() if w]
+        value = self._enum_choice("e" + "".join(w.capitalize() for w in fragments),
+                                  self._supported(fom, "DefinitionSupportedTypes"),
+                                  *fragments)
+        try:
+            fom.SetDefinitionType(value)
+        except Exception as exc:
+            raise StkError("Failed to set figure-of-merit definition on %s: %s"
+                           % (path, exc))
+        return path
+
+    def set_attitude_profile(self, sat_path, profile="Nadir Alignment With ECI Velocity Constraint"):
+        """Set the spacecraft's attitude profile (the bus, not a sensor).
+
+        Every satellite has been on STK's default attitude until now, which
+        matters for anything body-fixed: sensor boresights, antenna patterns,
+        solar arrays.
+        """
+        try:
+            basic = self.obj(sat_path).Attitude.Basic
+        except Exception as exc:
+            raise StkError("No basic attitude on %s: %s" % (sat_path, exc))
+        fragments = [w for w in str(profile).replace("_", " ").split() if w]
+        value = self._enum_choice("e" + "".join(w.capitalize() for w in fragments),
+                                  self._supported(basic, "ProfileSupportedTypes"),
+                                  *fragments)
+        try:
+            basic.SetProfileType(value)
+        except Exception as exc:
+            raise StkError("Failed to set attitude profile on %s: %s" % (sat_path, exc))
+        return profile
+
+    def write_pass_list_csv(self, from_path, to_path, out_dir=None, filename=None,
+                            with_details=False):
+        """Write EVERY pass, not just totals: start, stop, duration, gap.
+
+        With ``with_details`` each pass also gets peak elevation and minimum
+        range, which costs an AER query per pass.
+        """
+        count, _total, intervals = self.compute_access(from_path, to_path)
+        from_name = from_path.rsplit("/", 1)[-1]
+        to_name = to_path.rsplit("/", 1)[-1]
+        if not filename:
+            filename = "passes_%s_%s.csv" % (from_name, to_name)
+        out_file = os.path.join(self.output_dir(out_dir), filename)
+
+        header = "Pass,Start,Stop,Duration_s,GapSincePrevious_s"
+        if with_details:
+            header += ",PeakElevation_deg,MinRange_km"
+        lines = [header]
+        previous_end = None
+        for index, (start_time, stop_time) in enumerate(intervals, 1):
+            begins = float(self.root.ConversionUtility.ConvertDate("UTCG", "EpSec", start_time))
+            ends = float(self.root.ConversionUtility.ConvertDate("UTCG", "EpSec", stop_time))
+            gap = "" if previous_end is None else "%.3f" % (begins - previous_end)
+            previous_end = ends
+            row = "%d,%s,%s,%.3f,%s" % (index, start_time, stop_time, ends - begins, gap)
+            if with_details:
+                detail = self.pass_details(from_path, to_path, start_time, stop_time) or {}
+                row += ",%s,%s" % (
+                    "%.3f" % detail["peak_elevation_deg"] if detail.get("peak_elevation_deg") is not None else "",
+                    "%.3f" % detail["min_range_km"] if detail.get("min_range_km") is not None else "")
+            lines.append(row)
+        with open(out_file, "w") as handle:
+            handle.write("\n".join(lines) + "\n")
+        print("[file] %s  (%d passes)" % (out_file, count))
+        return out_file
+
     # -- ground assets ------------------------------------------------------
     def new_facility(self, name, lat_deg, lon_deg, alt_km=0.0, central_body=None):
         """Create a ground facility at a geodetic position. Altitude in km."""
@@ -1277,8 +1928,25 @@ class StkSession(object):
         available = self.report_styles(object_type)
         if not available or style in available:
             return style
-        lowered = style.lower()
-        near = [s for s in available if lowered in s.lower() or s.lower() in lowered]
+        # Some styles live in their own folder rather than the object's --
+        # "Access" is a satellite-usable style but is filed under Access.
+        # Only reject a name that exists nowhere.
+        for folder in ("Access", "Chain", "CoverageDefinition", "FigureOfMerit",
+                       "Sensor", "Facility", "AreaTarget"):
+            if style in self.report_styles(folder):
+                return style
+        # Substring matching missed the case it exists for: "Classical
+        # Elements" is not a substring of "Classical Orbit Elements". Score by
+        # shared words instead.
+        wanted_words = set(style.lower().replace("-", " ").split())
+        scored = []
+        for candidate in available:
+            words = set(candidate.lower().replace("-", " ").split())
+            shared = len(wanted_words & words)
+            if shared:
+                scored.append((shared / float(len(wanted_words | words)), shared, candidate))
+        scored.sort(reverse=True)
+        near = [candidate for _ratio, _shared, candidate in scored]
         raise StkError(
             "'%s' is not a %s report style in this STK installation.%s\n"
             "  %d styles are available; list them with "
@@ -1318,6 +1986,171 @@ class StkSession(object):
                  label="export report '%s'" % style)
         print("[file] %s" % out_file)
         return out_file
+
+    # -- deciding HOW to deliver, rather than leaving it to prose ----------
+    #
+    # "Open a window per object, unless there are many" is a rule with a
+    # threshold. Left in the prompt it gets applied outside the range it was
+    # written for -- three satellites produced one access report because the
+    # guidance had been tuned for twenty-four. A threshold belongs in code
+    # where it can be tested, not in a sentence.
+
+    #: Default cutoff for ``windows="auto"``. The script can always override
+    #: it, or bypass it entirely with windows=True / windows=False.
+    WINDOW_LIMIT = 5
+
+    def publish_report(self, objects, style, windows="auto", files="auto",
+                       window_limit=None, time_step_sec=600, label=""):
+        """Deliver a report for one or more objects. The CALLER decides how.
+
+        ``windows`` and ``files`` each take:
+
+          True    -- do it for every object
+          False   -- do not do it at all
+          "auto"  -- windows for up to ``window_limit`` objects (default
+                     :attr:`WINDOW_LIMIT`), then files instead
+
+        "auto" is a convenience default, not a policy: a script that knows
+        what it wants should say so. Returns
+        ``{"windows": [...], "files": [...]}``.
+        """
+        paths = [objects] if isinstance(objects, str) else list(objects)
+        limit = self.WINDOW_LIMIT if window_limit is None else window_limit
+        produced = {"windows": [], "files": []}
+
+        for index, path in enumerate(paths):
+            if windows is True:
+                want_window = True
+            elif windows is False:
+                want_window = False
+            else:
+                want_window = len(paths) <= limit or index < 2
+
+            if want_window:
+                self.open_report(path, style)
+                produced["windows"].append(path)
+
+            if files is True or (files == "auto" and not want_window):
+                produced["files"].append(
+                    self.export_report(path, style, time_step_sec=time_step_sec))
+
+        self._record_output("report:%s%s" % (style, (" (%s)" % label) if label else ""),
+                            len(produced["windows"]), len(produced["files"]))
+        return produced
+
+    def publish_access(self, satellites, station, windows="auto",
+                       pass_lists=True, totals=True, window_limit=None,
+                       with_details=True):
+        """Deliver access results. Every part is opt-out.
+
+        ``windows``     -- STK access report windows (True / False / "auto")
+        ``pass_lists``  -- a per-pass CSV per satellite
+        ``totals``      -- one summary CSV of totals per satellite
+
+        Nothing here is mandatory: ask for exactly the pieces the request
+        needs.
+        """
+        paths = [satellites] if isinstance(satellites, str) else list(satellites)
+        limit = self.WINDOW_LIMIT if window_limit is None else window_limit
+        produced = {"windows": [], "files": []}
+
+        for index, path in enumerate(paths):
+            if pass_lists:
+                produced["files"].append(
+                    self.write_pass_list_csv(path, station, with_details=with_details))
+            if windows is True:
+                want_window = True
+            elif windows is False:
+                want_window = False
+            else:
+                want_window = len(paths) <= limit or index < 2
+            if want_window:
+                self.open_access_report(path, station)
+                produced["windows"].append(path)
+
+        if totals:
+            rows = self.access_summary(paths, station)
+            produced["files"].append(
+                self.write_access_csv(rows, station.rsplit("/", 1)[-1]))
+
+        self._record_output("access -> %s" % station.rsplit("/", 1)[-1],
+                            len(produced["windows"]), len(produced["files"]))
+        return produced
+
+    # -- what did this script actually produce? -----------------------------
+    def declare_deliverables(self, *asked_for):
+        """State what the user asked for, e.g. "passes", "revisit", "graphs".
+
+        Used only by :meth:`output_summary`, which compares this against what
+        was produced and flags extras. The helper cannot know the request --
+        the script has to say -- but once said, over-production becomes
+        visible instead of being noticed by the user in a folder listing.
+        """
+        self._deliverables = [str(a).strip().lower() for a in asked_for if a]
+        return self._deliverables
+
+    def _record_output(self, description, windows=0, files=0):
+        if getattr(self, "_outputs", None) is None:
+            self._outputs = []
+        self._outputs.append((description, windows, files))
+
+    def output_summary(self):
+        """Print everything produced, and flag anything not asked for."""
+        outputs = getattr(self, "_outputs", []) or []
+        print("\n--- outputs ---")
+        if not outputs:
+            print("  (nothing recorded)")
+            return outputs
+        total_windows = total_files = 0
+        for description, windows, files in outputs:
+            total_windows += windows
+            total_files += files
+            print("  %-44s %d window(s), %d file(s)" % (description, windows, files))
+        print("  %-44s %d window(s), %d file(s)" % ("TOTAL", total_windows, total_files))
+
+        asked = getattr(self, "_deliverables", None)
+        if asked:
+            print("  asked for: %s" % ", ".join(asked))
+            unmatched = [d for d, _w, _f in outputs
+                         if not any(word in d.lower() for word in asked)]
+            if unmatched:
+                print("  [check] produced without being asked for:")
+                for description in unmatched:
+                    print("      %s" % description)
+        return outputs
+
+    def figure_of_merit_report(self, fom_path, style=None, time_step_sec=None,
+                               display=False):
+        """Export (or open) the numbers a figure of merit produced.
+
+        Revisit and coverage results live on the coverage definition and its
+        figure of merit, not on the satellites, and the style names differ
+        per object type. With ``style`` omitted this picks the first
+        available style that looks like a per-grid-point value, so a caller
+        does not have to know the catalogue.
+        """
+        available = self.report_styles(self._object_type(fom_path))
+        if style is None:
+            preferred = ("value by grid point", "value by point", "grid point",
+                         "value", "statistics")
+            for wanted in preferred:
+                matches = [s for s in available if wanted in s.lower()]
+                if matches:
+                    style = matches[0]
+                    break
+            if style is None and available:
+                style = available[0]
+            if style is None:
+                raise StkError(
+                    "No report styles found for %s. List them with "
+                    "session.report_styles(%r)."
+                    % (fom_path, self._object_type(fom_path)))
+            print("[info] figure-of-merit style not given; using %r "
+                  "(available: %s)" % (style, ", ".join(available[:6])))
+        if display:
+            return self.open_report(fom_path, style)
+        return self.export_report(fom_path, style,
+                                  time_step_sec=time_step_sec or 3600)
 
     def open_access_report(self, from_path, to_path):
         """Open STK's access report window for one object pair."""

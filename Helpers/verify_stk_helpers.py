@@ -252,6 +252,27 @@ def _assert_export(session, sat_path):
     return path
 
 
+def _assert_access_nonzero(session, from_path, to_path):
+    count, seconds, _ = session.compute_access(from_path, to_path)
+    print("        %s -> %s: %d passes, %.0f s"
+          % (from_path.rsplit("/", 1)[-1], to_path.rsplit("/", 1)[-1], count, seconds))
+    if count == 0:
+        raise AssertionError("no access at all -- suspicious for this geometry")
+    return count
+
+
+def _assert_pass_list(session, sat_path, gs_path):
+    path = session.write_pass_list_csv(sat_path, gs_path)
+    with open(path) as handle:
+        lines = [line for line in handle.read().splitlines() if line.strip()]
+    if len(lines) < 2:
+        raise AssertionError("pass list has a header but no passes: %s" % path)
+    if not lines[0].startswith("Pass,Start,Stop"):
+        raise AssertionError("unexpected header: %s" % lines[0])
+    print("        %d passes listed" % (len(lines) - 1))
+    return path
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
@@ -340,6 +361,14 @@ def main():
                                        phase_f=1, sma_km=sma, inc_deg=97.4,
                                        raan_deg=45.0))
 
+        # Every other orbit here is circular; an eccentric one exercises
+        # argument of perigee and the perigee/apogee radius band.
+        results.check(
+            "eccentric orbit (Molniya: e=0.74, argp=270)",
+            lambda: session.new_satellite(
+                "MolniyaProbe", sma_km=26554.0, inc_deg=63.4, raan_deg=0.0,
+                ecc=0.74, arg_perigee_deg=270.0))
+
         results.check("two-body propagator name accepted",
                       lambda: session.new_satellite("TwoBodySat", sma_km=sma,
                                                     inc_deg=45.0, raan_deg=10.0,
@@ -352,6 +381,11 @@ def main():
                       lambda: _assert_stk_home(session))
         results.check("lunar gravity file GL0420A.grv resolves",
                       lambda: _assert_gravity_file(session, "GL0420A.grv"))
+
+        # A facility early, since the constraint/chain checks below need one.
+        gs = results.check(
+            "facility for constraint and chain checks",
+            lambda: session.new_facility("ProbeStation", 38.5333, 23.6333, 0.2))
 
         # --- GEO placement -------------------------------------------------
         # A GEO placed by hand lands at an epoch-dependent longitude, which
@@ -396,6 +430,55 @@ def main():
             lambda: session.add_transmitter(sat, "SmokeTX", freq_ghz=0.437,
                                             eirp_dbw=0.0, data_rate_kbps=19.2),
             requires={"satellite": sat})
+
+        # --- new capabilities: constraints, ROI, coverage, chains, attitude
+        # Each was "syntax unknown" until probe_object_model.py read the real
+        # member names off the type library. These checks prove the wrappers
+        # work rather than that the objects merely got created.
+        # IMPORTANT: apply constraints to throwaway objects. An earlier
+        # version put a 3000 km range limit on the shared facility and a
+        # DirectSun constraint on the shared satellite, which then silently
+        # filtered every later access check against them -- the per-pass CSV
+        # came back with zero passes and looked like a CSV bug. Test
+        # constraints must not leak into other tests.
+        constraint_gs = results.check(
+            "facility for constraint tests only",
+            lambda: session.new_facility("ConstraintProbeGS", 10.0, 20.0, 0.0))
+        results.check("range constraint applies",
+                      lambda: session.set_constraint(constraint_gs, "Range", maximum=3000),
+                      requires={"facility": constraint_gs})
+        results.check("lighting constraint applies",
+                      lambda: session.set_constraint(constraint_gs, "Lighting",
+                                                     value="DirectSun"),
+                      requires={"facility": constraint_gs})
+        roi = results.check(
+            "area target from a boundary",
+            lambda: session.new_area_target(
+                "ProbeROI", [(38, 23), (39, 23), (39, 24), (38, 24)]))
+        results.check("satellite sees the area target",
+                      lambda: _assert_access_nonzero(session, sat, roi),
+                      requires={"satellite": sat, "area target": roi})
+        results.check("attitude profile set on the bus",
+                      lambda: session.set_attitude_profile(sat),
+                      requires={"satellite": sat})
+        chain = results.check(
+            "chain satellite -> facility",
+            lambda: session.new_chain("ProbeChain", [sat, gs]),
+            requires={"satellite": sat, "facility": gs})
+        cov = results.check(
+            "coverage definition over a lat/lon box",
+            lambda: session.new_coverage("ProbeCov", 30, 45, 15, 30,
+                                         resolution_deg=5.0, assets=[sat]),
+            requires={"satellite": sat})
+        results.check("figure of merit (revisit time)",
+                      lambda: session.add_figure_of_merit(cov, "Revisit"),
+                      requires={"coverage": cov})
+        # Use the area target, which the check above proved has access, so a
+        # zero-pass result means the CSV writer is broken rather than the
+        # geometry being unlucky.
+        results.check("per-pass CSV lists every pass",
+                      lambda: _assert_pass_list(session, sat, roi),
+                      requires={"satellite": sat, "area target": roi})
 
         # --- STK reports and graphs ---------------------------------------
         results.check("report styles are discoverable",

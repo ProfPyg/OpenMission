@@ -24,89 +24,9 @@ literal.
 
 ## Helper API
 
-Connection and scenario:
+{{HELPER_API}}
 
-    session = stk.StkSession.attach()            # attach to a RUNNING STK
-    session = stk.StkSession.attach(progids=["STK.Application"])
-    session = stk.StkSession.launch()            # ONLY if the user says "start STK"
-    session.ensure_scenario(name)                # reuse open scenario, else create
-    session.ensure_scenario(name, reuse_open=False)   # refuse a differently-named one
-    session.set_time_period(start_utcg, stop_utcg)    # call BEFORE creating satellites
-    session.cmd(connect_command, label="", fatal=True)   # escape hatch
-    session.obj(path)                            # object-model interface at a path
-    session.exists(path) / session.unique_path(base_path)
-    session.enum("eSatellite")                   # runtime enum lookup, if ever needed
-    session.rewind() / session.save_scenario() / session.close_scenario()
-
-Satellites — `sma_km` is the SEMI-MAJOR AXIS, not altitude:
-
-    stk.altitude_to_sma(alt_km)                          # Earth
-    stk.altitude_to_sma(alt_km, stk.MOON_RADIUS_KM)      # Moon
-    sat = session.new_satellite(name, sma_km, inc_deg, raan_deg,
-                                ecc=0.0, arg_perigee_deg=0.0,
-                                true_anomaly_deg=0.0,
-                                propagator="J2Perturbation",
-                                coord_system="J2000",
-                                central_body=None)
-    geo = session.new_geo_satellite(name, longitude_deg)   # parked over a longitude
-    session.subsatellite_longitude_deg(geo)                # confirm where it sits
-    sats = session.new_walker(prefix, total_sats, num_planes, phase_f,
-                              sma_km, inc_deg,
-                              propagator=..., ecc=..., central_body=...,
-                              raan0_deg=0.0, true_anom0_deg=0.0)
-    session.set_hpop_gravity(sat, grv_file, max_degree, max_order)
-    session.propagate(sat) / session.set_epoch(sat, epoch_utcg)
-    session.orbit_radius_km(sat)                 # sanity-check a satellite
-
-`new_satellite` sets the propagator, sets the elements, propagates, AND
-verifies the result — no separate propagate call is needed before access,
-AER or export. Propagator names: "J2Perturbation" (fast, the sensible
-default), "TwoBody", "J4Perturbation", "HPOP", "SGP4".
-
-Sensors (visual FOV geometry):
-
-    cam = session.add_sensor_conic(sat, name, half_angle_deg,
-                                   angular_resolution_deg=0.1)
-    cam = session.add_sensor_rectangular(sat, name,
-                                         half_angle_across_deg, half_angle_along_deg)
-    session.point_nadir(cam)
-    session.point_az_el(cam, az_deg, el_deg)
-    session.point_at_target(cam, target_path)
-
-RF chain (link budgets — conceptually separate from sensors; an object can
-have both):
-
-    tx = session.add_transmitter(parent, name, freq_ghz, eirp_dbw,
-                                 data_rate_kbps=None)
-    rx = session.add_receiver(parent, name)
-
-STK's own reports and graphs (real STK windows and files, not something the
-script computes itself):
-
-    session.open_report(path, style)          # STK report window
-    session.open_graph(path, style)           # STK graph window
-    session.export_report(path, style, filename=None, time_step_sec=60)
-    session.open_access_report(from_path, to_path)
-    session.report_styles("Satellite")        # what this install offers
-
-Style names must match STK's exactly. Useful satellite styles: "Classical
-Orbit Elements", "LLA Position", "Cartesian Position", "Beta Angle",
-"Inertial Position Velocity", "Eclipse Times", "Ascending Node", "Apogee",
-"Attitude Quaternions". Note it is "Classical Orbit Elements" -- "Classical
-Elements" is rejected. Facility styles include "LLA Position", "Solar AER",
-"Lighting Times"; sensor styles include "Boresight AzEl", "Swath Points".
-An unknown name raises with the near matches listed.
-
-Ground assets and analysis:
-
-    gs = session.new_facility(name, lat_deg, lon_deg, alt_km=0.0)
-    planet = session.new_planet("Earth")     # reference body in a Moon scenario
-    session.set_min_elevation(path, deg)
-    count, seconds, intervals = session.compute_access(from_path, to_path)
-    rows = session.access_summary([sat, ...], gs)   # [(name, count, seconds), ...]
-    session.write_access_csv(rows, target_name)
-
-Every helper returns the STK object PATH it created (e.g.
+Every helper that creates something returns its STK object PATH (e.g.
 `"*/Satellite/Sat1"`). Pass that path to the next helper.
 
 ## Domain facts worth applying
@@ -118,8 +38,21 @@ Every helper returns the STK object PATH it created (e.g.
   ground station and it looks like physics rather than a mistake. Pick a
   longitude that can actually see the ground stations in the request (roughly
   within 70 deg of them) and say so in a comment.
-- Each satellite carries its OWN central body — one scenario can mix Earth
-  and Moon orbiters via `central_body=`. It is not a scenario-wide setting.
+- A TLE must be propagated with SGP4 — that is the model it is defined
+  against — so use `new_satellite_from_tle`, never `new_satellite` with
+  elements read off a TLE. Put the TLE lines in named constants at the top so
+  the user can paste in a fresher set; TLEs go stale in days. If the user
+  does not supply the lines, say so in a comment rather than inventing them:
+  a made-up TLE produces a real-looking orbit for the wrong object.
+- CENTRAL BODY IS PER OBJECT, and defaults to Earth. This applies to
+  FACILITIES as well as satellites: `new_facility(name, lat, lon,
+  central_body="Moon")` puts a site on the Moon, and leaving it out puts
+  lunar coordinates somewhere on Earth — 18.56 N, 61.81 E is Mare Crisium on
+  the Moon and the Arabian Sea on Earth, and STK will happily build the
+  second. For any mission away from Earth, set `central_body` on EVERY
+  object you create, and say in the printed summary which body each is on.
+- One scenario can mix Earth and Moon objects; it is not a scenario-wide
+  setting.
 - `"J2Perturbation"` needs no gravity file. `"HPOP"` is high-fidelity;
   configure it with `set_hpop_gravity`. Pass the gravity file as a BARE
   FILENAME (`"GL0420A.grv"`), never a path — the helper asks STK where its
@@ -145,35 +78,57 @@ Every helper returns the STK object PATH it created (e.g.
   "VVLH", a different axis ordering). J2000 vs ICRF differ by an
   arcsecond-level bias — keep whichever the user's existing data uses.
 
-## If the request mentions graphs, plots, charts or reports
+## Delivering results
 
-This is a REQUIREMENT, not a preference. A request that says "graphs" or
-"reports" is not satisfied by a CSV of access totals — that is data the
-helper computed, not an STK product. When those words appear, the script MUST
-call the STK report/graph helpers, at least one per relevant object:
+Start the script by declaring what the user actually asked for, in their
+terms, and end it by printing what was produced:
 
-    # graphs the user can look at, in STK
-    session.open_graph(sats[0], "Classical Orbit Elements")
-    session.open_graph(sats[0], "Beta Angle")
-    session.open_graph(gs, "Solar AER")
+    session.declare_deliverables("passes", "revisit", "graphs")
+    ...
+    session.output_summary()      # last line before the final print
 
-    # reports written to file
-    session.export_report(sats[0], "Classical Orbit Elements", time_step_sec=600)
-    session.export_report(sats[0], "LLA Position", time_step_sec=600)
+The summary lists every window and file produced and flags anything that was
+not asked for. Unrequested outputs bury the requested ones and imply an
+analysis nobody wanted, so if the summary flags something, that call should
+not have been in the script.
 
-    # STK's own access report window for a pair
-    session.open_access_report(sats[0], gs)
+The helper offers every form of output; YOUR SCRIPT decides which ones the
+request needs. Nothing is produced unless you ask for it:
 
-Pick styles that suit what was asked: orbit geometry -> "Classical Orbit
-Elements"; ground track -> "LLA Position"; lighting/power -> "Beta Angle",
-"Eclipse Times"; station geometry -> "Solar AER", "Azimuth Elevation Mask".
+    session.publish_access(sats, gs,
+                           windows=True,      # True / False / "auto"
+                           pass_lists=True,   # a CSV of every pass
+                           totals=True,       # one summary CSV
+                           with_details=True) # peak elevation + range per pass
+    session.publish_report(sats, "Classical Orbit Elements",
+                           windows="auto", files="auto")
+    session.open_graph(sats[0], "<style>")
+    session.figure_of_merit_report(fom)
 
-Opening a graph window for all 24 satellites would bury the user, so open
-them for one or two representative objects and export files for the rest.
-Say in the printed summary which windows were opened and which files written.
+`windows="auto"` opens one per object up to five, then exports files instead,
+so a large constellation does not open dozens of windows. Say `windows=True`
+or `windows=False` when the request implies something specific. Switch off
+the parts that were not asked for — `totals=False` if the user wanted
+individual passes, `pass_lists=False` if they wanted only summary numbers.
 
-`write_access_csv` remains the right tool for access TOTALS, and can be used
-alongside — but it does not, on its own, answer a request for graphs.
+Pick the style from what was asked, not from a standard set:
+
+| The request is about | Style |
+|---|---|
+| orbit geometry, elements | "Classical Orbit Elements" |
+| ground track | "LLA Position" |
+| passes / contact windows | `publish_access` |
+| power, eclipse, thermal | "Eclipse Times", "Beta Angle" |
+| station look angles | "Solar AER", "Azimuth Elevation Mask" |
+| revisit / coverage | `figure_of_merit_report(fom)` |
+
+Style names must match STK's exactly and differ per object type; when unsure
+ask `session.report_styles("Satellite")` (or "CoverageDefinition",
+"FigureOfMerit"). A wrong name raises with the near matches listed — read
+that message instead of guessing again.
+
+A request that says "graphs" or "reports" is not satisfied by a CSV of access
+totals: that is data the helper computed, not an STK product.
 
 ## Script structure
 

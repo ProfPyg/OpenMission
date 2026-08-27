@@ -60,8 +60,70 @@ def _iter_calls(text):
         yield name, text[match.end():index - 1]
 
 
+#: Parameters that change WHAT IS BUILT, not merely how. If the prompt shows
+#: a helper without these, the agent cannot use them and will silently accept
+#: the default. That is how a lunar landing site ended up in the Arabian Sea:
+#: new_facility has always taken central_body, but the prompt documented it
+#: without, so the agent used the only signature it was shown.
+CONSEQUENTIAL_PARAMS = {
+    "central_body", "propagator", "ecc", "arg_perigee_deg", "windows",
+    "files", "pass_lists", "totals", "definition", "resolution_deg",
+    "with_details", "assets",
+}
+
+
+def check_undocumented(prompt_path, module):
+    """Flag consequential parameters the prompt never shows.
+
+    The forward check (does everything documented exist?) cannot catch an
+    omission -- only the reverse can.
+    """
+    prompt = _composed_prompt(prompt_path)
+    documented = {}
+    for name, args in _iter_calls(prompt):
+        documented.setdefault(name, set()).update(
+            re.findall(r"([a-zA-Z_][a-zA-Z0-9_]*)\s*=", args))
+
+    problems = []
+    for name, shown in documented.items():
+        owner = module.StkSession if hasattr(module.StkSession, name) else module
+        func = getattr(owner, name, None)
+        if func is None:
+            continue
+        try:
+            params = inspect.signature(func).parameters
+        except (TypeError, ValueError):
+            continue
+        for param_name, param in params.items():
+            if param_name in ("self", "args", "kwargs"):
+                continue
+            if param.default is inspect.Parameter.empty:
+                continue          # positional -- the agent must pass it anyway
+            if param_name in CONSEQUENTIAL_PARAMS and param_name not in shown:
+                problems.append(
+                    "%s(%s=...) exists and changes what is built, but the "
+                    "prompt never shows it" % (name, param_name))
+    return problems
+
+
+def _composed_prompt(prompt_path):
+    """The prompt as the agent will see it, with the API section spliced in.
+
+    Checking the raw file would test a placeholder rather than the text that
+    reaches the model.
+    """
+    text = io.open(prompt_path, encoding="utf-8").read()
+    if "{{HELPER_API}}" in text:
+        here = os.path.dirname(os.path.abspath(__file__))
+        sys.path.insert(0, here)
+        from api_reference import generate
+        text = text.replace("{{HELPER_API}}",
+                            generate(os.path.join(here, "stk_helpers.py")))
+    return text
+
+
 def check(prompt_path, module):
-    prompt = io.open(prompt_path, encoding="utf-8").read()
+    prompt = _composed_prompt(prompt_path)
     problems = []
 
     for name, args in _iter_calls(prompt):
@@ -109,6 +171,15 @@ def main():
 
     print("OK: every function and keyword the prompt documents exists in "
           "stk_helpers.py")
+
+    missing = check_undocumented(prompt_path, stk_helpers)
+    if missing:
+        print("\nUNDOCUMENTED CAPABILITIES (%d) -- the agent cannot use these:"
+              % len(missing))
+        for item in missing:
+            print("  * %s" % item)
+        return 1
+    print("OK: every consequential parameter is shown in the prompt")
     return 0
 
 

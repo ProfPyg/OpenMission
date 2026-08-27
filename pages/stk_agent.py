@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import io
 import json
+import sys
 import re
 import zipfile
 from pathlib import Path
@@ -50,6 +51,7 @@ st.markdown(_WATERMARK_HTML, unsafe_allow_html=True)
 # to be trusted to reproduce.
 # ─────────────────────────────────────────────────────────────────────────────
 _PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "stk_agent.md"
+_HELPERS_DIR = Path(__file__).resolve().parent.parent / "Helpers"
 _HELPER_PATH = Path(__file__).resolve().parent.parent / "Helpers" / "stk_helpers.py"
 
 
@@ -65,16 +67,48 @@ def _read_text(path_str: str, _mtime: float) -> str:
     return Path(path_str).read_text(encoding="utf-8")
 
 
+@st.cache_data(show_spinner=False)
+def _api_reference(helper_path: str, _mtime: float) -> str:
+    """The API section, generated from stk_helpers.py rather than typed.
+
+    A hand-maintained list of the helper's functions drifted from the code,
+    and each drift became a bug in a generated script -- most sharply when
+    new_facility was documented without central_body and a lunar landing site
+    was built on Earth. Generating it means nobody writes the description, so
+    nobody can get it wrong.
+
+    The module is parsed, not imported: this app runs on Linux where pywin32
+    does not exist.
+    """
+    sys.path.insert(0, str(_HELPERS_DIR))
+    from api_reference import generate
+    return generate(helper_path)
+
+
 def _load_prompt() -> str:
-    """Read the system prompt from disk (picks up edits automatically)."""
+    """Read the system prompt and splice in the generated API reference."""
     try:
-        return _read_text(str(_PROMPT_PATH), _PROMPT_PATH.stat().st_mtime).strip()
+        text = _read_text(str(_PROMPT_PATH), _PROMPT_PATH.stat().st_mtime).strip()
     except OSError as exc:
         st.error(
             f"Could not read the system prompt at `{_PROMPT_PATH}`: {exc}. "
             "The agent cannot compose a prompt without it."
         )
         return ""
+
+    if "{{HELPER_API}}" in text:
+        helper_path = _HELPERS_DIR / "stk_helpers.py"
+        try:
+            reference = _api_reference(str(helper_path), helper_path.stat().st_mtime)
+        except Exception as exc:            # noqa: BLE001 - surface, do not hide
+            st.error(
+                f"Could not generate the API reference from `{helper_path}`: "
+                f"{exc}. The prompt would describe no helpers at all, so it is "
+                "not safe to send."
+            )
+            return ""
+        text = text.replace("{{HELPER_API}}", reference)
+    return text
 
 
 def _load_helper_module() -> str:
@@ -339,17 +373,19 @@ with st.sidebar:
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("## STK Scenario-Builder Agent")
 st.markdown(
-    "Describe the STK scenario you want in plain English. This page builds "
-    "a complete prompt for you to paste into a **claude.ai** chat you "
-    "already have access to — no separate API key or billing needed. Paste "
-    "Claude's reply back below and this page pulls out the runnable Python "
-    "script. Nothing here connects to STK or your local machine directly."
+    "Describe an STK scenario in plain English. This page composes a full "
+    "prompt for you to paste into a **claude.ai** chat you already have — no "
+    "API key, no extra billing — and pulls the runnable Python script out of "
+    "the reply. Nothing here touches STK or your machine; the script you "
+    "download does that when you run it."
 )
-st.info(
-    "The generated script imports **stk_helpers.py** — download it from the "
-    "sidebar and keep it in the same folder as the script. The helper module "
-    "handles the STK COM details and is verified against a real STK install.",
-    icon="\u2139\ufe0f",
+st.markdown(
+    "**To run what you get, you need:** the generated script and "
+    "**stk_helpers.py** in the *same folder* — the script imports it. The "
+    "download button gives you a zip containing both, so normally there is "
+    "nothing to think about. The sidebar has stk_helpers.py on its own if you "
+    "want to update an existing folder. You also need **pywin32** "
+    "(`pip install pywin32`) and a licensed STK on that machine."
 )
 
 # ── Step 1: describe the scenario ───────────────────────────────────────────
@@ -407,26 +443,27 @@ if user_request.strip():
     with st.expander("View the full prompt", expanded=False):
         st.code(full_prompt, language="markdown")
 else:
-    st.info("Describe a scenario above to generate the prompt.")
+    st.caption("Describe a scenario above to generate the prompt.")
 
 # ── Step 3: paste the reply back ────────────────────────────────────────────
-st.markdown("### 3. Paste Claude's reply back here")
+st.markdown("### 3. Paste the reply back for a ready-to-run bundle")
+st.markdown(
+    "You could copy the code out of claude.ai yourself — pasting it here "
+    "instead gets you a **zip that already contains stk_helpers.py**, the "
+    "pywin32 requirement and a README with the run steps, under a filename "
+    "you choose. That is the difference between a file that runs and a file "
+    "that raises `ImportError`."
+)
 pasted_reply = st.text_area(
-    "Paste Claude's reply back here",
+    "Paste the reply here",
     height=200,
     label_visibility="collapsed",
-    placeholder="Paste the full reply from claude.ai here, code block and all …",
+    placeholder="Paste the whole reply, or just the code block — either works.",
 )
 
-extract_col, _ = st.columns([1, 3])
-extract_btn = extract_col.button(
-    "Extract Script",
-    type="primary",
-    use_container_width=True,
-    disabled=not pasted_reply.strip(),
-)
-
-if extract_btn:
+# Extract as soon as there is something to extract; a separate button was one
+# more click that could only ever be pressed in one order.
+if pasted_reply.strip():
     st.session_state["stk_agent_script"] = _extract_code(pasted_reply.strip())
 
 script = st.session_state["stk_agent_script"]
