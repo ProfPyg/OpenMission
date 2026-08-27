@@ -15,12 +15,24 @@ imports it and calls its functions:
     import stk_helpers as stk
 
 You must NOT write raw `win32com.client` calls, and you must NEVER reference
-`win32com.client.constants`. That constants module is EMPTY when attaching to
-a running STK, so any `constants.eSatellite` / `constants.eOrbitStateClassical`
-lookup crashes with a bare AttributeError. If a task needs something the
-helper module does not expose, use `session.cmd("<STK Connect command>")` —
-Connect commands are plain text. Never invent an enum value or a numeric enum
-literal.
+`win32com.client.constants`. That constants module is empty when attaching to
+a running STK, so any `constants.eSatellite` lookup crashes.
+
+DO NOT INVENT CONNECT COMMANDS. If a helper exists for what you are doing,
+call it — even if you think it cannot handle your case. Reading the signature
+is enough: `new_facility(..., central_body="Moon")` builds a lunar site, and
+a hand-written `New / */CentralBody/Moon Facility X` is not real STK syntax
+and will abort the script. Guessed Connect syntax has been wrong far more
+often than right here: SetState, targeted pointing, graph creation, area
+targets, coverage grids and attitude profiles were ALL rejected in the form a
+reasonable person would guess, and each had to be measured against a real
+install.
+
+`session.cmd("<Connect command>")` exists for capabilities the module has no
+helper for at all. Use it knowing it will probably be rejected, and say so in
+a comment. If the request needs something the helpers do not cover, it is
+better to build what you can, print clearly what you could not do and why,
+and leave it out — than to guess a command and abort the whole script.
 
 ## Helper API
 
@@ -145,7 +157,12 @@ totals: that is data the helper computed, not an STK product.
   print each file's absolute path — do not build output paths yourself, and
   never hardcode a Windows username or an absolute path unless the user gave
   one.
-- Print a short progress line per object created, and a summary at the end.
+- For a mission away from Earth, call `session.focus_on_scenario_body()`
+  once the objects exist, so the 3D view opens on the body the mission is
+  about rather than Earth. (STK 11's 2D map cannot be moved; the helper says
+  so rather than failing.)
+- Print a short progress line per object created, and a summary at the end
+  naming the central body of each object.
 
 ## Spec gaps
 

@@ -728,19 +728,16 @@ class StkSession(object):
         path = self.unique_path("*/Satellite/%s" % name)
         actual = path.rsplit("/", 1)[-1]
 
-        if central_body:
-            # Connect's New command takes an optional CentralBody keyword.
-            # Fall back to a plain New (scenario central body) if the
-            # installed STK build rejects it, so the script still runs.
-            created = self.cmd("New / */Satellite %s CentralBody %s" % (actual, central_body),
-                               label="create satellite on %s" % central_body, fatal=False)
-            if not created:
-                self.cmd("New / */Satellite %s" % actual, label="create satellite")
-                sys.stderr.write(
-                    "[warn] central body '%s' not applied to %s; satellite uses the "
-                    "scenario central body.\n" % (central_body, actual))
-        else:
+        # ALWAYS name the body: Connect reuses the last one used when it is
+        # omitted, which is how an Earth ground station ended up on the Moon.
+        body = central_body or "Earth"
+        created = self.cmd("New / */Satellite %s CentralBody %s" % (actual, body),
+                           label="create satellite on %s" % body, fatal=False)
+        if not created:
             self.cmd("New / */Satellite %s" % actual, label="create satellite")
+            sys.stderr.write(
+                "[warn] central body '%s' not applied to %s; it will use "
+                "whatever body STK defaults to.\n" % (body, actual))
 
         self._set_classical_state(
             path, propagator=propagator, start=start, stop=stop,
@@ -748,6 +745,7 @@ class StkSession(object):
             sma_km=sma_km, ecc=ecc, inc_deg=inc_deg,
             arg_perigee_deg=arg_perigee_deg, raan_deg=raan_deg,
             true_anomaly_deg=true_anomaly_deg)
+        self._assert_central_body(path, body)
         return path
 
     #: Single-satellite argument names that a caller may reasonably pass to
@@ -1622,12 +1620,10 @@ class StkSession(object):
         """
         path = self.unique_path("*/AreaTarget/%s" % name)
         actual = path.rsplit("/", 1)[-1]
-        command = "New / */AreaTarget %s" % actual
-        if central_body:
-            self.cmd("%s CentralBody %s" % (command, central_body), fatal=False) or \
-                self.cmd(command, label="create area target")
-        else:
-            self.cmd(command, label="create area target")
+        body = central_body or "Earth"
+        if not self.cmd("New / */AreaTarget %s CentralBody %s" % (actual, body),
+                        fatal=False):
+            self.cmd("New / */AreaTarget %s" % actual, label="create area target")
         points = [(float(lat), float(lon)) for lat, lon in boundary]
         if len(points) < 3:
             raise StkError("an area target needs at least 3 boundary points")
@@ -1847,20 +1843,65 @@ class StkSession(object):
         return out_file
 
     # -- ground assets ------------------------------------------------------
+    def central_body_of(self, path):
+        """The central body STK says an object is on, or None."""
+        for getter in ("CentralBodyName", "CentralBody"):
+            try:
+                value = getattr(self.obj(path), getter)
+                text = str(value).strip()
+                if text and not text.startswith("<"):
+                    return text
+            except Exception:
+                continue
+        try:
+            return str(self.root.ExecuteCommand("GetCentralBody %s" % path).Item(0)).strip()
+        except Exception:
+            return None
+
+    def _assert_central_body(self, path, expected):
+        """Fail loudly if an object landed on the wrong body.
+
+        STK's Connect "New" carries the LAST central body used forward when
+        none is given. A scenario that created a lunar site and then a ground
+        station without saying "Earth" put the ground station on the Moon --
+        while the script printed "central body: Earth", because it reported
+        what it asked for rather than what STK built. Everything downstream
+        (access, chains) was then quietly wrong.
+        """
+        actual = self.central_body_of(path)
+        if actual and expected and actual.lower() != str(expected).lower():
+            raise StkError(
+                "%s was created on %s, but %s was requested. STK carries the "
+                "previous central body forward when one is not specified, so "
+                "this is usually a leftover from an earlier object."
+                % (path, actual, expected))
+        return actual
+
     def new_facility(self, name, lat_deg, lon_deg, alt_km=0.0, central_body=None):
-        """Create a ground facility at a geodetic position. Altitude in km."""
+        """Create a surface site at a geodetic position. Altitude in km.
+
+        Works on ANY central body, not just Earth: pass
+        ``central_body="Moon"`` for a lunar landing site or station. Verified
+        on STK 11 -- Facility, Place and Target all accept a non-Earth body.
+        Do NOT hand-write a Connect command for this; there is no
+        "New / */CentralBody/Moon Facility ..." syntax and STK will reject it.
+
+        Leaving central_body out puts the coordinates on EARTH, which is how
+        a Mare Crisium landing site once ended up in the Arabian Sea.
+        """
         path = self.unique_path("*/Facility/%s" % name)
         actual = path.rsplit("/", 1)[-1]
-        if central_body:
-            created = self.cmd("New / */Facility %s CentralBody %s" % (actual, central_body),
-                               label="create facility on %s" % central_body, fatal=False)
-            if not created:
-                self.cmd("New / */Facility %s" % actual, label="create facility")
-        else:
+        # ALWAYS name the body. Omitting it lets STK reuse whatever body was
+        # last used, which silently put an Earth ground station on the Moon.
+        body = central_body or "Earth"
+        created = self.cmd("New / */Facility %s CentralBody %s" % (actual, body),
+                           label="create facility on %s" % body, fatal=False)
+        if not created:
             self.cmd("New / */Facility %s" % actual, label="create facility")
         self.cmd("SetPosition %s Geodetic %.9f %.9f %.9f"
                  % (path, float(lat_deg), float(lon_deg), float(alt_km)),
                  label="facility position")
+        self._assert_central_body(path, body)
         return path
 
     def new_planet(self, name):
@@ -2151,6 +2192,34 @@ class StkSession(object):
             return self.open_report(fom_path, style)
         return self.export_report(fom_path, style,
                                   time_step_sec=time_step_sec or 3600)
+
+    def chain_report(self, chain_path, style=None, display=True,
+                     time_step_sec=None):
+        """Report a chain's results, discovering a workable style.
+
+        Chain style names are not guessable -- "Complete Chain" is rejected;
+        the real name is "Complete Chain Access". With ``style`` omitted this
+        picks the first available style that reports access.
+        """
+        available = self.report_styles(self._object_type(chain_path))
+        if style is None:
+            for wanted in ("complete chain access", "complete chain", "access",
+                           "strand access", "link information"):
+                matches = [s for s in available if wanted in s.lower()]
+                if matches:
+                    style = matches[0]
+                    break
+            if style is None and available:
+                style = available[0]
+            if style is None:
+                raise StkError("No Chain report styles found. List them with "
+                               'session.report_styles("Chain").')
+            print("[info] chain style not given; using %r (available: %s)"
+                  % (style, ", ".join(available[:6])))
+        if display:
+            return self.open_report(chain_path, style)
+        return self.export_report(chain_path, style,
+                                  time_step_sec=time_step_sec or 60)
 
     def open_access_report(self, from_path, to_path):
         """Open STK's access report window for one object pair."""

@@ -273,6 +273,21 @@ def _assert_pass_list(session, sat_path, gs_path):
     return path
 
 
+def _assert_body_not_sticky(session):
+    """Earth objects must not inherit a previous object's central body."""
+    lunar = session.new_facility("StickyLunar", 0.0, 20.0, 0.0, central_body="Moon")
+    earthly = session.new_facility("StickyEarth", -35.4, 148.98, 0.6)
+    lunar_body = session.central_body_of(lunar)
+    earth_body = session.central_body_of(earthly)
+    print("        lunar site -> %s ; Earth site created next -> %s"
+          % (lunar_body, earth_body))
+    if not earth_body or earth_body.lower() != "earth":
+        raise AssertionError(
+            "a facility created without a central body landed on %s, not Earth "
+            "-- STK carried the previous body forward" % earth_body)
+    return earth_body
+
+
 def main():
     print("=" * 68)
     print("stk_helpers smoke test")
@@ -479,6 +494,15 @@ def main():
         results.check("per-pass CSV lists every pass",
                       lambda: _assert_pass_list(session, sat, roi),
                       requires={"satellite": sat, "area target": roi})
+
+        # REGRESSION: STK carries the last-used central body forward when
+        # "New" does not name one. A scenario that created a lunar site and
+        # then an Earth ground station put the ground station on the Moon,
+        # while the script printed "Earth". Create one of each, in that
+        # order, and check where they actually landed.
+        results.check(
+            "an Earth facility created after a lunar one stays on Earth",
+            lambda: _assert_body_not_sticky(session))
 
         # --- STK reports and graphs ---------------------------------------
         results.check("report styles are discoverable",
