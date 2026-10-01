@@ -57,7 +57,7 @@ def score(mission, findings):
         elif "expect" in chk:
             ok = abs(val - chk["expect"]) <= chk["tol"]
         else:
-            ok = val >= chk.get("min", float("-inf"))
+            ok = chk.get("min", float("-inf")) <= val <= chk.get("max", float("inf"))
         results.append({"check": chk, "metric": hit, "value": val, "ok": ok})
     if mission.get("expect_issue"):
         issues = " ".join(i.get("what", "") + " " + i.get("why", "")

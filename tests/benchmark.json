@@ -20,7 +20,9 @@
     {
       "name": "lunar_shackleton",
       "prompt": "A 150 kg satellite in a 100 km circular orbit around the Moon at 86 deg inclination, starting 12 June 2030, with a nadir camera of 1 deg x 1 deg. Over 7 days, how many access passes does the camera get over Shackleton crater (89.54 S, 129.78 E)? Report the number of passes.",
-      "checks": [{"match": ["pass"], "min": 1}]
+      "_why": "Known answer: an 86 deg orbit's track reaches ~86.6 S, ~105 km from Shackleton, while a 1 deg camera at 100 km sees ~1.7 km -> ZERO camera passes, but the satellite itself has line of sight many times. The agent must report both and explain.",
+      "checks": [{"match": ["camera", "pass"], "max": 0},
+                 {"match": ["line", "sight"], "min": 1}]
     },
     {
       "name": "sensor_elevation_trap",

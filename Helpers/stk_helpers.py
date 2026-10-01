@@ -1107,7 +1107,7 @@ class StkSession(object):
     def new_satellite(self, name, sma_km, inc_deg, raan_deg,
                       ecc=0.0, arg_perigee_deg=0.0, true_anomaly_deg=0.0,
                       propagator="J2Perturbation", start=None, stop=None,
-                      step_sec=60.0, coord_system="J2000", epoch=None,
+                      step_sec=60.0, coord_system=None, epoch=None,
                       central_body=None):
         """Create a satellite and set its classical orbit in one step.
 
@@ -1142,6 +1142,11 @@ class StkSession(object):
         # ALWAYS name the body: Connect reuses the last one used when it is
         # omitted, which is how an Earth ground station ended up on the Moon.
         body = central_body or "Earth"
+        # MEASURED (benchmark lunar_shackleton): with J2000 an "86 deg" lunar
+        # orbit is inclined to EARTH's equator -- its track reached only 62 S.
+        # Away from Earth the elements must be in the body's own inertial frame.
+        if coord_system is None:
+            coord_system = "J2000" if body.lower() == "earth" else "Inertial"
         created = self.cmd("New / */Satellite %s CentralBody %s" % (actual, body),
                            label="create satellite on %s" % body, fatal=False)
         if not created:
