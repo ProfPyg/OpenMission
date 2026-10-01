@@ -4864,10 +4864,91 @@ class StkSession(object):
                 out.append(d)
         return out
 
+    def search(self, name, candidates, build, score, objectives, budget_s=140.0,
+               state_file=None):
+        """THE trade-study recipe -- one engine for every regime.
+
+        The agent decides WHAT to try and HOW to judge it; this engine does the
+        rest the same way every time: builds each candidate in STK, scores it,
+        removes it, saves progress, resumes, and returns the Pareto front.
+
+        ``candidates``  list of plain dicts (any keys: altitude, planes, slot,
+                        antenna size, burn time...). Use candidate_grid,
+                        repeat_ground_track_altitudes and refine_candidates,
+                        or build the list yourself.
+        ``build(cand)`` creates the design in STK, returns the list of object
+                        paths it created (they are unloaded afterwards).
+        ``score(cand, objects)``  returns {metric: number or None} read FROM STK
+                        (None = infeasible). Any metrics: revisit, service %,
+                        link margin, delta-v, fuel, cost...
+        ``objectives``  [(metric, "min" | "max"), ...] -- the Pareto front is
+                        taken over these (e.g. [("cost", "min"),
+                        ("worst_revisit_h", "min")]).
+
+        Chunked by ``budget_s`` and saved to ``state_file`` (JSON): call again
+        with the same arguments until done=True. Each step is a fresh process,
+        so define build/score again in every call -- same code, same results.
+        Returns {"done", "evaluated", "remaining", "results", "pareto",
+        "state_file"}.
+        """
+        import json, time
+        started = time.time()
+        state_file = state_file or os.path.join(self.output_dir(), "search_%s.json" % name)
+        state = {"results": []}
+        if os.path.exists(state_file):
+            with open(state_file, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+        key = lambda c: json.dumps(c, sort_keys=True, default=str)
+        seen = {key(r["candidate"]) for r in state["results"]}
+        for cand in [c for c in candidates if key(c) not in seen]:
+            if time.time() - started > float(budget_s):
+                break
+            row, objects = {"candidate": cand}, []
+            try:
+                objects = list(build(cand) or [])
+                row["metrics"] = dict(score(cand, objects) or {})
+            except Exception as exc:
+                row["error"] = str(exc)[:300]
+            finally:
+                for path in reversed(objects):
+                    if path and self.exists(path):
+                        self.cmd("Unload / %s" % path, label="remove candidate", fatal=False)
+            state["results"].append(row)
+            seen.add(key(cand))
+            with open(state_file, "w", encoding="utf-8") as handle:
+                json.dump(state, handle, indent=1, default=str)
+            print("[search] %d: %s -> %s" % (len(state["results"]), cand,
+                                             row.get("metrics", row.get("error"))))
+
+        def value(r, m):
+            v = r.get("metrics", {}).get(m)
+            return None if v is None else float(v)
+        feasible = [r for r in state["results"]
+                    if all(value(r, m) is not None for m, _ in objectives)]
+
+        def better_or_equal(a, b):           # a at least as good as b on every objective
+            return all((value(a, m) <= value(b, m)) if d == "min" else (value(a, m) >= value(b, m))
+                       for m, d in objectives)
+        pareto = [r for r in feasible
+                  if not any(o is not r and better_or_equal(o, r) and
+                             any(value(o, m) != value(r, m) for m, _ in objectives)
+                             for o in feasible)]
+        first, direction = objectives[0]
+        pareto.sort(key=lambda r: value(r, first) * (1 if direction == "min" else -1))
+        remaining = len([c for c in candidates if key(c) not in seen])
+        return {"done": remaining == 0, "evaluated": len(state["results"]),
+                "remaining": remaining, "results": state["results"],
+                "pareto": pareto, "state_file": state_file}
+
     def trade_study(self, name, candidates, regions=(), box=None, resolution_deg=2.0,
                     sensor_half_angle_deg=30.0, budget_s=140.0, state_file=None,
                     plane_cost=2.0, mission="eo", min_elevation_deg=10.0):
-        """Search constellation architectures and score each one in STK.
+        """A ready-made PRESET of :meth:`search` for Walker constellations over a
+        region (imaging or comms). For anything else -- GEO slots, HEO, single
+        satellites, ground networks, link or manoeuvre trades -- call
+        :meth:`search` with your own build/score.
+
+        Search constellation architectures and score each one in STK.
 
         ``candidates``  list of dicts (see :meth:`candidate_grid`): altitude_km,
                         inclination (deg or "sso"), total_sats, planes, phase_f,
