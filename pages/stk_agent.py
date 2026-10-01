@@ -236,7 +236,7 @@ with bar[2].popover("Guide"):
                 '<a href="https://www.solarsystemscope.com/textures/" target="_blank">Solar System Scope</a>, '
                 'CC BY 4.0, based on NASA data.</div>', unsafe_allow_html=True)
 with bar[3].popover("Settings"):
-    st.text_input("Anthropic API key", key="api_key", type="password",
+    st.text_input("Anthropic API key", key="api_key", type="password", autocomplete="off",
                   help="Saved only on this computer (.streamlit/secrets.toml, never in git).")
     if S.api_key and S.api_key != _saved_key() and st.button("Remember on this computer"):
         _remember_key(S.api_key)
