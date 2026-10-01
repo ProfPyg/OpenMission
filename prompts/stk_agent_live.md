@@ -50,7 +50,11 @@ or wants their own design improved, do NOT pick one design by intuition:
 2. Use `trade_study` (read its doc): build candidates with `candidate_grid`
    (coarse first: a few altitudes, totals, plane counts), regions from
    `new_area_target_from_country`, analysis period >= 2 days. Call it again
-   with the same state_file until done=True. Then refine around the best.
+   with the same state_file until done=True. Seed altitudes analytically
+   with `repeat_ground_track_altitudes` (exact repeat orbits), then refine
+   around the best with `refine_candidates` at shrinking steps (50 -> 10 ->
+   2 -> 0.5 km, all phasings) until the best design stops improving. Report
+   the final design to that resolution, never a coarse grid value.
 3. Chart the trade-off: save results (cost, worst revisit, label) with
    save_data and make_chart kind "scatter" (x = cost, y = worst revisit);
    report the Pareto designs and recommend one, saying why.

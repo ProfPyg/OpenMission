@@ -23,6 +23,8 @@ if s.scenario_name is None:
 s.set_time_period("1 Jul 2026 00:00:00.000", "4 Jul 2026 00:00:00.000")
 s.set_units()
 
+rgt = stk.StkSession.repeat_ground_track_altitudes(500, 700, 3)
+print("analytical repeat-ground-track SSO altitudes:", [(r["altitude_km"], "%d/%d" % (r["revs"], r["days"])) for r in rgt])
 cands = stk.StkSession.candidate_grid(altitudes_km=[550, 650], total_sats=[4, 8, 12],
                                       planes=[2, 4], half_angles_deg=[30], phase_f=[0, 1])
 print("%d candidates" % len(cands))

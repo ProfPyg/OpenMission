@@ -4790,6 +4790,80 @@ class StkSession(object):
                                             "planes": int(p), "phase_f": ff})
         return out
 
+    @staticmethod
+    def repeat_ground_track_altitudes(min_alt_km=400.0, max_alt_km=800.0, max_days=3,
+                                      inclination_deg="sso"):
+        """Altitudes where the ground track repeats exactly after ``days``
+        and ``revs`` orbits (circular orbit, J2 secular rates) -- solved, not
+        sampled, so they land on the exact altitude (sub-metre), not a grid.
+
+        A repeating track is the classic analytical seed for EO design: the
+        same places are re-visited on a fixed cycle. Returns a list of dicts
+        {altitude_km, inclination_deg, revs, days} sorted by altitude.
+        """
+        import math
+        mu, re, j2 = 398600.4418, EARTH_RADIUS_KM, 1.08262668e-3
+        we = 7.2921158553e-5
+        sso_rate = 2 * math.pi / (365.2422 * 86400.0)
+
+        def inc_for(a):
+            if str(inclination_deg).lower() != "sso":
+                return math.radians(float(inclination_deg))
+            n = math.sqrt(mu / a ** 3)
+            return math.acos(-sso_rate / (1.5 * n * j2 * (re / a) ** 2))
+
+        def mismatch(a, revs, days):
+            n = math.sqrt(mu / a ** 3)
+            i = inc_for(a)
+            k = j2 * (re / a) ** 2
+            node = -1.5 * n * k * math.cos(i)
+            arg_lat = n * (1 + 0.75 * k * (3 * math.cos(i) ** 2 - 1)) + \
+                0.75 * n * k * (5 * math.cos(i) ** 2 - 1)
+            nodal_period = 2 * math.pi / arg_lat
+            nodal_day = 2 * math.pi / (we - node)
+            return revs * nodal_period - days * nodal_day
+
+        out = []
+        lo_a, hi_a = re + float(min_alt_km), re + float(max_alt_km)
+        for days in range(1, int(max_days) + 1):
+            for revs in range(1, 20 * days):
+                if math.gcd(revs, days) != 1:
+                    continue
+                f_lo, f_hi = mismatch(lo_a, revs, days), mismatch(hi_a, revs, days)
+                if f_lo * f_hi > 0:
+                    continue
+                a, b = lo_a, hi_a
+                for _ in range(80):                       # bisection to ~mm
+                    m = 0.5 * (a + b)
+                    if mismatch(a, revs, days) * mismatch(m, revs, days) <= 0:
+                        b = m
+                    else:
+                        a = m
+                sma = 0.5 * (a + b)
+                out.append({"altitude_km": round(sma - re, 4),
+                            "inclination_deg": round(math.degrees(inc_for(sma)), 4),
+                            "revs": revs, "days": days})
+        return sorted(out, key=lambda r: r["altitude_km"])
+
+    @staticmethod
+    def refine_candidates(best, altitude_span_km, altitude_step_km, all_phasings=True):
+        """Candidates around a winning design for the next, finer search level:
+        altitudes best +- span at ``step`` (e.g. 50 -> 10 -> 2 -> 0.5 km), and
+        every Walker phasing 0..P-1. Feed them to trade_study with the SAME
+        state file; designs already scored are skipped automatically."""
+        c = dict(best["candidate"] if "candidate" in best else best)
+        alt0, p = float(c["altitude_km"]), int(c["planes"])
+        n = int(round(float(altitude_span_km) / float(altitude_step_km)))
+        alts = [round(alt0 + k * float(altitude_step_km), 4) for k in range(-n, n + 1)]
+        phases = range(p) if all_phasings else [int(c["phase_f"])]
+        out = []
+        for a in alts:
+            for f in phases:
+                d = dict(c)
+                d.update(altitude_km=a, phase_f=int(f))
+                out.append(d)
+        return out
+
     def trade_study(self, name, candidates, regions=(), box=None, resolution_deg=2.0,
                     sensor_half_angle_deg=30.0, budget_s=140.0, state_file=None,
                     plane_cost=2.0):
@@ -4820,7 +4894,12 @@ class StkSession(object):
         (23.7 h) was worse than 4 sats/2 planes (23.1 h), 6 planes worse than
         2 -- because Walker Delta spreads SSO planes over all local times and
         the phasing changes with T. Search phasing (phase_f) and plane count,
-        not only the total; never assume more satellites is better. Candidates that miss part of the region get
+        not only the total; never assume more satellites is better.
+
+        Search coarse-to-fine, not on a fixed grid: seed altitudes with
+        :meth:`repeat_ground_track_altitudes` (exact, analytical), run, then
+        :meth:`refine_candidates` around the best at 50 -> 10 -> 2 -> 0.5 km
+        steps with all phasings, until the best design stops improving. Candidates that miss part of the region get
         worst_revisit_h = None and never enter the Pareto front.
         """
         import json, time, math
