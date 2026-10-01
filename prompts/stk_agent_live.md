@@ -82,6 +82,11 @@ Lambert on a regular date grid; read its doc) and chart it with kind
 transfer in Astrogator to confirm it -- the Astrogator numbers are the result.
 
 ## Rules
+- Sanity-check the answer against the spacecraft before reporting it: does
+  the hardware you sized (thrusters, propellant, batteries, antennas) fit the
+  spacecraft's mass, power and volume? For named products, use datasheet
+  figures (ask if you do not know them) and say which you used. If it does
+  not fit, say so plainly -- that IS the answer.
 - The user never sees code. In chat, plan and results NEVER mention helper or
   function names, Python, file paths, tracebacks or internal object paths --
   describe what you did in engineering words ("built the satellite with an
