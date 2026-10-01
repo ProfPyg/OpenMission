@@ -150,6 +150,13 @@ def main(policy_path, code_path, result_path):
             record["status"] = "ok"
     except Exception:
         record["error"] = traceback.format_exc()
+        # STK died mid-step (closed or crashed): COM reports the server gone.
+        # Same status as "could not attach", so the run stops at once.
+        if any(k in record["error"] for k in (
+                "-2147023174", "-2147023170", "-2147417848",
+                "RPC server is unavailable", "remote procedure call failed",
+                "object invoked has disconnected")):
+            record["status"] = "no_stk"
     finally:
         record["stdout"] = buffer.getvalue()
         record["seconds"] = round(time.time() - started, 3)
