@@ -109,7 +109,35 @@ def build(spec, data):
     cols = data["columns"]
     kind = spec["kind"]
     fig = go.Figure()
-    if kind == "scatter" and spec.get("value"):
+    if kind == "contour":
+        # a value over a REGULAR 2-D grid, drawn as contour lines -- the
+        # porkchop plot (departure date x arrival date -> C3 / delta-v)
+        xs_raw, ys_raw, vs = cols[spec["x"]], cols[spec["y"][0] if spec.get("y") else "y"], cols[spec["value"]]
+        xu = sorted(set(xs_raw), key=lambda t: _as_time([t])[0] if isinstance(t, str) else t)
+        yu = sorted(set(ys_raw), key=lambda t: _as_time([t])[0] if isinstance(t, str) else t)
+        xi, yi = {v: i for i, v in enumerate(xu)}, {v: i for i, v in enumerate(yu)}
+        z = [[None] * len(xu) for _ in yu]
+        for xv, yv, vv in zip(xs_raw, ys_raw, vs):
+            z[yi[yv]][xi[xv]] = vv
+        vals = sorted(v for v in vs if v is not None)
+        cap = spec.get("value_max") or (vals[int(0.6 * (len(vals) - 1))] if vals else 1)
+        z = [[(v if v is not None and v <= cap else None) for v in row] for row in z]
+        lo = vals[0] if vals else 0
+        fig.add_contour(x=_as_time(xu), y=_as_time(yu), z=z, connectgaps=False,
+                        contours={"start": lo, "end": cap, "size": (cap - lo) / 14 or 1,
+                                  "coloring": "lines", "showlabels": True,
+                                  "labelfont": {"size": 9, "color": "#a39d8e"}},
+                        line={"width": 1.3}, showscale=True, showlegend=False,
+                        colorscale=[[0, "#f3e7c4"], [0.35, "#c7a574"], [0.7, "#6e7f4a"], [1, "#3a4128"]],
+                        colorbar={"title": spec.get("value_title") or spec["value"]})
+        if vals:
+            k = min(range(len(vs)), key=lambda n: vs[n] if vs[n] is not None else 1e99)
+            fig.add_scatter(x=_as_time([xs_raw[k]]), y=_as_time([ys_raw[k]]), mode="markers+text",
+                            text=["best %.2f" % vs[k]], textposition="top center", showlegend=False,
+                            textfont={"color": "#f6f1e6", "size": 11},
+                            marker={"symbol": "star", "size": 15, "color": "#f6f1e6",
+                                    "line": {"width": 1, "color": "#0b0d0c"}})
+    elif kind == "scatter" and spec.get("value"):
         # a value plotted as COLOUR over two variables -- e.g. a porkchop
         # (departure date x flight time -> C3) or cost vs revisit coloured by
         # altitude. Without the colour such a plot only shows where samples
@@ -119,7 +147,7 @@ def build(spec, data):
         v = cols[spec["value"]]
         pairs = [(i, val) for i, val in enumerate(v) if val is not None]
         lo, hi = (min(p[1] for p in pairs), max(p[1] for p in pairs)) if pairs else (0, 1)
-        fig.add_scatter(x=x, y=y, mode="markers", name=spec["value"],
+        fig.add_scatter(x=x, y=y, mode="markers", name=spec["value"], showlegend=False,
                         text=[str(val) for val in v],
                         hovertemplate="%{x}<br>%{y}<br>" + spec["value"] + " %{text}<extra></extra>",
                         marker={"color": v, "size": 8, "cmin": lo, "cmax": hi,

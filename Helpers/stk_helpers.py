@@ -214,6 +214,79 @@ class StkError(RuntimeError):
     """Raised for any STK interaction failure, with actionable context."""
 
 
+def lambert(r1, r2, tof, mu, prograde=True):
+    """Single-revolution Lambert problem (universal variables, Bate-Mueller-
+    White / Vallado), bisection on z -- robust, no derivatives.
+    Returns (v1, v2) in the units of r and tof. Raises ValueError if none.
+    Checked: a 179.9 deg Earth-Mars arc in the Hohmann time gives the
+    Hohmann departure delta-v to 2 mm/s."""
+    import math
+
+    def dot(a, b):
+        return sum(x * y for x, y in zip(a, b))
+
+    def norm(a):
+        return math.sqrt(dot(a, a))
+
+    m1, m2 = norm(r1), norm(r2)
+    d = math.acos(max(-1.0, min(1.0, dot(r1, r2) / (m1 * m2))))
+    cz = r1[0] * r2[1] - r1[1] * r2[0]
+    if (prograde and cz < 0) or (not prograde and cz >= 0):
+        d = 2 * math.pi - d
+    A = math.sin(d) * math.sqrt(m1 * m2 / (1 - math.cos(d)))
+    if abs(A) < 1e-12:
+        raise ValueError("degenerate transfer geometry (180 deg)")
+
+    def C(z):
+        if z > 1e-8:
+            return (1 - math.cos(math.sqrt(z))) / z
+        if z < -1e-8:
+            return (math.cosh(math.sqrt(-z)) - 1) / (-z)
+        return 0.5
+
+    def S(z):
+        if z > 1e-8:
+            s = math.sqrt(z)
+            return (s - math.sin(s)) / s ** 3
+        if z < -1e-8:
+            s = math.sqrt(-z)
+            return (math.sinh(s) - s) / s ** 3
+        return 1.0 / 6
+
+    def y(z):
+        return m1 + m2 + A * (z * S(z) - 1) / math.sqrt(C(z))
+
+    def t_of(z):
+        yy = y(z)
+        if yy < 0:
+            return None
+        return ((yy / C(z)) ** 1.5 * S(z) + A * math.sqrt(yy)) / math.sqrt(mu)
+
+    lo, hi = -4 * math.pi ** 2, 4 * math.pi ** 2 - 1e-6
+    while t_of(lo) is None:
+        lo += 0.1
+        if lo >= hi:
+            raise ValueError("no solution")
+    t_lo, t_hi = t_of(lo), t_of(hi)
+    if t_hi is None or not (t_lo <= tof <= t_hi):
+        raise ValueError("time of flight outside single-rev range")
+    for _ in range(200):
+        z = 0.5 * (lo + hi)
+        t = t_of(z)
+        if t is None or t < tof:
+            lo = z
+        else:
+            hi = z
+        if hi - lo < 1e-12:
+            break
+    z = 0.5 * (lo + hi)
+    yy = y(z)
+    f, g, gdot = 1 - yy / m1, A * math.sqrt(yy / mu), 1 - yy / m2
+    v1 = tuple((r2[i] - f * r1[i]) / g for i in range(3))
+    v2 = tuple((gdot * r2[i] - r1[i]) / g for i in range(3))
+    return v1, v2
+
+
 def altitude_to_sma(altitude_km: float, body_radius_km: float = EARTH_RADIUS_KM) -> float:
     """Circular-orbit semi-major axis for a given altitude above a body."""
     return body_radius_km + float(altitude_km)
@@ -4868,6 +4941,81 @@ class StkSession(object):
                 d.update(altitude_km=a, phase_f=int(f))
                 out.append(d)
         return out
+
+    # -- interplanetary: porkchop plots ----------------------------------------
+    #
+    # A porkchop needs thousands of transfers on a REGULAR date grid -- far too
+    # many to fly one by one in Astrogator (a 234-point Astrogator scan gave
+    # scattered dots, not a porkchop). Standard practice, used here: planet
+    # positions come from STK's own ephemerides (Analysis Workbench), each
+    # date pair is solved as a Lambert arc around the Sun, and the chosen
+    # transfer is then confirmed in Astrogator.
+
+    def planet_state(self, body, when, step_s=600.0):
+        """Heliocentric ICRF position (km) and velocity (km/s) of ``body`` at
+        ``when`` (UTCG), from STK's ephemeris. Velocity by central difference."""
+        cbs = self.root.CentralBodies
+        sun_icrf = cbs.Item("Sun").Vgt.Systems.Item("ICRF")
+        point = cbs.Item(body).Vgt.Points.Item("Center")
+
+        def pos(t):
+            p = point.LocateInSystem(t, sun_icrf).Position
+            xyz = p.Get() if hasattr(p, "Get") else (p.X, p.Y, p.Z)
+            return [float(v) for v in xyz]
+        r = pos(when)
+        a = pos(self._utcg_offset(when, -step_s))
+        b = pos(self._utcg_offset(when, step_s))
+        v = [(b[i] - a[i]) / (2 * step_s) for i in range(3)]
+        return r, v
+
+    def porkchop(self, origin, target, depart_start, depart_days, arrive_start,
+                 arrive_days, step_days=2.0, prograde=True):
+        """Porkchop grid: for every departure date x arrival date, the Lambert
+        transfer around the Sun between ``origin`` and ``target`` (STK
+        ephemerides). Returns {columns} with depart_utcg, arrive_utcg, tof_d,
+        c3_km2s2, vinf_dep_kms, vinf_arr_kms, dv_total_kms (= v_inf dep + arr,
+        the usual porkchop measure), plus "best" (min C3 row). Save it with
+        save_data and chart it with make_chart kind "contour" (x depart_utcg,
+        y arrive_utcg, value c3_km2s2). Confirm the chosen transfer in
+        Astrogator afterwards."""
+        import math
+        mu_sun = 1.32712440018e11
+        ndep = int(depart_days / step_days) + 1
+        narr = int(arrive_days / step_days) + 1
+        deps = [self._utcg_offset(depart_start, k * step_days * 86400.0) for k in range(ndep)]
+        arrs = [self._utcg_offset(arrive_start, k * step_days * 86400.0) for k in range(narr)]
+        so = {t: self.planet_state(origin, t) for t in deps}
+        st_ = {t: self.planet_state(target, t) for t in arrs}
+        cols = {k: [] for k in ("depart_utcg", "arrive_utcg", "tof_d", "c3_km2s2",
+                                "vinf_dep_kms", "vinf_arr_kms", "dv_total_kms")}
+        best = None
+        for i, td in enumerate(deps):
+            for j, ta in enumerate(arrs):
+                tof = ((j * step_days) - (i * step_days)) * 86400.0 + self._utcg_diff_s(depart_start, arrive_start)
+                if tof < 30 * 86400.0:
+                    continue
+                (r1, ve), (r2, vm) = so[td], st_[ta]
+                try:
+                    v1, v2 = lambert(r1, r2, tof, mu_sun, prograde)
+                except ValueError:
+                    continue
+                vd = math.sqrt(sum((v1[k] - ve[k]) ** 2 for k in range(3)))
+                va = math.sqrt(sum((v2[k] - vm[k]) ** 2 for k in range(3)))
+                row = (td, ta, round(tof / 86400.0, 3), vd * vd, vd, va, vd + va)
+                for key, val in zip(cols, row):
+                    cols[key].append(val)
+                if best is None or row[3] < best[3]:
+                    best = row
+        return {"columns": cols,
+                "best": dict(zip(cols, best)) if best else None,
+                "grid": "%d departures x %d arrivals, %.1f-day step" % (ndep, narr, step_days)}
+
+    def _utcg_diff_s(self, t0, t1):
+        """Seconds from UTCG t0 to t1, using STK's own date conversion."""
+        conv = self.root.ConversionUtility
+        a = float(conv.ConvertDate("UTCG", "EpSec", t0))
+        b = float(conv.ConvertDate("UTCG", "EpSec", t1))
+        return b - a
 
     def search(self, name, candidates, build, score, objectives, budget_s=140.0,
                state_file=None):

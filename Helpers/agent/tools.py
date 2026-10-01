@@ -84,15 +84,17 @@ TOOLS = [
             "coastlines; other bodies get a lat/lon grid. Add targets to mark "
             "sites. No 3D views: the user has STK's own 3D window. 'scatter' with a "
             "'value' column colours each point by that value and stars the best "
-            "('best': min|max) -- use it for porkchops (x = departure DATE as UTCG, "
-            "y = flight time, value = C3) and trade studies; a scatter without value "
+            "('best': min|max) -- use it for trade studies. 'contour' draws a value over a "
+            "regular 2-D grid as contour lines with the best starred: THE porkchop "
+            "chart (x = depart_utcg, y = arrive_utcg, value = c3_km2s2 or "
+            "dv_total_kms, from the porkchop helper; optional value_max caps it); a scatter without value "
             "only shows where samples were taken."),
         "input_schema": {
             "type": "object",
             "properties": {
                 "dataset": {"type": "string"},
                 "kind": {"type": "string",
-                         "enum": ["line", "scatter", "bar", "timeline", "elements",
+                         "enum": ["line", "scatter", "bar", "timeline", "elements", "contour",
                                   "ground_track", "map_heat"]},
                 "body": {"type": "string", "description": "Central body for maps: Earth, Moon, Mars..."},
                 "targets": {"type": "array", "items": {"type": "object", "properties": {
@@ -103,7 +105,7 @@ TOOLS = [
                 "x": {"type": "string"}, "y": {"type": "array", "items": {"type": "string"}},
                 "lat": {"type": "string"}, "lon": {"type": "string"},
                 "value": {"type": "string"}, "z": {"type": "string"},
-                "value_title": {"type": "string"}, "best": {"type": "string", "enum": ["min", "max"]},
+                "value_title": {"type": "string"}, "value_max": {"type": "number"}, "best": {"type": "string", "enum": ["min", "max"]},
                 "start": {"type": "string"}, "stop": {"type": "string"},
                 "label": {"type": "string"},
                 "x_title": {"type": "string"}, "y_title": {"type": "string"},

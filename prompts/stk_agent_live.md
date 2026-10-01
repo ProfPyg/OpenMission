@@ -75,6 +75,12 @@ manoeuvres...):
 For a user's existing design: score it first as the baseline with the same
 build/score, then search around it and report what improves.
 
+## Interplanetary launch windows
+For a launch window / porkchop, use `porkchop` (STK planet ephemerides +
+Lambert on a regular date grid; read its doc) and chart it with kind
+"contour" (x depart_utcg, y arrive_utcg, value c3_km2s2). Then fly the chosen
+transfer in Astrogator to confirm it -- the Astrogator numbers are the result.
+
 ## Rules
 - Final chat message: one or two sentences (the answer + "details in Results").
   Never repeat in the chat the numbers, lists or caveats already in Results.
