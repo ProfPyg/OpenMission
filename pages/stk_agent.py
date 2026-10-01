@@ -240,8 +240,22 @@ with bar[1].popover("Missions"):
     if not listed:
         st.caption("No missions yet.")
     for mid, title, usd in listed[:20]:
-        if st.button(title, key="pm_" + mid, use_container_width=True):
+        c_name, c_bin = st.columns([5, 1], vertical_alignment="center", gap="small")
+        if c_name.button(title, key="pm_" + mid, use_container_width=True):
             _open_mission(mid); st.rerun()
+        asking = S.get("confirm_del") == "pm" + mid
+        with c_bin.container(key="bin_" + ("ask_" if asking else "") + "pm" + mid):
+            if st.button("Delete?" if asking else "🗑", key="pdel_" + mid,
+                         help="Click again to delete for good" if asking else "Delete this mission"):
+                current = S.get("mission") or {}
+                if not asking:
+                    S.confirm_del = "pm" + mid
+                elif not (_busy() and mid == current.get("id")):
+                    missions.delete(mid)
+                    S.confirm_del = None
+                    if mid == current.get("id"):
+                        S.mission = S.agent = None
+                st.rerun()
 with bar[2].popover("Guide"):
     st.markdown(
         "**How it works**\n\n"
