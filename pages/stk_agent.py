@@ -37,10 +37,15 @@ SECRETS = ROOT / ".streamlit" / "secrets.toml"      # git-ignored; stays on this
 
 
 def _saved_key():
-    try:
-        return str(st.secrets.get("ANTHROPIC_API_KEY", ""))
-    except Exception:                 # no secrets file yet
+    """Read the file directly: touching st.secrets when no file exists makes
+    Streamlit print a 'No secrets found' banner on the page."""
+    if not SECRETS.exists():
         return ""
+    for line in SECRETS.read_text(encoding="utf-8").splitlines():
+        k, _, v = line.partition("=")
+        if k.strip() == "ANTHROPIC_API_KEY":
+            return v.strip().strip('"').strip("'")
+    return ""
 
 
 def _remember_key(key):
