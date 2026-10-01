@@ -82,6 +82,10 @@ Lambert on a regular date grid; read its doc) and chart it with kind
 transfer in Astrogator to confirm it -- the Astrogator numbers are the result.
 
 ## Rules
+- The user never sees code. In chat, plan and results NEVER mention helper or
+  function names, Python, file paths, tracebacks or internal object paths --
+  describe what you did in engineering words ("built the satellite with an
+  HPOP propagator", not "new_satellite(...)").
 - Final chat message: one or two sentences (the answer + "details in Results").
   Never repeat in the chat the numbers, lists or caveats already in Results.
 - Vague go-aheads ("fix it", "ok", "do it") after you listed several issues:

@@ -36,6 +36,22 @@ S = st.session_state
 SECRETS = ROOT / ".streamlit" / "secrets.toml"      # git-ignored; stays on this computer
 
 
+def _plain_reason(text):
+    """One plain sentence from a failed step -- no code, paths or tracebacks.
+    Internals stay internal; the full detail is in the developer view."""
+    lines = [l.strip() for l in str(text).splitlines() if l.strip()]
+    for l in lines:
+        if "Error:" in l and not l.startswith("File "):
+            msg = l.split("Error:", 1)[1].strip()
+            break
+    else:
+        msg = "STK did not accept this step; the agent adjusted and continued."
+    msg = re.sub(r"[A-Za-z]:\\[^ ]+|/[\w./-]+\.py|\*/[\w/]+", "", msg)
+    msg = re.sub(r"\b\w+\(\)", "", msg).strip(" .:;")
+    msg = re.sub(r"\s+(on|in|for|to|at)$", "", msg)
+    return (msg[:160] + "…") if len(msg) > 160 else (msg or "STK did not accept this step; the agent adjusted and continued.")
+
+
 def _saved_key():
     """Read the file directly: touching st.secrets when no file exists makes
     Streamlit print a 'No secrets found' banner on the page."""
@@ -261,7 +277,8 @@ with bar[3].popover("Settings"):
     if saved:
         st.markdown('<div class="pr-dlg-small">Saved on this computer ✓</div>', unsafe_allow_html=True)
     st.selectbox("Model", list(MODELS), key="model", format_func=lambda k: MODELS[k]["label"])
-    st.toggle("Moving background", key="motion")     # bound by key: one click = one change
+    st.toggle("Moving background", key="motion")
+    st.toggle("Developer details (code in the process log)", key="dev_mode")     # bound by key: one click = one change
     if st.button("Re-check STK"):
         S.probe = StkLink(WORK_DIR).probe(); st.rerun()
 WATCH_S = 30        # STK / licence watchdog period
@@ -508,10 +525,16 @@ with chat:
         lines = []
         for i, e in enumerate(steps, 1):
             t, color = tag.get(e.get("status"), (str(e.get("status")).upper(), "var(--dim)"))
-            lines.append('<div class="pr-logline"><span style="color:%s">%s</span>%d · %s</div>'
-                         % (color, t, i, html.escape(e.get("purpose") or "")))
+            reason = ""
+            if e.get("status") not in ("ok", "running") and e.get("output"):
+                reason = _plain_reason(e["output"])
+            lines.append('<div class="pr-logline"><span style="color:%s">%s</span>%d · %s%s</div>'
+                         % (color, t, i, html.escape(e.get("purpose") or ""),
+                            ('<br><small style="color:var(--dim);margin-left:64px">%s</small>'
+                             % html.escape(reason)) if reason else ""))
         st.markdown("".join(lines) or "No steps yet.", unsafe_allow_html=True)
-        if steps:
+        if steps and S.get("dev_mode"):
+            # developer view only: code and raw output are internal
             k = st.selectbox("Inspect a step", range(1, len(steps) + 1),
                              format_func=lambda n: "%d · %s" % (n, steps[n - 1].get("purpose")))
             e = steps[k - 1]
