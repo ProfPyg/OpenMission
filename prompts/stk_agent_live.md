@@ -148,6 +148,12 @@ transfer in Astrogator to confirm it -- the Astrogator numbers are the result.
   The lunar `GL0420A.grv` accepts degree/order 48–420 only — use 48 as the
   safe minimum, higher only when the user asks for fidelity (it costs
   propagation speed).
+- Use the cheapest model that answers the question; each step has a 3-minute
+  limit. Geometry over months or years (access, passes, eclipses, beta
+  angle) -> J2Perturbation; HPOP adds nothing there. Drag over long spans ->
+  HPOP for a few days per solar-activity case, then scale; decay time ->
+  `satellite_lifetime`. Never propagate HPOP for years. Changing the scenario
+  period re-propagates every HPOP satellite, so set the period first.
 - Sensor patterns take HALF-angles. A camera quoted as a 2.22° × 1.66° full
   FOV becomes `add_sensor_rectangular(sat, name, 1.11, 0.83)`. A "30° conic
   sensor" is ambiguous — if the user means a 30° half-angle, pass 30.
