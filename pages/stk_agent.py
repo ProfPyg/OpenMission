@@ -33,9 +33,27 @@ st.set_page_config(page_title="Pronoia", page_icon=str(ROOT / "assets" / "pronoi
                    layout="wide", initial_sidebar_state="collapsed")
 
 S = st.session_state
+SECRETS = ROOT / ".streamlit" / "secrets.toml"      # git-ignored; stays on this computer
+
+
+def _saved_key():
+    try:
+        return str(st.secrets.get("ANTHROPIC_API_KEY", ""))
+    except Exception:                 # no secrets file yet
+        return ""
+
+
+def _remember_key(key):
+    """Store the key in .streamlit/secrets.toml (local only, never in git)."""
+    lines = []
+    if SECRETS.exists():
+        lines = [l for l in SECRETS.read_text(encoding="utf-8").splitlines()
+                 if not l.strip().startswith("ANTHROPIC_API_KEY")]
+    lines.append('ANTHROPIC_API_KEY = "%s"' % key.strip().replace('"', ""))
+    SECRETS.write_text("\n".join(lines) + "\n", encoding="utf-8")
 for key, value in {"probe": None, "mission": None, "agent": None, "allow_open": False,
                    "motion": True, "model": DEFAULT_MODEL,
-                   "api_key": os.environ.get("ANTHROPIC_API_KEY", "")}.items():
+                   "api_key": os.environ.get("ANTHROPIC_API_KEY", "") or _saved_key()}.items():
     S.setdefault(key, value)
 
 WORK_DIR = str(ROOT / "missions" / "_steps")
@@ -214,7 +232,10 @@ with bar[2].popover("Guide"):
                 'CC BY 4.0, based on NASA data.</div>', unsafe_allow_html=True)
 with bar[3].popover("Settings"):
     st.text_input("Anthropic API key", key="api_key", type="password",
-                              help="Kept in memory only. Or set ANTHROPIC_API_KEY.")
+                  help="Saved only on this computer (.streamlit/secrets.toml, never in git).")
+    if S.api_key and S.api_key != _saved_key() and st.button("Remember on this computer"):
+        _remember_key(S.api_key)
+        st.success("Saved. You won't be asked again on this computer.")
     st.selectbox("Model", list(MODELS), key="model", format_func=lambda k: MODELS[k]["label"])
     st.toggle("Moving background", key="motion")     # bound by key: one click = one change
     if st.button("Re-check STK"):
