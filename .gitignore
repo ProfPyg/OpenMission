@@ -41,3 +41,24 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
+
+# STK scratch output
+Helpers/stk_output/
+Helpers/output/
+
+# Trainer (bridge) run-time files: jobs, results, logs
+Helpers/bridge/jobs/
+Helpers/bridge/results/
+Helpers/bridge/done/
+Helpers/bridge/held/
+Helpers/bridge/heartbeat.json
+Helpers/bridge/log.jsonl
+Helpers/bridge/_ping_result*
+
+# Source video (the app uses static/bg.webm)
+assets/*.mp4
+
+missions/
+
+# Cowork scratch
+Claude outputs/

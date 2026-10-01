@@ -1,0 +1,9 @@
+# Pass prediction (archived, not part of Pronoia). Run from this folder:
+#   pip install -r requirements.txt
+#   streamlit run pass_prediction.py
+streamlit==1.43.0
+numpy
+pandas
+plotly
+skyfield
+sgp4

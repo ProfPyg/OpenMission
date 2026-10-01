@@ -1,0 +1,487 @@
+{
+ "kind": "Radar",
+ "path": "*/Satellite/CensusSatellite/Radar/CensusRadar",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Constraints",
+   "type": 1
+  },
+  {
+   "name": "All Constraints",
+   "type": 1
+  },
+  {
+   "name": "Angles",
+   "type": 2,
+   "groups": [
+    "Sun"
+   ]
+  },
+  {
+   "name": "Antenna Gain",
+   "type": 1
+  },
+  {
+   "name": "Antenna Properties",
+   "type": 1
+  },
+  {
+   "name": "Available Times",
+   "type": 4
+  },
+  {
+   "name": "Axes Choose Axes",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICRF",
+    "J2000",
+    "Earth Fixed",
+    "Parent Body Axes"
+   ]
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "type": 4,
+   "groups": [
+    "LightingIntervals"
+   ]
+  },
+  {
+   "name": "Condition",
+   "type": 2,
+   "groups": [
+    "AfterStart",
+    "BeforeStop"
+   ]
+  },
+  {
+   "name": "Condition Set",
+   "type": 2,
+   "groups": [
+    "HoursAfterStart",
+    "HoursBeforeStop"
+   ]
+  },
+  {
+   "name": "Crdn Available Times",
+   "type": 4
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Interval",
+   "type": 4,
+   "groups": [
+    "AvailabilityTimeSpan"
+   ]
+  },
+  {
+   "name": "Interval List",
+   "type": 4,
+   "groups": [
+    "AvailabilityIntervals"
+   ]
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "type": 2,
+   "groups": [
+    "Attitude(Fixed)",
+    "Attitude(ICRF)",
+    "Attitude(Parent)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Cartographic Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(Cartographic)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Orbit",
+   "type": 2
+  },
+  {
+   "name": "Parameter Set: Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(CBF)",
+    "Trajectory(CBI)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "type": 2
+  },
+  {
+   "name": "Planes Choose System",
+   "type": 2
+  },
+  {
+   "name": "Planes(Fixed)",
+   "type": 2
+  },
+  {
+   "name": "Planes(ICRF)",
+   "type": 2
+  },
+  {
+   "name": "Planes(Inertial)",
+   "type": 2
+  },
+  {
+   "name": "Planes(J2000)",
+   "type": 2
+  },
+  {
+   "name": "Points Choose Plane",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Points Choose System",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(Fixed)",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(ICRF)",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(Inertial)",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(J2000)",
+   "type": 2,
+   "groups": [
+    "BoresightIntersection",
+    "BoresightIntersection(Terrain)",
+    "Center"
+   ]
+  },
+  {
+   "name": "Radar Spectrum and Filter",
+   "type": 1
+  },
+  {
+   "name": "Refraction Settings",
+   "type": 1
+  },
+  {
+   "name": "SAR Properties",
+   "type": 1
+  },
+  {
+   "name": "Scalar Calculations",
+   "type": 2,
+   "groups": [
+    "ElapsedTimeFromStart",
+    "ElapsedTimeFromStop"
+   ]
+  },
+  {
+   "name": "SearchTrack Properties",
+   "type": 1
+  },
+  {
+   "name": "System Properties",
+   "type": 1
+  },
+  {
+   "name": "Time Array",
+   "type": 4,
+   "groups": [
+    "OneMinuteSampleTimes"
+   ]
+  },
+  {
+   "name": "Time Instant",
+   "type": 4,
+   "groups": [
+    "AvailabilityStartTime",
+    "AvailabilityStopTime"
+   ]
+  },
+  {
+   "name": "User Supplied Data",
+   "type": 2
+  },
+  {
+   "name": "Vector Choose Axes",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "type": 2,
+   "groups": [
+    "Boresight",
+    "CensusAircraft",
+    "CensusAreaTarget",
+    "CensusFacility",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusLineTarget",
+    "CensusMissile",
+    "CensusPlace",
+    "CensusPlanet",
+    "CensusShip",
+    "CensusTarget",
+    "Moonlight",
+    "Sun",
+    "Sunlight",
+    "Up"
+   ]
+  }
+ ],
+ "report_styles": [
+  "Active Constraints",
+  "Antenna Gain",
+  "Antenna GainMatrix",
+  "Antenna Properties",
+  "DeckAccess",
+  "DeckAccessCommonName",
+  "SAR Properties",
+  "SearchTrack Properties",
+  "System Properties"
+ ]
+}

@@ -1,0 +1,832 @@
+{
+ "transmitter_models": [
+  "Complex Re-Transmitter Model",
+  "Complex Transmitter Model",
+  "GPS Satellite Transmitter Model",
+  "Laser Transmitter Model",
+  "Medium Re-Transmitter Model",
+  "Medium Transmitter Model",
+  "Multibeam Transmitter Model",
+  "Script Plugin Laser Transmitter Model",
+  "Script Plugin RF Transmitter Model",
+  "Simple Re-Transmitter Model",
+  "Simple Transmitter Model"
+ ],
+ "receiver_models": [
+  "Cable Receiver Model",
+  "Complex Receiver Model",
+  "Laser Receiver Model",
+  "Medium Receiver Model",
+  "Multibeam Receiver Model",
+  "Script Plugin Laser Receiver Model",
+  "Script Plugin RF Receiver Model",
+  "Simple Receiver Model"
+ ],
+ "antenna_models": [
+  "Antenna Script",
+  "Bessel Aperture Circular",
+  "Bessel Envelope Aperture Circular",
+  "Cosecant Squared",
+  "Cosine Aperture Circular",
+  "Cosine Aperture Rectangular",
+  "Cosine Pedestal Aperture Circular",
+  "Cosine Pedestal Aperture Rectangular",
+  "Cosine Squared Aperture Circular",
+  "Cosine Squared Aperture Rectangular",
+  "Cosine Squared Pedestal Aperture Circular",
+  "Cosine Squared Pedestal Aperture Rectangular",
+  "Dipole",
+  "Elevation Azimuth Cuts",
+  "External Antenna Pattern",
+  "GIMROC Antenna Pattern",
+  "GPS FRPA",
+  "GPS Global",
+  "Gaussian",
+  "Gaussian Optical",
+  "Helix",
+  "Hemispherical",
+  "IEEE 1979",
+  "ITU-R BO1213 Co-Polar",
+  "ITU-R BO1213 Cross-Polar",
+  "ITU-R F1245-1",
+  "ITU-R S1528 1.2 Circular",
+  "ITU-R S1528 1.2 Rectangular",
+  "ITU-R S1528 1.3",
+  "ITU-R S465-5",
+  "ITU-R S580-5",
+  "ITU-R S672-4 Circular",
+  "ITU-R S672-4 Rectangular",
+  "ITU-R S731",
+  "IntelSat Antenna Pattern",
+  "Isotropic",
+  "Parabolic",
+  "Pencil Beam",
+  "Phased Array",
+  "Rectangular Pattern",
+  "Simple Optical",
+  "Sinc Integer Power Aperture Circular",
+  "Sinc Integer Power Aperture Rectangular",
+  "Sinc Real Power Aperture Circular",
+  "Sinc Real Power Aperture Rectangular",
+  "Square Horn",
+  "Uniform Aperture Circular",
+  "Uniform Aperture Rectangular"
+ ],
+ "tx_embedded_antennas": [
+  "Antenna Script",
+  "Bessel Aperture Circular",
+  "Bessel Envelope Aperture Circular",
+  "Cosecant Squared",
+  "Cosine Aperture Circular",
+  "Cosine Aperture Rectangular",
+  "Cosine Pedestal Aperture Circular",
+  "Cosine Pedestal Aperture Rectangular",
+  "Cosine Squared Aperture Circular",
+  "Cosine Squared Aperture Rectangular",
+  "Cosine Squared Pedestal Aperture Circular",
+  "Cosine Squared Pedestal Aperture Rectangular",
+  "Dipole",
+  "Elevation Azimuth Cuts",
+  "External Antenna Pattern",
+  "GIMROC Antenna Pattern",
+  "GPS FRPA",
+  "GPS Global",
+  "Gaussian",
+  "Helix",
+  "Hemispherical",
+  "IEEE 1979",
+  "ITU-R BO1213 Co-Polar",
+  "ITU-R BO1213 Cross-Polar",
+  "ITU-R F1245-1",
+  "ITU-R S1528 1.2 Circular",
+  "ITU-R S1528 1.2 Rectangular",
+  "ITU-R S1528 1.3",
+  "ITU-R S465-5",
+  "ITU-R S580-5",
+  "ITU-R S672-4 Circular",
+  "ITU-R S672-4 Rectangular",
+  "ITU-R S731",
+  "IntelSat Antenna Pattern",
+  "Isotropic",
+  "Parabolic",
+  "Pencil Beam",
+  "Phased Array",
+  "Rectangular Pattern",
+  "Sinc Integer Power Aperture Circular",
+  "Sinc Integer Power Aperture Rectangular",
+  "Sinc Real Power Aperture Circular",
+  "Sinc Real Power Aperture Rectangular",
+  "Square Horn",
+  "Uniform Aperture Circular",
+  "Uniform Aperture Rectangular"
+ ],
+ "tx_modulators": [
+  "16PSK",
+  "8PSK",
+  "BOC",
+  "BPSK",
+  "BPSK-BCH-127-64",
+  "BPSK-BCH-255-123",
+  "BPSK-BCH-511-259",
+  "BPSK-BCH-63-30",
+  "BPSK-Conv-2-1-6",
+  "BPSK-Conv-2-1-8",
+  "BPSK-Conv-3-1-6",
+  "BPSK-Conv-3-2-6",
+  "BPSK-Conv-3-2-8",
+  "BPSK-Conv-4-3-6",
+  "BPSK-Conv-4-3-8",
+  "DPSK",
+  "External",
+  "FSK",
+  "MSK",
+  "NFSK",
+  "NFSK-BCH-127-92",
+  "NFSK-BCH-255-191",
+  "NFSK-BCH-511-385",
+  "NFSK-BCH-63-45",
+  "Narrowband Uniform",
+  "OQPSK",
+  "Pulsed Signal",
+  "QAM1024",
+  "QAM128",
+  "QAM16",
+  "QAM256",
+  "QAM32",
+  "QAM64",
+  "QPSK",
+  "Script - Custom PSD",
+  "Script - Ideal PSD",
+  "Wideband Gaussian",
+  "Wideband Uniform"
+ ],
+ "tx_filters": [
+  "Bessel",
+  "Butterworth",
+  "Chebyshev",
+  "Cosine Window",
+  "Elliptic",
+  "External",
+  "FIR",
+  "FIR Box Car",
+  "Gaussian Window",
+  "Hamming Window",
+  "IIR",
+  "RC Low-Pass",
+  "Raised Cosine",
+  "Rectangular",
+  "Root Raised Cosine",
+  "Script",
+  "Sinc",
+  "Sinc Envelope Sinc"
+ ],
+ "rx_demodulators": [
+  "16PSK",
+  "8PSK",
+  "BOC",
+  "BPSK",
+  "BPSK-BCH-127-64",
+  "BPSK-BCH-255-123",
+  "BPSK-BCH-511-259",
+  "BPSK-BCH-63-30",
+  "BPSK-Conv-2-1-6",
+  "BPSK-Conv-2-1-8",
+  "BPSK-Conv-3-1-6",
+  "BPSK-Conv-3-2-6",
+  "BPSK-Conv-3-2-8",
+  "BPSK-Conv-4-3-6",
+  "BPSK-Conv-4-3-8",
+  "DPSK",
+  "External",
+  "FSK",
+  "MSK",
+  "NFSK",
+  "NFSK-BCH-127-92",
+  "NFSK-BCH-255-191",
+  "NFSK-BCH-511-385",
+  "NFSK-BCH-63-45",
+  "Narrowband Uniform",
+  "OQPSK",
+  "Pulsed Signal",
+  "QAM1024",
+  "QAM128",
+  "QAM16",
+  "QAM256",
+  "QAM32",
+  "QAM64",
+  "QPSK",
+  "Script",
+  "Wideband Gaussian",
+  "Wideband Uniform"
+ ],
+ "rx_rain_outage_percent": [
+  "0.001",
+  "0.002",
+  "0.003",
+  "0.004",
+  "0.005",
+  "0.006",
+  "0.007",
+  "0.008",
+  "0.009",
+  "0.01",
+  "0.02",
+  "0.03",
+  "0.04",
+  "0.05",
+  "0.06",
+  "0.07",
+  "0.08",
+  "0.09",
+  "0.1",
+  "0.2",
+  "0.3",
+  "0.4",
+  "0.5",
+  "0.6",
+  "0.7",
+  "0.8",
+  "0.9",
+  "1.0",
+  "2.0",
+  "3.0",
+  "4.0",
+  "5.0"
+ ],
+ "rain_models": [
+  "Crane 1985",
+  "ITU-R P618-12",
+  "Script Plugin",
+  "CCIR 1983",
+  "Crane 1982",
+  "ITU-R P618-10",
+  "ITU-R P618-5",
+  "ITU-R P618-8",
+  "ITU-R P618-9"
+ ],
+ "atmos_models": [
+  "ITU-R P676-9",
+  "Script Plugin",
+  "Simple Satcom",
+  "ITU-R P676-3",
+  "ITU-R P676-5"
+ ],
+ "access_providers": [
+  {
+   "name": "AER Data",
+   "kind": "time-varying",
+   "groups": [
+    "Default",
+    "VVLH CBI",
+    "VVLH CBF",
+    "BodyFixed",
+    "NorthEastDown"
+   ]
+  },
+  {
+   "name": "Access Data",
+   "kind": "interval"
+  },
+  {
+   "name": "Access Gaps",
+   "kind": "interval"
+  },
+  {
+   "name": "Access Intervals by Constraint",
+   "kind": "fixed"
+  },
+  {
+   "name": "Access Intervals by Time",
+   "kind": "fixed"
+  },
+  {
+   "name": "Access Schedule",
+   "kind": "interval"
+  },
+  {
+   "name": "Active Constraints",
+   "kind": "fixed"
+  },
+  {
+   "name": "All Boundary Access",
+   "kind": "interval"
+  },
+  {
+   "name": "Allowed Times",
+   "kind": "interval"
+  },
+  {
+   "name": "Angles",
+   "kind": "time-varying",
+   "groups": [
+    "FromObjectBodyElevation",
+    "ToObjectBodyElevation"
+   ]
+  },
+  {
+   "name": "Area Collection Angle",
+   "kind": "interval"
+  },
+  {
+   "name": "Axes Choose Axes",
+   "kind": "time-varying",
+   "groups": [
+    "FromObjectBody",
+    "ToObjectBody"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Boundary Minimum Range",
+   "kind": "interval"
+  },
+  {
+   "name": "Boundary Point Access",
+   "kind": "interval"
+  },
+  {
+   "name": "Boundary Target Data",
+   "kind": "interval"
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "kind": "interval",
+   "groups": [
+    "ConstraintIntervals"
+   ]
+  },
+  {
+   "name": "Condition",
+   "kind": "time-varying",
+   "groups": [
+    "AfterAccessStart",
+    "BeforeAccessStop"
+   ]
+  },
+  {
+   "name": "Condition Set",
+   "kind": "time-varying",
+   "groups": [
+    "HoursAfterAccessStart",
+    "HoursBeforeAccessStop"
+   ]
+  },
+  {
+   "name": "Configuration",
+   "kind": "fixed"
+  },
+  {
+   "name": "Considered Times",
+   "kind": "interval"
+  },
+  {
+   "name": "Constraint Data",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Constraint Sample Stats",
+   "kind": "fixed"
+  },
+  {
+   "name": "Constraint Samples",
+   "kind": "fixed"
+  },
+  {
+   "name": "Crdn Available Times",
+   "kind": "interval"
+  },
+  {
+   "name": "Event Times",
+   "kind": "interval",
+   "groups": [
+    "Default",
+    "VVLH CBI",
+    "VVLH CBF",
+    "BodyFixed",
+    "NorthEastDown"
+   ]
+  },
+  {
+   "name": "From Position Velocity",
+   "kind": "time-varying",
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000",
+    "Body"
+   ]
+  },
+  {
+   "name": "Interval",
+   "kind": "interval",
+   "groups": [
+    "AccessTimeSpan",
+    "ConsideredTimeSpan"
+   ]
+  },
+  {
+   "name": "Interval List",
+   "kind": "interval",
+   "groups": [
+    "AccessIntervals",
+    "AllowedIntervals",
+    "ConsideredIntervals"
+   ]
+  },
+  {
+   "name": "LLA Grazing Point",
+   "kind": "time-varying"
+  },
+  {
+   "name": "LLR Grazing Point",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Link Information",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Cartographic Trajectory",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Comm Link Information",
+   "kind": "time-varying",
+   "groups": [
+    "CommLinkInformation"
+   ]
+  },
+  {
+   "name": "Parameter Set: Orbit",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Antenna",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Environment",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Geometry",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Ground Reflection Point",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar SAR",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Search Track",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Radar Target RCS",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Trajectory",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-AER(Body)",
+    "To-From-AER(Body)"
+   ]
+  },
+  {
+   "name": "Planes Choose System",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Planes(Fixed)",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Planes(ICRF)",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Planes(Inertial)",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Planes(J2000)",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Points Choose Plane",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Points Choose System",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Points(Fixed)",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Points(ICRF)",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Points(Inertial)",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Points(J2000)",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "FromObject(Apparent)",
+    "ToObject",
+    "ToObject(Apparent)"
+   ]
+  },
+  {
+   "name": "Radar Antenna",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar Environment",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar Geometry",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar Multipath",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar RCS",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar SAR",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Radar SearchTrack",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Refraction",
+   "kind": "time-varying",
+   "groups": [
+    "FromObject",
+    "ToObject"
+   ]
+  },
+  {
+   "name": "Rel Position Velocity",
+   "kind": "time-varying",
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000",
+    "Body"
+   ]
+  },
+  {
+   "name": "Sat Angles Data",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Scalar Calculations",
+   "kind": "time-varying",
+   "groups": [
+    "ElapsedTimeFromAccessStart",
+    "ElapsedTimeFromAccessStop"
+   ]
+  },
+  {
+   "name": "Sensor Based Angles",
+   "kind": "time-varying",
+   "groups": [
+    "BodyFixed"
+   ]
+  },
+  {
+   "name": "Targeting Data",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Time Array",
+   "kind": "interval",
+   "groups": [
+    "ConstraintSampleTimes"
+   ]
+  },
+  {
+   "name": "Time Instant",
+   "kind": "interval",
+   "groups": [
+    "AccessStartTime",
+    "AccessStopTime",
+    "ConsideredStartTime",
+    "ConsideredStopTime"
+   ]
+  },
+  {
+   "name": "To Position Velocity",
+   "kind": "time-varying",
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000",
+    "Body"
+   ]
+  },
+  {
+   "name": "Vector Choose Axes",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "kind": "time-varying"
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "kind": "time-varying",
+   "groups": [
+    "From-To-RelPos",
+    "From-To-RelVel",
+    "To-From-RelPos",
+    "To-From-RelVel"
+   ]
+  }
+ ],
+ "access_report_styles": [
+  "AER",
+  "AERSummary",
+  "AOS",
+  "Access",
+  "Access Configuration",
+  "Access Detailed",
+  "Access Intervals by Constraint",
+  "Access Intervals by Time",
+  "Access Violated Constraints",
+  "Access-IFT",
+  "AccessSummary",
+  "Angular Rates",
+  "Gaps",
+  "GapsSummary",
+  "LOS",
+  "Link Budget",
+  "Link Budget - BER",
+  "Link Budget - Detailed",
+  "Radar Advanced Model",
+  "Radar Antenna",
+  "Radar Environment",
+  "Radar Geometry",
+  "Radar Multipath",
+  "Radar RCS",
+  "Radar SAR",
+  "Radar SAR with Jamming",
+  "Radar SearchTrack",
+  "Radar SearchTrack with Jamming",
+  "Range Rate",
+  "SchedulePlus-Outlook",
+  "Timex Data Link"
+ ]
+}

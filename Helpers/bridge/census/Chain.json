@@ -1,0 +1,158 @@
+{
+ "kind": "Chain",
+ "path": "*/Chain/CensusChain",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Access AER Data",
+   "type": 2
+  },
+  {
+   "name": "Access Data",
+   "type": 4
+  },
+  {
+   "name": "Angle Between",
+   "type": 2,
+   "groups": [
+    "Granularity Determined",
+    "Three Points Minimum"
+   ]
+  },
+  {
+   "name": "Base Object Data",
+   "type": 2
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "type": 4,
+   "groups": [
+    "ObjectAccessIntervals",
+    "StrandAccessIntervals"
+   ]
+  },
+  {
+   "name": "Complete Access",
+   "type": 4
+  },
+  {
+   "name": "Complete Cost Access",
+   "type": 4
+  },
+  {
+   "name": "Cost Data",
+   "type": 2
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Definition",
+   "type": 1
+  },
+  {
+   "name": "ESD Data",
+   "type": 4
+  },
+  {
+   "name": "Event Angle Between",
+   "type": 4,
+   "groups": [
+    "AOS",
+    "LOS"
+   ]
+  },
+  {
+   "name": "Event Data",
+   "type": 4,
+   "groups": [
+    "AOS",
+    "LOS",
+    "TME",
+    "TCA"
+   ]
+  },
+  {
+   "name": "Interval",
+   "type": 4,
+   "groups": [
+    "CompleteChainAccessTimeSpan",
+    "ConsideredTimeSpan"
+   ]
+  },
+  {
+   "name": "Interval List",
+   "type": 4,
+   "groups": [
+    "CompleteChainAccessIntervals"
+   ]
+  },
+  {
+   "name": "Link Information",
+   "type": 2
+  },
+  {
+   "name": "Object Access",
+   "type": 4
+  },
+  {
+   "name": "Range Data",
+   "type": 2
+  },
+  {
+   "name": "Strand Access",
+   "type": 4
+  },
+  {
+   "name": "Strand Cost Access",
+   "type": 4
+  },
+  {
+   "name": "Strand Link Overlap",
+   "type": 4
+  },
+  {
+   "name": "TCA Ephemeris Data",
+   "type": 4
+  },
+  {
+   "name": "Time Array",
+   "type": 4,
+   "groups": [
+    "OneMinuteSampleTimes"
+   ]
+  },
+  {
+   "name": "Time Instant",
+   "type": 4,
+   "groups": [
+    "CompleteChainAccessStartTime",
+    "CompleteChainAccessStopTime",
+    "ConsideredStartTime",
+    "ConsideredStopTime"
+   ]
+  },
+  {
+   "name": "Time Ordered Access",
+   "type": 4
+  }
+ ],
+ "report_styles": [
+  "Access AER",
+  "Access Data",
+  "Angle Between",
+  "Base Object Data",
+  "Bent Pipe Comm Link",
+  "Complete Chain Access",
+  "Digital Repeater Comm Link",
+  "Event Data",
+  "Individual Object Access",
+  "Individual Strand Access",
+  "Time Ordered Access"
+ ]
+}

@@ -1,0 +1,477 @@
+{
+ "kind": "Planet",
+ "path": "*/Planet/CensusPlanet",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Constraints",
+   "type": 1
+  },
+  {
+   "name": "All Constraints",
+   "type": 1
+  },
+  {
+   "name": "Angles",
+   "type": 2,
+   "groups": [
+    "EarthRA",
+    "SunRA"
+   ]
+  },
+  {
+   "name": "Apparent Cartesian Position",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Apparent Cartesian Velocity",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Apparent Heliocentric Cartesian Position",
+   "type": 2
+  },
+  {
+   "name": "Apparent Heliocentric Cartesian Velocity",
+   "type": 2
+  },
+  {
+   "name": "Apparent Heliocentric Classical Elements",
+   "type": 2
+  },
+  {
+   "name": "Apparent LLA State",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "Apparent LLR State",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Available Times",
+   "type": 4
+  },
+  {
+   "name": "Axes Choose Axes",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "J2000",
+    "MeanEclpDate",
+    "MeanEclpJ2000"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "type": 2
+  },
+  {
+   "name": "Cartesian Position",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Velocity",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "type": 4
+  },
+  {
+   "name": "Condition",
+   "type": 2,
+   "groups": [
+    "AfterStart",
+    "BeforeStop"
+   ]
+  },
+  {
+   "name": "Condition Set",
+   "type": 2,
+   "groups": [
+    "HoursAfterStart",
+    "HoursBeforeStop"
+   ]
+  },
+  {
+   "name": "Crdn Available Times",
+   "type": 4
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Heliocentric Cartesian Position",
+   "type": 2
+  },
+  {
+   "name": "Heliocentric Cartesian Velocity",
+   "type": 2
+  },
+  {
+   "name": "Heliocentric Classical Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "J2000_Ecliptic",
+    "TrueEclipticOfDate",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Interval",
+   "type": 4
+  },
+  {
+   "name": "Interval List",
+   "type": 4
+  },
+  {
+   "name": "LLA State",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "LLR State",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "type": 2,
+   "groups": [
+    "Attitude(ICRF)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Cartographic Trajectory",
+   "type": 2
+  },
+  {
+   "name": "Parameter Set: Orbit",
+   "type": 2,
+   "groups": [
+    "Orbit"
+   ]
+  },
+  {
+   "name": "Parameter Set: Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(CBI)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "type": 2
+  },
+  {
+   "name": "Planes Choose System",
+   "type": 2,
+   "groups": [
+    "MeanEquator2000"
+   ]
+  },
+  {
+   "name": "Planes(Fixed)",
+   "type": 2,
+   "groups": [
+    "MeanEquator2000"
+   ]
+  },
+  {
+   "name": "Planes(ICRF)",
+   "type": 2,
+   "groups": [
+    "MeanEquator2000"
+   ]
+  },
+  {
+   "name": "Planes(Inertial)",
+   "type": 2,
+   "groups": [
+    "MeanEquator2000"
+   ]
+  },
+  {
+   "name": "Planes(J2000)",
+   "type": 2,
+   "groups": [
+    "MeanEquator2000"
+   ]
+  },
+  {
+   "name": "Points Choose Plane",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Points Choose System",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(Fixed)",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(ICRF)",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(Inertial)",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Points(J2000)",
+   "type": 2,
+   "groups": [
+    "Center"
+   ]
+  },
+  {
+   "name": "Scalar Calculations",
+   "type": 2,
+   "groups": [
+    "ElapsedTimeFromStart",
+    "ElapsedTimeFromStop"
+   ]
+  },
+  {
+   "name": "Time Array",
+   "type": 4
+  },
+  {
+   "name": "Time Instant",
+   "type": 4
+  },
+  {
+   "name": "User Supplied Data",
+   "type": 2
+  },
+  {
+   "name": "Vector Choose Axes",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "type": 2
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "type": 2,
+   "groups": [
+    "Earth",
+    "Earth(True)",
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Sun",
+    "Sun(True)"
+   ]
+  }
+ ],
+ "report_styles": [
+  "Active Constraints",
+  "Apparent ECF LLR Position",
+  "Apparent ECF Position Velocity",
+  "Apparent Helio Classical Elements",
+  "Apparent Helio Position Velocity",
+  "Apparent J2000 Position Velocity",
+  "Apparent LLA Position",
+  "ECF LLR Position",
+  "ECF Position Velocity",
+  "Helio Classical Elements",
+  "Helio Position Velocity",
+  "J2000 Position Velocity",
+  "LLA Position"
+ ]
+}

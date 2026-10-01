@@ -1,0 +1,2 @@
+Planet and Moon textures in this folder: Solar System Scope (https://www.solarsystemscope.com/textures/),
+licensed CC BY 4.0, based on NASA elevation and imagery data. Attribution required.

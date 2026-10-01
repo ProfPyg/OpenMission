@@ -1,0 +1,178 @@
+{
+ "kind": "Star",
+ "path": "*/Star/CensusStar",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Constraints",
+   "type": 1
+  },
+  {
+   "name": "All Constraints",
+   "type": 1
+  },
+  {
+   "name": "Angles",
+   "type": 2,
+   "groups": [
+    "RA"
+   ]
+  },
+  {
+   "name": "Astrometric Data",
+   "type": 1
+  },
+  {
+   "name": "Available Times",
+   "type": 4
+  },
+  {
+   "name": "Axes Choose Axes",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "J2000",
+    "MeanEclpDate",
+    "MeanEclpJ2000"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "type": 2
+  },
+  {
+   "name": "Crdn Available Times",
+   "type": 4
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "J2000 Cartesian Position",
+   "type": 2
+  },
+  {
+   "name": "J2000 Position",
+   "type": 2
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "type": 2
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "type": 2
+  },
+  {
+   "name": "Physical Data",
+   "type": 1
+  },
+  {
+   "name": "Scalar Calculations",
+   "type": 2
+  },
+  {
+   "name": "User Supplied Data",
+   "type": 2
+  },
+  {
+   "name": "Vector Choose Axes",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "type": 2
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "type": 2,
+   "groups": [
+    "EclipticNormal",
+    "ICRF-X",
+    "ICRF-Z",
+    "Location"
+   ]
+  }
+ ],
+ "report_styles": [
+  "Active Constraints",
+  "Astrometric Data",
+  "J2000 Cartesian Position",
+  "J2000 Position"
+ ]
+}

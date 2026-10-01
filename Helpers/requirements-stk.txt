@@ -9,3 +9,4 @@
 #
 # STK itself must also be installed and licensed on that machine.
 pywin32>=306
+anthropic>=0.60

@@ -1,0 +1,61 @@
+{
+ "kind": "Volumetric",
+ "path": "*/Volumetric/CensusVolumetric",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Grid Points at Time",
+   "type": 1
+  },
+  {
+   "name": "Gap Duration",
+   "type": 1
+  },
+  {
+   "name": "Grid Definition",
+   "type": 1
+  },
+  {
+   "name": "Grid Points",
+   "type": 1
+  },
+  {
+   "name": "Satisfaction Duration",
+   "type": 1
+  },
+  {
+   "name": "Satisfaction Volume",
+   "type": 2
+  },
+  {
+   "name": "Selected Point Probability of Satisfaction",
+   "type": 1
+  },
+  {
+   "name": "Selected Point Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Selected Point Value",
+   "type": 2
+  },
+  {
+   "name": "Volumetric Definition",
+   "type": 1
+  },
+  {
+   "name": "Volumetric Values at Time",
+   "type": 1
+  }
+ ],
+ "report_styles": [
+  "Active Grid Points At Time",
+  "Gap Duration",
+  "Grid Points",
+  "Satisfaction Duration",
+  "Satisfaction Volume",
+  "Selected Point Probability of Satisfaction",
+  "Selected Point Value",
+  "Volumetric Values At Time"
+ ]
+}

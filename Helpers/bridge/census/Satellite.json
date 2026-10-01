@@ -1,0 +1,2694 @@
+{
+ "kind": "Satellite",
+ "path": "*/Satellite/CensusSatellite",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Constraints",
+   "type": 1
+  },
+  {
+   "name": "All Constraints",
+   "type": 1
+  },
+  {
+   "name": "Angles",
+   "type": 2,
+   "groups": [
+    "SEET_GeomagneticDeclination",
+    "SEET_GeomagneticInclination",
+    "SunMoon",
+    "VelocityAzimuth",
+    "VertFlightPath"
+   ]
+  },
+  {
+   "name": "Articulation",
+   "type": 1
+  },
+  {
+   "name": "Astrogator Log",
+   "type": 1
+  },
+  {
+   "name": "Astrogator MCS Ephemeris Segments",
+   "type": 4
+  },
+  {
+   "name": "Astrogator Maneuver Ephemeris Block Final",
+   "type": 1024,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Astrogator Maneuver Ephemeris Block History",
+   "type": 2,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Astrogator Maneuver Ephemeris Block Initial",
+   "type": 1024,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Astrogator Pass Data",
+   "type": 2,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Astrogator Script Summary",
+   "type": 1
+  },
+  {
+   "name": "Astrogator Targeter Data",
+   "type": 2
+  },
+  {
+   "name": "Astrogator Values",
+   "type": 2,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Attitude Quaternions",
+   "type": 2
+  },
+  {
+   "name": "Attitude Segment Description",
+   "type": 1
+  },
+  {
+   "name": "Attitude Segment ECF Quaternions",
+   "type": 2
+  },
+  {
+   "name": "Attitude Segment Euler Angles",
+   "type": 2,
+   "groups": [
+    "Seq 121",
+    "Seq 123",
+    "Seq 131",
+    "Seq 132",
+    "Seq 212",
+    "Seq 213",
+    "Seq 231",
+    "Seq 232",
+    "Seq 312",
+    "Seq 313",
+    "Seq 321",
+    "Seq 323"
+   ]
+  },
+  {
+   "name": "Attitude Segment Quaternions",
+   "type": 2
+  },
+  {
+   "name": "Attitude Segment Schedule",
+   "type": 4
+  },
+  {
+   "name": "Attitude Segment YPR",
+   "type": 2,
+   "groups": [
+    "Seq RPY",
+    "Seq RYP",
+    "Seq PRY",
+    "Seq PYR",
+    "Seq YRP",
+    "Seq YPR"
+   ]
+  },
+  {
+   "name": "Attitude YPR",
+   "type": 2,
+   "groups": [
+    "Seq RPY",
+    "Seq RYP",
+    "Seq PRY",
+    "Seq PYR",
+    "Seq YRP",
+    "Seq YPR"
+   ]
+  },
+  {
+   "name": "Available Times",
+   "type": 4
+  },
+  {
+   "name": "Axes Choose Axes",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)"
+   ]
+  },
+  {
+   "name": "Beta Angle",
+   "type": 2
+  },
+  {
+   "name": "Body Axes Orientation",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "LVLH(Earth)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "Principal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "SEET_GeocentricSolarMagnetic",
+    "SEET_Geomagnetic",
+    "SEET_SolarMagnetic",
+    "TopoCentric",
+    "TrueOfOrbitEpoch",
+    "VNC",
+    "VNC(CBF)",
+    "VNC(Earth)",
+    "VNC(Mars)",
+    "VNC(Moon)",
+    "VNC(Sun)",
+    "VNC(Venus)",
+    "VVLH",
+    "VVLH(CBF)",
+    "VVLH(Earth)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Brouwer-Lyd Mean Long",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Brouwer-Lyd Mean Short",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Acceleration",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Position",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Velocity",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Classical Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Close Approach Compute Results",
+   "type": 1
+  },
+  {
+   "name": "Close Approach Definition",
+   "type": 1
+  },
+  {
+   "name": "Close Approach Filter Settings",
+   "type": 1
+  },
+  {
+   "name": "CloseApproach",
+   "type": 4
+  },
+  {
+   "name": "CloseApproachByMinRange",
+   "type": 4
+  },
+  {
+   "name": "CloseApproachBySSC",
+   "type": 4
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "type": 4,
+   "groups": [
+    "LightingIntervals"
+   ]
+  },
+  {
+   "name": "Condition",
+   "type": 2,
+   "groups": [
+    "AboveAscendingNode",
+    "AfterStart",
+    "BeforeStop",
+    "BelowDescendingNode"
+   ]
+  },
+  {
+   "name": "Condition Set",
+   "type": 2,
+   "groups": [
+    "HoursAfterStart",
+    "HoursBeforeStop"
+   ]
+  },
+  {
+   "name": "Crdn Available Times",
+   "type": 4
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "DeckAccess",
+   "type": 4
+  },
+  {
+   "name": "DeckAccess Data",
+   "type": 4,
+   "groups": [
+    "Access Interval",
+    "Start Time LocalHorizontal Geometry",
+    "Stop Time LocalHorizontal Geometry",
+    "Start Time CBFVVLH Geometry",
+    "Stop Time CBFVVLH Geometry",
+    "Start Time CBIVVLH Geometry",
+    "Stop Time CBIVVLH Geometry",
+    "Start Time BodyFixed Geometry",
+    "Stop Time BodyFixed Geometry",
+    "Start Time Source CBF Location",
+    "Stop Time Source CBF Location",
+    "Start Time Target CBF Location",
+    "Stop Time Target CBF Location",
+    "Start Time Source CBI Location",
+    "Stop Time Source CBI Location",
+    "Start Time Target CBI Location",
+    "Stop Time Target CBI Location"
+   ]
+  },
+  {
+   "name": "Delaunay Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "ECF Attitude Quaternions",
+   "type": 2
+  },
+  {
+   "name": "Eclipse Definition",
+   "type": 1
+  },
+  {
+   "name": "Eclipse Solar Intensity",
+   "type": 2
+  },
+  {
+   "name": "Eclipse Summary",
+   "type": 4
+  },
+  {
+   "name": "Eclipse Times",
+   "type": 4
+  },
+  {
+   "name": "Ecliptic Crossings",
+   "type": 1024,
+   "groups": [
+    "J2000 Ecliptic",
+    "Mean Ecliptic of Date",
+    "True Ecliptic of Date"
+   ]
+  },
+  {
+   "name": "Element Set",
+   "type": 1
+  },
+  {
+   "name": "Ephemeris Diff",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Ephemeris Diff in Curvilinear Coordinates",
+   "type": 2
+  },
+  {
+   "name": "Equinoctial Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Euler Angles",
+   "type": 2,
+   "groups": [
+    "Seq 121",
+    "Seq 123",
+    "Seq 131",
+    "Seq 132",
+    "Seq 212",
+    "Seq 213",
+    "Seq 231",
+    "Seq 232",
+    "Seq 312",
+    "Seq 313",
+    "Seq 321",
+    "Seq 323"
+   ]
+  },
+  {
+   "name": "Gravity Model",
+   "type": 1
+  },
+  {
+   "name": "Ground Ellipse Definition",
+   "type": 1
+  },
+  {
+   "name": "Heading",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "IIRV User Input",
+   "type": 1
+  },
+  {
+   "name": "Interval",
+   "type": 4,
+   "groups": [
+    "AvailabilityTimeSpan",
+    "EphemerisTimeSpan"
+   ]
+  },
+  {
+   "name": "Interval List",
+   "type": 4,
+   "groups": [
+    "AttitudeIntervals",
+    "AvailabilityIntervals",
+    "PassIntervals"
+   ]
+  },
+  {
+   "name": "Kozai-Izsak Mean",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "LLA State",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "LLR State",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "LOP Mean Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "LaserCAT Clear Firing",
+   "type": 4
+  },
+  {
+   "name": "LaserCAT General Information",
+   "type": 1
+  },
+  {
+   "name": "LaserCAT Potential Victim",
+   "type": 4
+  },
+  {
+   "name": "LaserCAT Status Information",
+   "type": 1
+  },
+  {
+   "name": "Launch Window Definition",
+   "type": 1
+  },
+  {
+   "name": "Lifetime",
+   "type": 2
+  },
+  {
+   "name": "Lighting AER",
+   "type": 2,
+   "groups": [
+    "ECIVVLH",
+    "ECFVVLH",
+    "BodyFixed"
+   ]
+  },
+  {
+   "name": "Lighting Times",
+   "type": 4,
+   "groups": [
+    "Sunlight",
+    "Penumbra",
+    "Umbra",
+    "Subpoint Sunlight",
+    "Subpoint Penumbra",
+    "Subpoint Umbra"
+   ]
+  },
+  {
+   "name": "Lunar Eclipse Solar Intensity",
+   "type": 2
+  },
+  {
+   "name": "MCS Summary",
+   "type": 1
+  },
+  {
+   "name": "Maneuver Summary",
+   "type": 4
+  },
+  {
+   "name": "Mass",
+   "type": 1
+  },
+  {
+   "name": "Mixed Spherical Elements",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Model Area",
+   "type": 2
+  },
+  {
+   "name": "Model LOD 0 Articulations",
+   "type": 1
+  },
+  {
+   "name": "Model LOD 1 Articulations",
+   "type": 1
+  },
+  {
+   "name": "Moon AER",
+   "type": 2,
+   "groups": [
+    "ECIVVLH",
+    "ECFVVLH",
+    "BodyFixed"
+   ]
+  },
+  {
+   "name": "Moon Vector",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "type": 2,
+   "groups": [
+    "Attitude(Fixed)",
+    "Attitude(ICRF)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Cartographic Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(Cartographic)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Orbit",
+   "type": 2,
+   "groups": [
+    "Orbit"
+   ]
+  },
+  {
+   "name": "Parameter Set: Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(CBF)",
+    "Trajectory(CBI)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "type": 2
+  },
+  {
+   "name": "Pass Event Times",
+   "type": 4
+  },
+  {
+   "name": "Passes",
+   "type": 4
+  },
+  {
+   "name": "Planes Choose System",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal",
+    "SEET_GeomagneticEquator"
+   ]
+  },
+  {
+   "name": "Planes(Fixed)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal",
+    "SEET_GeomagneticEquator"
+   ]
+  },
+  {
+   "name": "Planes(ICRF)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal",
+    "SEET_GeomagneticEquator"
+   ]
+  },
+  {
+   "name": "Planes(Inertial)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal",
+    "SEET_GeomagneticEquator"
+   ]
+  },
+  {
+   "name": "Planes(J2000)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal",
+    "SEET_GeomagneticEquator"
+   ]
+  },
+  {
+   "name": "Pointing Covariance (Projection)",
+   "type": 2
+  },
+  {
+   "name": "Points Choose Plane",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Points Choose System",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Points(Fixed)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Points(ICRF)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Points(Inertial)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Points(J2000)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SEET_NorthFootprint",
+    "SEET_SouthFootprint",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)",
+    "SunGlint"
+   ]
+  },
+  {
+   "name": "Pos Vel Projected Covariance",
+   "type": 2
+  },
+  {
+   "name": "Pos Vel Rotated Covariance",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance Choose Axes",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance CrossSection",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance CrossSection Choose Plane",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance Projection",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance Projection Choose Plane",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance in Axes",
+   "type": 2
+  },
+  {
+   "name": "Precision Passes",
+   "type": 2
+  },
+  {
+   "name": "Propagator Inputs",
+   "type": 1
+  },
+  {
+   "name": "RFI General Information",
+   "type": 1
+  },
+  {
+   "name": "RFI Potential Victim",
+   "type": 4
+  },
+  {
+   "name": "RIC Coordinates",
+   "type": 2
+  },
+  {
+   "name": "Relative Motion",
+   "type": 2
+  },
+  {
+   "name": "SEET Debris Flux",
+   "type": 1024,
+   "groups": [
+    "Impacts",
+    "Damaging Impacts"
+   ]
+  },
+  {
+   "name": "SEET GCR Differential Fluence by Energy",
+   "type": 1024
+  },
+  {
+   "name": "SEET GCR Differential Flux by Energy",
+   "type": 1024
+  },
+  {
+   "name": "SEET GCR Integral Fluence by Energy",
+   "type": 1024
+  },
+  {
+   "name": "SEET GCR Integral Flux by Energy",
+   "type": 1024
+  },
+  {
+   "name": "SEET GCR Model",
+   "type": 1
+  },
+  {
+   "name": "SEET Magnetic Conjugacy",
+   "type": 2
+  },
+  {
+   "name": "SEET Magnetic Coordinates",
+   "type": 2,
+   "groups": [
+    "Geomagnetic (MAG)",
+    "Geocentric Solar Magnetospheric (GSM)",
+    "Solar Magnetic (SM)"
+   ]
+  },
+  {
+   "name": "SEET Magnetic Field",
+   "type": 2
+  },
+  {
+   "name": "SEET Magnetic Field Model",
+   "type": 1
+  },
+  {
+   "name": "SEET Meteor Flux",
+   "type": 2,
+   "groups": [
+    "Impacts",
+    "Damaging Impacts"
+   ]
+  },
+  {
+   "name": "SEET Particle Distribution Fluence",
+   "type": 1024,
+   "groups": [
+    "Meteors",
+    "Debris",
+    "Meteor Damage",
+    "Debris Damage"
+   ]
+  },
+  {
+   "name": "SEET Particle Fluence",
+   "type": 1024,
+   "groups": [
+    "Meteors",
+    "Debris",
+    "Meteor Damage",
+    "Debris Damage"
+   ]
+  },
+  {
+   "name": "SEET Particle Flux Model",
+   "type": 1
+  },
+  {
+   "name": "SEET Radiation Accumulated Dose",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Accumulated Dose By Thickness",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Average Dose Rate",
+   "type": 1024
+  },
+  {
+   "name": "SEET Radiation Average Dose Rate By Thickness",
+   "type": 1024
+  },
+  {
+   "name": "SEET Radiation Dose Depth",
+   "type": 1024
+  },
+  {
+   "name": "SEET Radiation Dose Rate",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Dose Rate By Thickness",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Flux",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Flux by Energy",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Integral Flux",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Integral Flux by Energy",
+   "type": 2
+  },
+  {
+   "name": "SEET Radiation Model",
+   "type": 1
+  },
+  {
+   "name": "SEET SAA Contour Settings",
+   "type": 4
+  },
+  {
+   "name": "SEET SAA Crossing Times",
+   "type": 4
+  },
+  {
+   "name": "SEET SAA Flux Intensity",
+   "type": 2,
+   "groups": [
+    "Channel >23MeV",
+    "Channel >38MeV",
+    "Channel >66MeV",
+    "Channel >94MeV"
+   ]
+  },
+  {
+   "name": "SEET SEP Energy by Fluence",
+   "type": 1024
+  },
+  {
+   "name": "SEET SEP Fluence by Probability per Energy",
+   "type": 1024
+  },
+  {
+   "name": "SEET SEP Model",
+   "type": 1
+  },
+  {
+   "name": "SEET Vehicle Temperature",
+   "type": 2
+  },
+  {
+   "name": "SEET Vehicle Temperature Model",
+   "type": 1
+  },
+  {
+   "name": "Scalar Calculations",
+   "type": 2,
+   "groups": [
+    "DistanceAlongGroundTrack",
+    "DistanceAlongTrajectory",
+    "DistanceAlongTrajectory(CBF)",
+    "DistanceFromOrbitalReferencePlane",
+    "ElapsedTimeFromStart",
+    "ElapsedTimeFromStop",
+    "Speed",
+    "Speed(CBF)",
+    "SurfaceSpeed"
+   ]
+  },
+  {
+   "name": "Segment Summary",
+   "type": 1
+  },
+  {
+   "name": "Shadow LLA",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "Solar Apparent Time",
+   "type": 2
+  },
+  {
+   "name": "Solar Intensity",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Angles",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Area",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Area No Sum",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Power",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Power No Sum",
+   "type": 2
+  },
+  {
+   "name": "Solar Specular Point",
+   "type": 2
+  },
+  {
+   "name": "Spherical Elements",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Sun Vector",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Swath Points",
+   "type": 2,
+   "groups": [
+    "Left Swath",
+    "Right Swath"
+   ]
+  },
+  {
+   "name": "TLE Residual Data",
+   "type": 2
+  },
+  {
+   "name": "TLE Summary Data",
+   "type": 1
+  },
+  {
+   "name": "Time Array",
+   "type": 4,
+   "groups": [
+    "EphemerisTimes",
+    "OneMinuteSampleTimes"
+   ]
+  },
+  {
+   "name": "Time Instant",
+   "type": 4,
+   "groups": [
+    "AvailabilityStartTime",
+    "AvailabilityStopTime",
+    "EphemerisEpoch",
+    "EphemerisStartTime",
+    "EphemerisStopTime"
+   ]
+  },
+  {
+   "name": "True Anomaly Step",
+   "type": 2,
+   "groups": [
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "User Supplied Data",
+   "type": 2
+  },
+  {
+   "name": "Vector Choose Axes",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Fixed_VVLH)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(LVLH)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(VNC)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(VVLH(CBF))",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(VVLH)",
+   "type": 2,
+   "groups": [
+    "AngMomentum",
+    "AngVelocity",
+    "Apoapsis",
+    "Apoapsis(BLL)",
+    "Apoapsis(BLS)",
+    "Apoapsis(K)",
+    "CensusAircraft",
+    "CensusGroundVehicle",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusShip",
+    "Earth",
+    "Earth(True)",
+    "East",
+    "Ecc",
+    "Ecc(BLL)",
+    "Ecc(BLS)",
+    "Ecc(Earth)",
+    "Ecc(K)",
+    "GrvGrdTorque",
+    "LineOfNodes",
+    "LineOfNodes(J2000Equator)",
+    "LineOfNodes(TEMEJ2000Equator)",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moon(True)",
+    "Moonlight",
+    "Nadir(Centric)",
+    "Nadir(Detic)",
+    "North",
+    "Orbit_AngMomentum",
+    "Orbit_AngMomentum(BLL)",
+    "Orbit_AngMomentum(BLS)",
+    "Orbit_AngMomentum(Earth(CBF))",
+    "Orbit_AngMomentum(Earth)",
+    "Orbit_AngMomentum(K)",
+    "Orbit_AngMomentum(Moon)",
+    "Orbit_Normal",
+    "Periapsis",
+    "Periapsis(BLL)",
+    "Periapsis(BLS)",
+    "Periapsis(K)",
+    "Position",
+    "Position(Apparent)",
+    "Position(Earth)",
+    "Position(Mars)",
+    "Position(Moon)",
+    "Position(Sun)",
+    "Position(Venus)",
+    "SEET_GeomagneticField",
+    "SEET_GeomagneticNorthPole",
+    "SEET_GeomagneticSouthPole",
+    "SEET_HorizontalGeomagneticField",
+    "SEET_LorentzForce",
+    "SEET_VerticalGeomagneticField",
+    "South",
+    "Sun",
+    "SunGlint",
+    "Sunlight",
+    "TotalThrust",
+    "TotalTorque",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(Earth(CBF))",
+    "Velocity(Earth)",
+    "Velocity(Mars)",
+    "Velocity(Moon)",
+    "Velocity(SubPoint)",
+    "Velocity(Sun)",
+    "Velocity(Venus)",
+    "West",
+    "Zenith(Centric)",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Velocity Projected Covariance",
+   "type": 2
+  }
+ ],
+ "report_styles": [
+  "Accel File",
+  "Active Constraints",
+  "Apogee",
+  "Ascending Node",
+  "Astrogator Log",
+  "Astrogator Script Summary",
+  "Attitude Quaternions",
+  "Attitude Schedule",
+  "Attitude Segment",
+  "B1950 Position Velocity",
+  "Beta Angle",
+  "Classical Orbit Elements",
+  "Close Approach",
+  "DeckAccess",
+  "DeckAccessCommonName",
+  "Descending Node",
+  "Eclipse Summary",
+  "Eclipse Times",
+  "Ephemeris-IFT",
+  "Ephemeris-IFT-LLA",
+  "EphemerisChooseAxes",
+  "Euler Angles",
+  "Fixed Acceleration",
+  "Fixed LLR Position",
+  "Fixed Position Velocity",
+  "Generated TLE",
+  "Inertial Acceleration",
+  "Inertial Position Velocity",
+  "J2000 Acceleration",
+  "J2000 Position Velocity",
+  "LLA Position",
+  "LOP Mean Elements",
+  "Lifetime",
+  "Lighting Times",
+  "Lunar Vector Fixed",
+  "Lunar Vector J2000",
+  "Lunar Vector TOD",
+  "MCS Ephemeris Segments",
+  "MCS Summary",
+  "MOD Position Velocity",
+  "Maneuver History",
+  "Maneuver Summary",
+  "Model Area",
+  "Pass Data",
+  "Penumbra",
+  "Penumbra Start",
+  "Penumbra Stop",
+  "Perigee",
+  "Propagator Inputs",
+  "RIC",
+  "SAA",
+  "SAA Start",
+  "SAA Stop",
+  "SEET Debris Flux",
+  "SEET GCR Differential Fluence",
+  "SEET GCR Differential Flux",
+  "SEET GCR Integral Fluence",
+  "SEET GCR Integral Flux",
+  "SEET Geomagnetic Conjugacy",
+  "SEET Geomagnetic Coordinates",
+  "SEET Geomagnetic Field",
+  "SEET Geomagnetic Field Model",
+  "SEET Meteor Flux",
+  "SEET Particle Damaging Fluence",
+  "SEET Particle Distribution Damaging Fluence",
+  "SEET Particle Flux Model",
+  "SEET Radiation Accumulated Total Dose",
+  "SEET Radiation Avg Total Dose Rate",
+  "SEET Radiation Dose Depth",
+  "SEET Radiation Flux",
+  "SEET Radiation Flux at CRRES energies",
+  "SEET Radiation Model",
+  "SEET SAA Flux Intensity",
+  "SEET SAA Settings",
+  "SEET SAA Transit Times",
+  "SEET SEP Fluence by Energy at Probability to Exceed",
+  "SEET SEP Fluence by Probability per Energy",
+  "SEET SEP Model",
+  "SEET Temperature",
+  "SEET Temperature Model",
+  "Segment Summary",
+  "Solar AER",
+  "Solar Intensity",
+  "Solar Panel Angles",
+  "Solar Panel Area",
+  "Solar Panel Power",
+  "Sun",
+  "Sun Start",
+  "Sun Stop",
+  "Sun Vector Fixed",
+  "Sun Vector J2000",
+  "Sun Vector TOD",
+  "Swath Points",
+  "TEMEofDate Position Velocity",
+  "TEMEofEpoch Position Velocity",
+  "TLE",
+  "TLE Solution Summary",
+  "TLE TEME Residuals",
+  "TOD Position Velocity",
+  "Targeter Log",
+  "Umbra",
+  "Umbra Start",
+  "Umbra Stop",
+  "Yaw Pitch Roll"
+ ]
+}

@@ -1,0 +1,139 @@
+{
+ "kind": "FigureOfMerit",
+ "path": "*/CoverageDefinition/CensusCoverageDefinition/FigureOfMerit/CensusFigureOfMerit",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Coverage Definition",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "FOM Definition",
+   "type": 1
+  },
+  {
+   "name": "Global Partial Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Global Total Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Overall Value",
+   "type": 1
+  },
+  {
+   "name": "Overall Value by Time",
+   "type": 2
+  },
+  {
+   "name": "Region Stats",
+   "type": 1
+  },
+  {
+   "name": "Satisfied by Time",
+   "type": 2
+  },
+  {
+   "name": "Selected Point All DOPs",
+   "type": 2
+  },
+  {
+   "name": "Selected Point All Nav Accs",
+   "type": 2
+  },
+  {
+   "name": "Selected Point DOP Best N",
+   "type": 2
+  },
+  {
+   "name": "Selected Point FOM",
+   "type": 2
+  },
+  {
+   "name": "Selected Point Nav Best N",
+   "type": 2
+  },
+  {
+   "name": "Selected Point Percent Val",
+   "type": 1,
+   "groups": [
+    "All Times",
+    "Access Only",
+    "Gaps Only"
+   ]
+  },
+  {
+   "name": "Selected Point Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Selected Point Static Value",
+   "type": 1
+  },
+  {
+   "name": "Selected Region FOM",
+   "type": 2
+  },
+  {
+   "name": "Selected Region Partial Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Selected Region Total Satisfaction",
+   "type": 4
+  },
+  {
+   "name": "Static Satisfaction",
+   "type": 1
+  },
+  {
+   "name": "Time Value By Point",
+   "type": 1
+  },
+  {
+   "name": "Value By Point",
+   "type": 1
+  },
+  {
+   "name": "Value by Latitude",
+   "type": 1
+  },
+  {
+   "name": "Value by Longitude",
+   "type": 1
+  }
+ ],
+ "report_styles": [
+  "FOM Value",
+  "GI All DOP",
+  "GI Point Best N",
+  "GI Point FOM",
+  "GI Point Nav Best N",
+  "GI Point Percent Value",
+  "GI Point Satisfaction",
+  "GI Point Static Value",
+  "GI Region FOM",
+  "GI Region Full Satisfaction",
+  "GI Region Satisfaction",
+  "GI Static Value",
+  "Grid Stats",
+  "Grid Stats Over Time",
+  "Percent Satisfied",
+  "Satisfied By Time",
+  "Stats By Region",
+  "Value By Grid Point",
+  "Value By Grid Point At Time",
+  "Value By Latitude",
+  "Value By Longitude"
+ ]
+}

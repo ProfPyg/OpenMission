@@ -1,0 +1,127 @@
+{
+ "kind": "CoverageDefinition",
+ "path": "*/CoverageDefinition/CensusCoverageDefinition",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Access Duration",
+   "type": 1
+  },
+  {
+   "name": "All Regions By Pass",
+   "type": 1
+  },
+  {
+   "name": "All Regions By Spliced Pass",
+   "type": 1
+  },
+  {
+   "name": "Coverage By Asset",
+   "type": 1
+  },
+  {
+   "name": "Coverage Definition",
+   "type": 1
+  },
+  {
+   "name": "Coverage Gap Duration",
+   "type": 1
+  },
+  {
+   "name": "Coverage by Latitude",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Global Coverage",
+   "type": 4
+  },
+  {
+   "name": "Global Coverage Gaps",
+   "type": 4
+  },
+  {
+   "name": "Global Zero Coverage",
+   "type": 4
+  },
+  {
+   "name": "Grid Point Locations",
+   "type": 1
+  },
+  {
+   "name": "Partial Coverage",
+   "type": 4
+  },
+  {
+   "name": "Percent Coverage",
+   "type": 2
+  },
+  {
+   "name": "Selected Point Coverage",
+   "type": 4
+  },
+  {
+   "name": "Selected Point Daily Coverage",
+   "type": 1
+  },
+  {
+   "name": "Selected Point Probability of Coverage",
+   "type": 1
+  },
+  {
+   "name": "Selected Region By Pass",
+   "type": 1
+  },
+  {
+   "name": "Selected Region By Spliced Pass",
+   "type": 1
+  },
+  {
+   "name": "Selected Region Coverage",
+   "type": 2
+  },
+  {
+   "name": "Selected Region Full Coverage",
+   "type": 4
+  },
+  {
+   "name": "Selected Region Partial Coverage",
+   "type": 4
+  },
+  {
+   "name": "Selected Region Time To Cover",
+   "type": 2
+  },
+  {
+   "name": "Time To Cover By Region",
+   "type": 1
+  }
+ ],
+ "report_styles": [
+  "Access Duration",
+  "Coverage By Asset",
+  "Coverage By Latitude",
+  "GI Point Coverage",
+  "GI Point Daily Coverage",
+  "GI Point Prob Of Coverage",
+  "GI Region Coverage",
+  "GI Region Full Coverage",
+  "GI Region Partial Coverage",
+  "GI Region Pass Coverage",
+  "GI Region Spliced Pass",
+  "GI Region Time To Cover",
+  "Gap Duration",
+  "Gaps in Global Coverage",
+  "Global Coverage",
+  "Grid Point Information",
+  "Percent Coverage",
+  "Time To Cover By Region"
+ ]
+}

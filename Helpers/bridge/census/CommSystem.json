@@ -1,0 +1,94 @@
+{
+ "kind": "CommSystem",
+ "path": "*/CommSystem/CensusCommSystem",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Basic Properties",
+   "type": 1
+  },
+  {
+   "name": "Cumulative Density Function",
+   "type": 1024,
+   "groups": [
+    "Rcvd. Iso. Power",
+    "Flux Density",
+    "Rcvr Gain",
+    "Tequivalent",
+    "g/T",
+    "C/No",
+    "C/(No+Io)",
+    "C/N",
+    "C/(N+I)",
+    "Eb/No",
+    "Eb/(No+Io)",
+    "C/I",
+    "Delta T/T",
+    "Pwr Flux Density",
+    "Spectral Flux Density"
+   ]
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Interference Information",
+   "type": 2
+  },
+  {
+   "name": "Interferer Information",
+   "type": 1
+  },
+  {
+   "name": "Link Information",
+   "type": 2
+  },
+  {
+   "name": "Probability Density Function",
+   "type": 1024,
+   "groups": [
+    "Rcvd. Iso. Power",
+    "Flux Density",
+    "Rcvr Gain",
+    "Tequivalent",
+    "g/T",
+    "C/No",
+    "C/(No+Io)",
+    "C/N",
+    "C/(N+I)",
+    "Eb/No",
+    "Eb/(No+Io)",
+    "C/I",
+    "Delta T/T",
+    "Pwr Flux Density",
+    "Spectral Flux Density"
+   ]
+  },
+  {
+   "name": "Receiver Information",
+   "type": 1
+  },
+  {
+   "name": "Transmitter Information",
+   "type": 1
+  }
+ ],
+ "report_styles": [
+  "Basic Properties",
+  "Carrier to Noise PDF",
+  "Interference Information",
+  "Interference Information Detailed",
+  "Interferer IDs",
+  "Link Information",
+  "Link Information Detailed",
+  "Power Flux Density CDF",
+  "Power Flux Density PDF",
+  "Receiver IDs",
+  "Transmitter IDs"
+ ]
+}

@@ -1,0 +1,1071 @@
+{
+ "kind": "GroundVehicle",
+ "path": "*/GroundVehicle/CensusGroundVehicle",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Active Constraints",
+   "type": 1
+  },
+  {
+   "name": "All Constraints",
+   "type": 1
+  },
+  {
+   "name": "Angles",
+   "type": 2,
+   "groups": [
+    "VelocityAzimuth"
+   ]
+  },
+  {
+   "name": "Articulation",
+   "type": 1
+  },
+  {
+   "name": "Astrogator Values",
+   "type": 2,
+   "groups": [
+    "Top",
+    "Access",
+    "Cartesian Elems",
+    "Constants",
+    "Delaunay Elems",
+    "Environment",
+    "Equinoctial Elems",
+    "Formation",
+    "GeoStationary",
+    "Geodetic",
+    "Ground Track",
+    "Keplerian Elems",
+    "Maneuver",
+    "Math",
+    "Mean Elems",
+    "MultiBody",
+    "Other Orbit",
+    "Power",
+    "Relative Motion",
+    "SEET",
+    "Scalar",
+    "Scripts",
+    "Spacecraft Properties",
+    "Spherical Elems",
+    "Target Vector",
+    "Time",
+    "UserValues",
+    "Vector",
+    "Segment Data"
+   ]
+  },
+  {
+   "name": "Attitude Segment Schedule",
+   "type": 4
+  },
+  {
+   "name": "Available Times",
+   "type": 4
+  },
+  {
+   "name": "Axes Choose Axes",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 123",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 132",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 213",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 231",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 312",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Body Axes Orientation:YPR 321",
+   "type": 2,
+   "groups": [
+    "Body",
+    "ICR",
+    "ICR(CBF)",
+    "ICRF",
+    "J2000",
+    "LVLH",
+    "LVLH(CBF)",
+    "Model",
+    "NorthEastDown",
+    "NorthWestUp",
+    "PositionCovPrincipal",
+    "RIC",
+    "RIC(CBF)",
+    "RadialCentric",
+    "TopoCentric",
+    "VNC",
+    "VNC(CBF)",
+    "VVLH",
+    "VVLH(CBF)",
+    "Earth Fixed"
+   ]
+  },
+  {
+   "name": "Cartesian Acceleration",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Position",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Cartesian Velocity",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Collection of Interval Lists",
+   "type": 4,
+   "groups": [
+    "LightingIntervals"
+   ]
+  },
+  {
+   "name": "Condition",
+   "type": 2,
+   "groups": [
+    "AfterStart",
+    "BeforeStop"
+   ]
+  },
+  {
+   "name": "Condition Set",
+   "type": 2,
+   "groups": [
+    "HoursAfterStart",
+    "HoursBeforeStop"
+   ]
+  },
+  {
+   "name": "Crdn Available Times",
+   "type": 4
+  },
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "DeckAccess",
+   "type": 4
+  },
+  {
+   "name": "DeckAccess Data",
+   "type": 4,
+   "groups": [
+    "Access Interval",
+    "Start Time LocalHorizontal Geometry",
+    "Stop Time LocalHorizontal Geometry",
+    "Start Time CBFVVLH Geometry",
+    "Stop Time CBFVVLH Geometry",
+    "Start Time CBIVVLH Geometry",
+    "Stop Time CBIVVLH Geometry",
+    "Start Time BodyFixed Geometry",
+    "Stop Time BodyFixed Geometry",
+    "Start Time Source CBF Location",
+    "Stop Time Source CBF Location",
+    "Start Time Target CBF Location",
+    "Stop Time Target CBF Location",
+    "Start Time Source CBI Location",
+    "Stop Time Source CBI Location",
+    "Start Time Target CBI Location",
+    "Stop Time Target CBI Location"
+   ]
+  },
+  {
+   "name": "Distance",
+   "type": 2
+  },
+  {
+   "name": "Eclipse Definition",
+   "type": 1
+  },
+  {
+   "name": "Eclipse Summary",
+   "type": 4
+  },
+  {
+   "name": "Eclipse Times",
+   "type": 4
+  },
+  {
+   "name": "Ephemeris Diff",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Ground Ellipse Definition",
+   "type": 1
+  },
+  {
+   "name": "Heading",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "Interval",
+   "type": 4,
+   "groups": [
+    "AvailabilityTimeSpan",
+    "EphemerisTimeSpan"
+   ]
+  },
+  {
+   "name": "Interval List",
+   "type": 4,
+   "groups": [
+    "AttitudeIntervals",
+    "AvailabilityIntervals"
+   ]
+  },
+  {
+   "name": "LLA State",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "LLR State",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "LaserCAT Clear Firing",
+   "type": 4
+  },
+  {
+   "name": "LaserCAT General Information",
+   "type": 1
+  },
+  {
+   "name": "LaserCAT Potential Victim",
+   "type": 4
+  },
+  {
+   "name": "LaserCAT Status Information",
+   "type": 1
+  },
+  {
+   "name": "Lighting AER",
+   "type": 2,
+   "groups": [
+    "ECIVVLH",
+    "ECFVVLH",
+    "BodyFixed",
+    "LH"
+   ]
+  },
+  {
+   "name": "Lighting Times",
+   "type": 4,
+   "groups": [
+    "Sunlight",
+    "Penumbra",
+    "Umbra"
+   ]
+  },
+  {
+   "name": "LineOfSight Info",
+   "type": 2
+  },
+  {
+   "name": "Model Area",
+   "type": 2
+  },
+  {
+   "name": "Model LOD 0 Articulations",
+   "type": 1
+  },
+  {
+   "name": "Model LOD 1 Articulations",
+   "type": 1
+  },
+  {
+   "name": "Moon AER",
+   "type": 2,
+   "groups": [
+    "ECIVVLH",
+    "ECFVVLH",
+    "BodyFixed",
+    "LH"
+   ]
+  },
+  {
+   "name": "Moon Vector",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Parameter Set: Attitude",
+   "type": 2,
+   "groups": [
+    "Attitude(Fixed)",
+    "Attitude(ICRF)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Cartographic Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(Cartographic)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Orbit",
+   "type": 2
+  },
+  {
+   "name": "Parameter Set: Trajectory",
+   "type": 2,
+   "groups": [
+    "Trajectory(CBF)",
+    "Trajectory(CBI)"
+   ]
+  },
+  {
+   "name": "Parameter Set: Vector",
+   "type": 2
+  },
+  {
+   "name": "Planes Choose System",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal"
+   ]
+  },
+  {
+   "name": "Planes(Fixed)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal"
+   ]
+  },
+  {
+   "name": "Planes(ICRF)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal"
+   ]
+  },
+  {
+   "name": "Planes(Inertial)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal"
+   ]
+  },
+  {
+   "name": "Planes(J2000)",
+   "type": 2,
+   "groups": [
+    "LocalHorizontal"
+   ]
+  },
+  {
+   "name": "Pointing Covariance (Projection)",
+   "type": 2
+  },
+  {
+   "name": "Points Choose Plane",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Points Choose System",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Points(Fixed)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Points(ICRF)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Points(Inertial)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Points(J2000)",
+   "type": 2,
+   "groups": [
+    "Center",
+    "SubPoint(Centric)",
+    "SubPoint(Detic)"
+   ]
+  },
+  {
+   "name": "Position Covariance Choose Axes",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance CrossSection",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance CrossSection Choose Plane",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance Projection",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance Projection Choose Plane",
+   "type": 2
+  },
+  {
+   "name": "Position Covariance in Axes",
+   "type": 2
+  },
+  {
+   "name": "RFI General Information",
+   "type": 1
+  },
+  {
+   "name": "RFI Potential Victim",
+   "type": 4
+  },
+  {
+   "name": "Scalar Calculations",
+   "type": 2,
+   "groups": [
+    "DistanceAlongGroundTrack",
+    "DistanceAlongTrajectory",
+    "DistanceAlongTrajectory(CBF)",
+    "ElapsedTimeFromStart",
+    "ElapsedTimeFromStop",
+    "Speed",
+    "Speed(CBF)",
+    "SurfaceSpeed"
+   ]
+  },
+  {
+   "name": "Shadow LLA",
+   "type": 2,
+   "groups": [
+    "Fixed"
+   ]
+  },
+  {
+   "name": "Solar Intensity",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Angles",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Area",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Area No Sum",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Power",
+   "type": 2
+  },
+  {
+   "name": "Solar Panel Power No Sum",
+   "type": 2
+  },
+  {
+   "name": "Sun Vector",
+   "type": 2,
+   "groups": [
+    "Fixed",
+    "ICRF",
+    "MeanOfDate",
+    "MeanOfEpoch",
+    "TrueOfDate",
+    "TrueOfEpoch",
+    "B1950",
+    "TEMEOfEpoch",
+    "TEMEOfDate",
+    "AlignmentAtEpoch",
+    "J2000"
+   ]
+  },
+  {
+   "name": "Time Array",
+   "type": 4,
+   "groups": [
+    "EphemerisTimes",
+    "OneMinuteSampleTimes"
+   ]
+  },
+  {
+   "name": "Time Instant",
+   "type": 4,
+   "groups": [
+    "AvailabilityStartTime",
+    "AvailabilityStopTime",
+    "EphemerisStartTime",
+    "EphemerisStopTime"
+   ]
+  },
+  {
+   "name": "User Supplied Data",
+   "type": 2
+  },
+  {
+   "name": "Vector Choose Axes",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vector Choose Plane",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Body)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Fixed)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Fixed_VVLH)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(ICRF)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(Inertial)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(J2000)",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Vectors(VVLH(CBF))",
+   "type": 2,
+   "groups": [
+    "CensusAircraft",
+    "CensusLaunchVehicle",
+    "CensusMissile",
+    "CensusSatellite",
+    "CensusShip",
+    "East",
+    "MagField(IGRF)",
+    "MagField(WMM)",
+    "Moon",
+    "Moonlight",
+    "Nadir(Detic)",
+    "North",
+    "Position",
+    "South",
+    "Sun",
+    "Sunlight",
+    "Velocity",
+    "Velocity(CBF)",
+    "Velocity(SubPoint)",
+    "West",
+    "Zenith(Detic)"
+   ]
+  },
+  {
+   "name": "Waypoints",
+   "type": 1
+  }
+ ],
+ "report_styles": [
+  "Active Constraints",
+  "Attitude Schedule",
+  "DeckAccess",
+  "DeckAccessCommonName",
+  "ECF Position Velocity",
+  "Eclipse Times",
+  "LLA Position",
+  "LLR Position",
+  "LaserCATClearFiring",
+  "LaserCATPotentialVictim",
+  "LaserCATPotentialVictimName",
+  "Lighting Times",
+  "Model Area",
+  "Penumbra",
+  "Penumbra Start",
+  "Penumbra Stop",
+  "RFIPotentialVictim",
+  "Solar AER",
+  "Solar Intensity",
+  "Solar Panel Angles",
+  "Solar Panel Area",
+  "Solar Panel Power",
+  "Sun",
+  "Sun Start",
+  "Sun Stop",
+  "Sun Vector ECF",
+  "Umbra",
+  "Umbra Start",
+  "Umbra Stop",
+  "Velocity Heading",
+  "Waypoints"
+ ]
+}

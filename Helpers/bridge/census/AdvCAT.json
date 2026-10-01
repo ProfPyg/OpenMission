@@ -1,0 +1,102 @@
+{
+ "kind": "AdvCAT",
+ "path": "*/AdvCAT/CensusAdvCAT",
+ "created": true,
+ "data_providers": [
+  {
+   "name": "Data Provider Detail",
+   "type": 1
+  },
+  {
+   "name": "Data Provider Summary",
+   "type": 1
+  },
+  {
+   "name": "Encounter Warnings",
+   "type": 1
+  },
+  {
+   "name": "Errors",
+   "type": 1
+  },
+  {
+   "name": "Event Ephemeris",
+   "type": 2
+  },
+  {
+   "name": "Events Unsorted",
+   "type": 4
+  },
+  {
+   "name": "Events by Duration",
+   "type": 4
+  },
+  {
+   "name": "Events by Min Range",
+   "type": 4
+  },
+  {
+   "name": "Events by Min Sep",
+   "type": 4
+  },
+  {
+   "name": "Events by SSC",
+   "type": 4
+  },
+  {
+   "name": "Events by Time In",
+   "type": 4
+  },
+  {
+   "name": "Filter Settings",
+   "type": 1
+  },
+  {
+   "name": "General Info",
+   "type": 1
+  },
+  {
+   "name": "Primary Data",
+   "type": 1
+  },
+  {
+   "name": "Primary Ephemeris",
+   "type": 2
+  },
+  {
+   "name": "Primary Vehicles",
+   "type": 1
+  },
+  {
+   "name": "Secondary Data",
+   "type": 1
+  },
+  {
+   "name": "Secondary Vehicles",
+   "type": 1
+  },
+  {
+   "name": "Time Events",
+   "type": 4,
+   "groups": [
+    "TimeIn",
+    "TCA",
+    "ConjTCA",
+    "TMS",
+    "TimeOut"
+   ]
+  }
+ ],
+ "report_styles": [
+  "Close Approach By Min Range",
+  "Close Approach By Min Sep",
+  "Close Approach By SSC",
+  "Close Approach By Time In",
+  "Custom",
+  "Encounter Warnings",
+  "Error Report",
+  "Input Data",
+  "Primary Veh List",
+  "Secondary Veh List"
+ ]
+}

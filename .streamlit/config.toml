@@ -7,3 +7,14 @@ maxUploadSize = 50
 
 [browser]
 gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#d9c9a3"
+backgroundColor = "#0b0d0c"
+secondaryBackgroundColor = "#17170f"
+textColor = "#ece6d8"
+font = "sans serif"
+
+[client]
+showErrorDetails = false

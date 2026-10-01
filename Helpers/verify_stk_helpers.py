@@ -135,15 +135,10 @@ def _assert_api(session):
 
 
 def _assert_prompt_matches_api():
-    """The prompt must not document anything stk_helpers.py lacks."""
-    import check_prompt_api
-    problems = check_prompt_api.check(
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                     "prompts", "stk_agent.md"),
-        stk)
-    if problems:
-        raise AssertionError("; ".join(problems))
-    return True
+    """The live prompt's API section is generated from stk_helpers.py itself
+    (api_reference.py), so it cannot drift; just check it generates."""
+    import api_reference
+    return bool(api_reference.generate(stk.__file__))
 
 
 def _assert_stk_home(session):
@@ -233,14 +228,542 @@ def _assert_styles(session):
 
 
 def _assert_bad_style(session, sat_path):
-    """A wrong style must fail with a suggestion, not a bare STK error."""
+    """A near-miss style name is REPAIRED; an unrecognisable one is rejected.
+
+    A style name only chooses which columns are exported, so it cannot make
+    a scenario wrong -- which is why a clear near-miss is corrected rather
+    than aborting a run that has already built everything. This checks both
+    halves of that behaviour.
+    """
+    # 1. a near miss resolves to the real style
+    chosen = session.open_report(sat_path, "Classical Elements")
+    if chosen != "Classical Orbit Elements":
+        raise AssertionError(
+            "'Classical Elements' should have been repaired to 'Classical "
+            "Orbit Elements', got %r" % chosen)
+
+    # 2. a name sharing nothing with any style is still refused, with help
     try:
-        session.open_report(sat_path, "Classical Elements")
+        session.open_report(sat_path, "Zqx Nonsense Style")
     except stk.StkError as exc:
-        if "Did you mean" not in str(exc):
-            raise AssertionError("rejected, but without a suggestion: %s" % exc)
+        if "is not a" not in str(exc):
+            raise AssertionError("rejected, but unhelpfully: %s" % exc)
         return True
-    raise AssertionError("'Classical Elements' was accepted; it should not be")
+    raise AssertionError("'Zqx Nonsense Style' was accepted; it should not be")
+
+
+def _assert_walker_tool(session):
+    """STK's Walker tool: same geometry as new_walker(), payload replicated,
+    and the seed (a duplicate of member 11) removed."""
+    seed = session.new_satellite("SmokeSeed", stk.altitude_to_sma(550.0), 53.0, 0.0)
+    session.add_sensor_conic(seed, "Cam", 10.0)
+    members, const = session.walker_constellation(seed, "Delta", num_planes=3,
+                                                  sats_per_plane=4, phase_f=1)
+    if session.exists(seed):
+        raise AssertionError("Walker seed still present -- it duplicates member 11")
+    if [str(k.InstanceName) for k in session.obj(members[0]).Children] != ["Cam"]:
+        raise AssertionError("seed sensor not copied to the members")
+    if session.obj(const).Objects.Count != 12:
+        raise AssertionError("constellation holds %d, expected 12" % session.obj(const).Objects.Count)
+    star_seed = session.new_satellite("SmokeStar", stk.altitude_to_sma(780.0), 86.4, 0.0)
+    star, _ = session.walker_constellation(star_seed, "Star", num_planes=6,
+                                           sats_per_plane=2, phase_f=1)
+    print("        Delta 12/3/1 and Star 12/6/1 built and verified (%d + %d members)"
+          % (len(members), len(star)))
+    return True
+
+
+class _LongerPeriod(object):
+    """Temporarily extend the smoke scenario (6 h) for checks that need days.
+
+    The drift, decay and transfer checks were written against a 2-day bridge
+    scenario and failed here purely on window length: 0.2463 deg/day is
+    exactly 0.9856 x 6/24.
+    """
+
+    def __init__(self, session, days):
+        self.session, self.days = session, days
+
+    def __enter__(self):
+        self.session.set_time_period(START, self.session._utcg_offset(START, self.days * 86400.0))
+        return self
+
+    def __exit__(self, *exc):
+        self.session.set_time_period(START, STOP)
+        return False
+
+
+def _assert_astrogator_transfer(session):
+    """The differential corrector reaches GEO -- verified on the ephemeris.
+
+    Point mass must reproduce the textbook Hohmann dv (3.89256 km/s) and an
+    exactly circular GEO; with real gravity the dv is a few m/s higher and
+    the orbit still sits at GEO radius. The goal must be at the END of the
+    coast: attached to the burn it "converged" 175 km short of GEO.
+    """
+    with _LongerPeriod(session, 2):
+        results = {}
+        for prop in ("Earth Point Mass", "Earth HPOP Default v10"):
+            sat = session.new_astrogator_satellite("SmokeGator%s" % prop.split()[1],
+                                                   6678.137, propagator=prop)
+            results[prop] = session.plan_circular_transfer(sat, 42164.137, propagator=prop)
+        pm, hp = results["Earth Point Mass"], results["Earth HPOP Default v10"]
+        if abs(pm["total_dv_kms"] - 3.89256) > 1e-4:
+            raise AssertionError("point-mass total dv %.5f, textbook 3.89256" % pm["total_dv_kms"])
+        for label, res in (("point mass", pm), ("HPOP", hp)):
+            lo, hi = res["final_radius_km"]
+            if not (42164.137 - 5.0 < lo and hi < 42164.137 + 5.0):
+                raise AssertionError("%s final orbit %.1f-%.1f km, not GEO" % (label, lo, hi))
+        if not 0.0005 < hp["total_dv_kms"] - pm["total_dv_kms"] < 0.02:
+            raise AssertionError("real-gravity dv %.5f vs point mass %.5f -- J2 penalty implausible"
+                                 % (hp["total_dv_kms"], pm["total_dv_kms"]))
+        print("        dv point mass %.5f / HPOP %.5f km/s; HPOP orbit %.1f-%.1f km"
+              % (pm["total_dv_kms"], hp["total_dv_kms"], *hp["final_radius_km"]))
+        return True
+
+
+def _assert_state_round_trip(session):
+    """A satellite rebuilt from another's J2000 state vector flies identically."""
+    with _LongerPeriod(session, 2):
+        import math
+        t0 = session._start
+        t1 = session._utcg_offset(t0, 86400.0)
+        ref = session.new_satellite("SmokeStateRef", stk.altitude_to_sma(550.0), 53.0, 40.0,
+                                    ecc=0.001, arg_perigee_deg=30.0, true_anomaly_deg=10.0)
+        r = session.read_data(ref, "Cartesian Position", group="J2000", start=t0, stop=t0)
+        v = session.read_data(ref, "Cartesian Velocity", group="J2000", start=t0, stop=t0)
+        state = [r.column(c)[0] for c in "xyz"] + [v.column(c)[0] for c in "xyz"]
+        copy = session.new_satellite_from_state("SmokeStateCopy", "cartesian", state, frame="J2000")
+
+        def pos(path):
+            q = session.read_data(path, "Cartesian Position", group="J2000", start=t1, stop=t1)
+            return [q.column(c)[0] for c in "xyz"]
+        gap = math.dist(pos(ref), pos(copy))
+        if gap > 0.01:
+            raise AssertionError("rebuilt satellite %.3f km from the original after a day" % gap)
+        print("        rebuilt from its state vector: %.4f km apart after 1 day" % gap)
+        return True
+
+
+def _assert_attitude_eccentric(session):
+    """The attitude profile is the one ASKED for -- word order matters.
+
+    "Nadir Alignment With ECI Velocity Constraint" used to set the ECI
+    VELOCITY alignment profile (same words, swapped roles). On a circular
+    orbit the two are identical; on a Molniya orbit a quarter of the way from
+    perigee the flight-path angle is ~40 deg, so the velocity-aligned body's
+    +Z misses nadir by that much while the nadir-aligned one stays on it.
+    """
+    import math
+    when = session._start
+
+    def nadir_off_z(path):
+        r = session.read_data(path, "Vectors(Body)", group="Nadir(Centric)",
+                              start=when, stop=when)
+        c = {k.lower(): r.column(k)[0] for k in r.columns}
+        n = math.sqrt(c["x"] ** 2 + c["y"] ** 2 + c["z"] ** 2)
+        return math.degrees(math.acos(max(-1.0, min(1.0, c["z"] / n))))
+
+    angles = {}
+    for label, profile in (("nadir", "Nadir Alignment With ECI Velocity Constraint"),
+                           ("velocity", "ECI Velocity Alignment With Nadir Constraint")):
+        sat = session.new_satellite("SmokeAtt%s" % label.capitalize(), 26554.0, 63.4, 0.0,
+                                    ecc=0.74, arg_perigee_deg=270.0, true_anomaly_deg=90.0)
+        chosen = session.set_attitude_profile(sat, profile)
+        angles[label] = (chosen, nadir_off_z(sat))
+    if angles["nadir"][1] > 0.01:
+        raise AssertionError("nadir-aligned body misses nadir by %.3f deg (%s)" % (
+            angles["nadir"][1], angles["nadir"][0]))
+    if angles["velocity"][1] < 10.0:
+        raise AssertionError("velocity-aligned body only %.2f deg off nadir -- was the "
+                             "nadir profile set instead? (%s)" % (angles["velocity"][1],
+                                                                  angles["velocity"][0]))
+    print("        Molniya: nadir-aligned %.3f deg off nadir; velocity-aligned %.1f deg"
+          % (angles["nadir"][1], angles["velocity"][1]))
+    return True
+
+
+def _assert_lifetime(session):
+    """STK's Lifetime tool: plausible, scales with mass, reports no-decay.
+
+    Measured on STK 11: 3U at 400 km ~223 days near the 2026 solar maximum;
+    double mass ~x2.1; a 3U at 800 km does not decay within 50 years.
+    """
+    low = session.new_satellite("SmokeLife400", stk.altitude_to_sma(400.0), 51.6, 0.0,
+                                propagator="J2Perturbation")
+    a = session.satellite_lifetime(low, spacecraft="3U")
+    b = session.satellite_lifetime(low, spacecraft="custom", mass_kg=8.0, area_m2=0.039)
+    if not (a["decays"] and b["decays"]):
+        raise AssertionError("a 400 km 3U did not decay: %s" % a["message"])
+    if not 30.0 < a["lifetime_days"] < 1500.0:
+        raise AssertionError("3U at 400 km lifetime %.0f days is implausible" % a["lifetime_days"])
+    ratio = b["lifetime_days"] / a["lifetime_days"]
+    if not 1.7 < ratio < 2.6:
+        raise AssertionError("double mass changed lifetime x%.2f, expected ~2" % ratio)
+    high = session.new_satellite("SmokeLife800", stk.altitude_to_sma(800.0), 51.6, 0.0,
+                                 propagator="J2Perturbation")
+    c = session.satellite_lifetime(high, spacecraft="3U", max_years=50)
+    if c["decays"]:
+        raise AssertionError("a 3U at 800 km decayed within 50 years: %s" % c["message"])
+    print("        3U@400 %.0f d; 2x mass x%.2f; 3U@800 no decay in 50 y"
+          % (a["lifetime_days"], ratio))
+    return True
+
+
+def _assert_propagator_physics(session):
+    """Propagators match physics; HPOP drag follows the spacecraft's area/mass.
+
+    Measured on STK 11: SSO plane drift J2 +0.9852 deg/day (target +0.9856);
+    with mean elements, drag-off decay ~0 and drag decay ~2x for 2x area/mass
+    on the first day. Osculating elements showed -3.7 km of false "decay".
+    """
+    with _LongerPeriod(session, 3):
+        import math
+        start = session._start
+        stop = session._utcg_offset(start, 2 * 86400.0)
+        a600 = stk.altitude_to_sma(600.0)
+        inc = math.degrees(math.acos(-(a600 / 12352.0) ** 3.5))
+        sso = session.new_satellite("SmokeJ2", a600, inc, 0.0, propagator="J2Perturbation")
+        raan = session.read_data(sso, "Classical Elements", group="TrueOfDate",
+                                 elements=["Time", "RAAN"], start=start, stop=stop,
+                                 step_sec=86400).column("RAAN")
+        drift = (((raan[1] - raan[0]) + 540) % 360) - 180
+        if abs(drift - 0.9856) > 0.005:
+            raise AssertionError("J2 SSO plane drifts %.4f deg/day, expected +0.9856" % drift)
+        a300 = stk.altitude_to_sma(300.0)
+        decay = {}
+        for amr in (None, 0.01, 0.02):
+            p = session.new_satellite("SmokeDrag%s" % ("Off" if amr is None else str(amr)[2:]),
+                                      a300, 51.6, 0.0, propagator="HPOP")
+            session.set_hpop_forces(p, drag=amr is not None, drag_area_mass=amr,
+                                    f107=150, f107_avg=150, kp=3)
+            m = session.mean_elements(p, step_sec=86400, start=start, stop=stop)
+            a = m.column("Mean Semi-major Axis")
+            decay[amr] = a[1] - a[0]
+        if abs(decay[None]) > 0.5:
+            raise AssertionError("drag OFF but mean SMA moved %.2f km in a day" % decay[None])
+        ratio = decay[0.02] / decay[0.01]
+        if not 1.8 <= ratio <= 2.4:
+            raise AssertionError("first-day decay ratio %.2f for 2x area/mass, expected ~2" % ratio)
+        print("        J2 SSO drift %+.4f deg/day; day-1 decay %.2f / %.2f km (ratio %.2f), drag off %+.3f"
+              % (drift, decay[0.01], decay[0.02], ratio, decay[None]))
+        return True
+
+
+def _assert_orbit_wizard(session):
+    """The Orbit Wizard builds what was asked -- and refuses its silent traps.
+
+    Measured on STK 11: distances are metres and a wrong unit is accepted
+    (0.6 km altitude), local times must be HH:MM:SS, and RepeatingSunSync
+    ignores the requested local time (88 minutes off).
+    """
+    sso = session.orbit_wizard("SmokeSSO", "SunSynchronous", altitude_km=600,
+                               local_time_desc_node="10:30")
+    _ltan, ltdn = session.local_time_of_nodes(sso)
+    if abs(ltdn - 10.5) * 60.0 > 20.0:
+        raise AssertionError("SSO descending node at %.2f h, asked 10:30" % ltdn)
+    geo = session.orbit_wizard("SmokeGEO", "Geosynchronous", subsatellite_point_deg=23.7)
+    lon = session.read_data(geo, "LLA State", group="Fixed", elements=["Time", "Lon"],
+                            start=session._start, stop=session._start).column("Lon")[0]
+    if abs(lon - 23.7) > 0.01:
+        raise AssertionError("GEO parked at %.3f E, asked 23.700" % lon)
+    try:
+        session.orbit_wizard("SmokeRSS", "RepeatingSunSync", approx_revs_per_day=15,
+                             revs_to_repeat=15, local_time_desc_node=10.5)
+    except stk.StkError as exc:
+        if "ignores" not in str(exc):
+            raise AssertionError("RepeatingSunSync refused for the wrong reason: %s" % exc)
+    else:
+        raise AssertionError("RepeatingSunSync's ignored local time was accepted")
+    print("        SSO LTDN %.2f h; GEO %.3f E; RepeatingSunSync trap refused" % (ltdn, lon))
+    return True
+
+
+def _assert_relay_and_rfi(session):
+    """Bent pipe combines BOTH legs; interference actually degrades the link.
+
+    Guards the re-transmitter's -700 MHz default translation (negative
+    downlink frequency, total == uplink alone) and the CommSystem's
+    constellation + PreData requirements (empty results otherwise).
+    """
+    import math
+    sat = session.new_satellite("SmokeRelay", stk.altitude_to_sma(500.0), 97.4, 0.0)
+    a = session.new_facility("SmokeAthens", 37.98, 23.73, 0.1)
+    b = session.new_facility("SmokeSofia", 42.70, 23.32, 0.6)
+    ya = session.add_tracking_ground_antenna(a, sat, "SmokeYA", 0.435, 14.0)
+    yb = session.add_tracking_ground_antenna(b, sat, "SmokeYB", 0.437, 14.0)
+    up = session.add_radio_transmitter(a, "SmokeUp", 0.435, 10.0, 9.6, antenna=ya)
+    srx, rt = session.add_bent_pipe(sat, "SmokePipe", 0.435, 0.437, 0.0)
+    dn = session.add_radio_receiver(b, "SmokeDn", antenna=yb, required_ebno_db=9.6)
+    lb = session.chain_link_budget(session.new_chain("SmokePipeChain", [up, srx, rt, dn]))
+    if len(lb) == 0:
+        raise AssertionError("bent pipe produced no samples")
+    for i in range(len(lb)):
+        u, d, t = lb.column("C/No1")[i], lb.column("C/No2")[i], lb.column("C/No Tot.2")[i]
+        if abs(-10 * math.log10(10 ** (-u / 10) + 10 ** (-d / 10)) - t) > 0.01:
+            raise AssertionError("total C/No %.2f does not combine legs %.2f/%.2f" % (t, u, d))
+    wanted = session.add_radio_transmitter(sat, "SmokeWanted", 0.437, 0.0, 9.6,
+                                           antenna_model="Hemispherical")
+    jsat = session.new_satellite("SmokeJammer", stk.altitude_to_sma(520.0), 97.4, 0.0,
+                                 true_anomaly_deg=-3.0)
+    jam = session.add_radio_transmitter(jsat, "SmokeJam", 0.437, 0.0, 9.6,
+                                        antenna_model="Hemispherical")
+    victim = session.add_radio_receiver(b, "SmokeVictim", antenna=yb)
+    ib = session.interference_budget(
+        session.new_interference_study("SmokeRFI", [wanted], [victim], [jam]), victim,
+        elements=["Eb/No", "Eb/(No+I)", "C/I"])
+    if len(ib) == 0:
+        raise AssertionError("interference study returned no samples (%s)" % ib.message)
+    worst = max(ib.column("Eb/No")[i] - ib.column("Eb/(No+I)")[i] for i in range(len(ib)))
+    if worst < 10.0:
+        raise AssertionError("co-channel interferer degraded Eb/No by only %.1f dB" % worst)
+    print("        bent pipe %d samples, legs combine; interference costs up to %.1f dB"
+          % (len(lb), worst))
+    return True
+
+
+def _assert_link_budget(session):
+    """A UHF downlink to a tracking Yagi must come out physically right.
+
+    Guards every trap measured in bridge jobs 0046-0059, each of which STK
+    accepts silently: a gain antenna embedded with a 14.5 GHz design
+    frequency (-16.4 dBi instead of 14), a receiver on a sensor that cannot
+    link, a margin stuck at -9999.99, and access data whose later passes are
+    dropped (37 rows of a six-pass day).
+    """
+    import math
+    sat = session.new_satellite("SmokeLinkSat", stk.altitude_to_sma(500.0), 97.4, 0.0)
+    gs = session.new_facility("SmokeLinkGS", 38.58, 23.65, 0.1)
+    session.set_min_elevation(gs, 5.0)
+    yagi = session.add_tracking_ground_antenna(gs, sat, "SmokeYagi", 0.437, 14.0)
+    rx = session.add_radio_receiver(gs, "SmokeRx", antenna=yagi,
+                                    lna_noise_figure_db=1.0, required_ebno_db=9.6)
+    tx = session.add_radio_transmitter(sat, "SmokeTx", 0.437, 0.0, 9.6,
+                                       antenna_model="Hemispherical")
+    lb = session.link_budget(tx, rx)
+    if len(lb.segments) < 2:
+        raise AssertionError("only %d pass(es) returned in 24 h" % len(lb.segments))
+    rng = lb.column("Range")
+    k = rng.index(min(rng))
+    gain = lb.column("Rcvr Gain")[k]
+    if abs(gain - 14.0) > 0.2:
+        raise AssertionError("tracking Yagi gain %.2f dBi at the peak, expected 14" % gain)
+    if lb.column("Link Margin")[k] < -9000:
+        raise AssertionError("link margin not enabled (-9999.99)")
+    fspl = 20 * math.log10(4 * math.pi * rng[k] * 1e3 * 0.437e9 / 299792458.0)
+    if abs(fspl - lb.column("Free Space Loss")[k]) > 0.05:
+        raise AssertionError("free-space loss %.2f dB vs Friis %.2f dB"
+                             % (lb.column("Free Space Loss")[k], fspl))
+    print("        %d passes; peak %.0f km, Yagi %.2f dBi, Eb/No %.1f dB, margin %.1f dB"
+          % (len(lb.segments), rng[k], gain, lb.column("Eb/No")[k], lb.column("Link Margin")[k]))
+    return True
+
+
+def _assert_read_data(session):
+    """The generic data-provider reader returns the RIGHT shape of answer.
+
+    An equatorial 500 km orbit eclipses once per orbit for ~34 minutes, so a
+    6-hour window must hold 4 umbra intervals. Reading STK's result.Intervals
+    as the events reported ONE interval spanning the window instead -- a
+    plausible number that was wrong. This pins the correct reading.
+    """
+    start = session._start
+    stop = session._utcg_offset(start, 6 * 3600.0)
+    eq = session.new_satellite("SmokeEq", stk.altitude_to_sma(500.0), 0.0, 0.0)
+
+    umbra = session.read_data(eq, "Lighting Times", group="Umbra",
+                              start=start, stop=stop)
+    if umbra.kind != "interval" or len(umbra.intervals) != 4:
+        raise AssertionError("expected 4 umbra intervals in 6 h, got %d (%s)"
+                             % (len(umbra.intervals), umbra.message))
+    durations = umbra.column("Duration")
+    if not all(abs(d - 2066.0) < 30.0 for d in durations[:3]):
+        raise AssertionError("eclipse durations %r, expected ~2066 s" % durations[:3])
+
+    elements = session.read_data(eq, "Classical Elements", group="J2000",
+                                 elements=["Time", "Semi-major Axis"],
+                                 start=start, stop=stop, step_sec=600)
+    sma = elements.column("Semi-major Axis")[0]
+    if elements.kind != "time-varying" or abs(sma - stk.altitude_to_sma(500.0)) > 0.01:
+        raise AssertionError("SMA read back as %.3f km" % sma)
+
+    try:
+        session.read_data(eq, "Classical Element")
+    except stk.StkError as exc:
+        if "Classical Elements" not in str(exc):
+            raise AssertionError("wrong name refused without a suggestion: %s" % exc)
+    else:
+        raise AssertionError("a misspelled provider name was accepted")
+
+    print("        4 eclipses of %.0f s; SMA %.3f km" % (durations[0], sma))
+    return True
+
+
+def _assert_country_area_target(session):
+    """Built-in Natural Earth outlines build real area targets.
+
+    The alternative -- a lat/lon box, or an outline recalled from memory --
+    is the failure that produces numbers rather than errors: a Greece box
+    also covers Albania and North Macedonia, so revisit statistics average
+    over countries nobody asked about.
+    """
+    countries = session.list_countries()
+    if not countries:
+        raise AssertionError(
+            "no built-in country outlines; country_polygons.py is not next "
+            "to stk_helpers.py")
+    if "Greece" not in countries:
+        raise AssertionError("Greece missing from %d outlines" % len(countries))
+    print("        %d built-in outlines available" % len(countries))
+
+    path = session.new_area_target_from_country("SmokeGreece", "Greece")
+
+    # ring 1 is Crete -- multi-part countries must be reachable
+    crete = session.new_area_target_from_country("SmokeCrete", "Greece", ring=1)
+    print("        mainland: %s ; Crete: %s" % (path, crete))
+
+    # an unknown country must name what IS available, not fail obscurely
+    try:
+        session.new_area_target_from_country("SmokeNowhere", "Wakanda")
+    except stk.StkError as exc:
+        if "Available" not in str(exc):
+            raise AssertionError("rejected without listing alternatives: %s" % exc)
+    else:
+        raise AssertionError("'Wakanda' was accepted as a country")
+    return path
+
+
+def _assert_output_dir_join(session):
+    """output_dir() must behave as a string AND accept pathlib's ``/``.
+
+    Generated scripts write ``session.output_dir() / "results.csv"``. That
+    used to raise TypeError after the whole scenario had been built, which
+    is the most expensive possible moment for a one-character syntax
+    preference to matter.
+    """
+    folder = session.output_dir()
+    joined = folder / "smoke_join.csv"
+    expected = os.path.join(str(folder), "smoke_join.csv")
+    if str(joined) != expected:
+        raise AssertionError("'/' gave %r, expected %r" % (str(joined), expected))
+    if os.path.join(folder, "x.csv") != os.path.join(str(folder), "x.csv"):
+        raise AssertionError("os.path.join no longer works on output_dir()")
+    if not isinstance(folder, str):
+        raise AssertionError("output_dir() must still be a str, got %s" % type(folder))
+    return True
+
+
+def _write_test_shapefile(path, ring, projected=False):
+    """Write a minimal one-polygon shapefile, so this check needs no test data.
+
+    Only the .shp geometry file is written -- read_shapefile_rings() does not
+    read the .dbf. ``ring`` is a list of (lon, lat) pairs, closed.
+    """
+    import struct
+
+    body = struct.pack("<i", 5)
+    xs = [x for x, _y in ring]
+    ys = [y for _x, y in ring]
+    body += struct.pack("<4d", min(xs), min(ys), max(xs), max(ys))
+    body += struct.pack("<ii", 1, len(ring)) + struct.pack("<i", 0)
+    for x, y in ring:
+        body += struct.pack("<2d", x, y)
+
+    header = struct.pack(">i", 9994) + b"\0" * 20
+    header += struct.pack(">i", (100 + 8 + len(body)) // 2)
+    header += struct.pack("<i", 1000) + struct.pack("<i", 5)
+    header += struct.pack("<4d", min(xs), min(ys), max(xs), max(ys))
+    header += struct.pack("<4d", 0, 0, 0, 0)
+
+    with open(path, "wb") as handle:
+        handle.write(header + struct.pack(">ii", 1, len(body) // 2) + body)
+
+    if projected:
+        with open(os.path.splitext(path)[0] + ".prj", "w") as handle:
+            handle.write('PROJCS["WGS_84_UTM_zone_34N",GEOGCS["GCS_WGS_1984"]]')
+
+
+def _assert_shapefile_area_target(session):
+    """A geographic shapefile builds an area target; a projected one is refused.
+
+    A country outline recalled from memory looks plausible and is wrong by
+    tens of kilometres. Reading the real boundary from a shapefile is the
+    honest route -- provided a PROJECTED file (coordinates in metres) is
+    caught, because those would otherwise place the region near the Gulf of
+    Guinea without any error at all.
+    """
+    folder = session.output_dir()
+    good = os.path.join(folder, "_smoke_geographic.shp")
+    bad = os.path.join(folder, "_smoke_projected.shp")
+
+    # a 1 deg square over the Aegean, as (lon, lat)
+    ring = [(23.0, 38.0), (24.0, 38.0), (24.0, 39.0), (23.0, 39.0), (23.0, 38.0)]
+    _write_test_shapefile(good, ring)
+    _write_test_shapefile(bad, [(500000.0, 4200000.0), (510000.0, 4200000.0),
+                                (510000.0, 4210000.0), (500000.0, 4210000.0),
+                                (500000.0, 4200000.0)], projected=True)
+
+    rings = session.read_shapefile_rings(good)
+    if len(rings) != 1 or len(rings[0]) != 5:
+        raise AssertionError("expected one 5-vertex ring, got %s"
+                             % [len(r) for r in rings])
+    if rings[0][0] != (38.0, 23.0):
+        raise AssertionError(
+            "rings must come back as (lat, lon); got %r" % (rings[0][0],))
+
+    path = session.new_area_target_from_shapefile("SmokeShapeROI", good)
+    print("        shapefile area target: %s" % path)
+
+    # a projected file must RAISE, not silently build a region in the wrong place
+    try:
+        session.new_area_target_from_shapefile("SmokeShapeBad", bad)
+    except stk.StkError as exc:
+        if "PROJECTED" not in str(exc) and "projected" not in str(exc):
+            raise AssertionError("refused, but not as a projection problem: %s" % exc)
+    else:
+        raise AssertionError(
+            "a projected shapefile was accepted; its metre coordinates would "
+            "place the area target in the wrong hemisphere")
+    return path
+
+
+def _assert_coverage_regions(session, sat_path, roi_path, box_cov_path):
+    """A region-bounded grid must exist AND be smaller than the box.
+
+    A lat/lon box is the wrong shape for a country: a "Greece" box also
+    covers Albania, a "Japan" box covers both Koreas, and revisit statistics
+    then average over places nobody asked about. Bounding the grid to an
+    area target fixes that -- but only if STK actually applied the polygon
+    rather than silently leaving the grid global, which is what this checks.
+
+    ProbeROI is a 1 deg x 1 deg square at (38-39 N, 23-24 E); the box
+    coverage is 15 deg x 15 deg. At the same resolution the polygon grid
+    must therefore have FEWER points. Equal counts mean the region was
+    ignored.
+    """
+    region_cov = session.new_coverage(
+        "ProbeCovRegion", regions=[roi_path], resolution_deg=0.5,
+        assets=[sat_path], compute=False)
+
+    region_points = session.grid_point_count(region_cov)
+    box_points = session.grid_point_count(box_cov_path)
+    print("        polygon grid: %s points ; box grid: %s points"
+          % (region_points, box_points))
+
+    if region_points is None:
+        raise AssertionError(
+            "grid_point_count() could not read a point count on this STK; "
+            "the region grid cannot be verified")
+    if region_points <= 0:
+        raise AssertionError(
+            "the region-bounded grid has no points -- the area target was "
+            "not applied, or the resolution is coarser than the region")
+    if box_points is not None and region_points >= box_points:
+        raise AssertionError(
+            "region grid (%d points) is not smaller than the 15x15 deg box "
+            "grid (%d) -- the polygon was probably ignored"
+            % (region_points, box_points))
+    return region_cov
 
 
 def _assert_export(session, sat_path):
@@ -286,6 +809,45 @@ def _assert_body_not_sticky(session):
             "a facility created without a central body landed on %s, not Earth "
             "-- STK carried the previous body forward" % earth_body)
     return earth_body
+
+
+def _assert_bodies(session):
+    names = session.central_body_names()
+    if len(names) < 10:
+        raise AssertionError("only %d central bodies found; expected ~31" % len(names))
+    for expected in ("Earth", "Moon", "Mars"):
+        if expected not in names:
+            raise AssertionError("%s missing from the %d bodies" % (expected, len(names)))
+    print("        %d bodies, including Mars, Venus, Titan" % len(names))
+    return len(names)
+
+
+def _assert_radii(session):
+    """Radii must match known values, or a Mars orbit would be built wrong."""
+    expected = {"Earth": 6378.1, "Moon": 1737.4, "Mars": 3396.2}
+    out = {}
+    for body, want in expected.items():
+        got = session.body_radius_km(body)
+        out[body] = got
+        # Mars' equatorial radius is 3396.2; mean is 3389.5. Allow either.
+        if abs(got - want) > 12.0:
+            raise AssertionError("%s radius read as %.1f km, expected ~%.1f"
+                                 % (body, got, want))
+    print("        " + ", ".join("%s %.1f km" % (b, r) for b, r in sorted(out.items())))
+    return out
+
+
+def _assert_mars(session):
+    sma = session.sma_for_altitude(400.0, central_body="Mars")
+    sat = session.new_satellite("MarsProbe", sma_km=sma, inc_deg=93.0,
+                                raan_deg=0.0, central_body="Mars")
+    body = session.central_body_of(sat)
+    radius = session.orbit_radius_km(sat)
+    print("        Mars orbiter: body %s, sma %.1f km, radius %.1f km"
+          % (body, sma, radius or -1))
+    if not body or body.lower() != "mars":
+        raise AssertionError("satellite landed on %s, not Mars" % body)
+    return sat
 
 
 def main():
@@ -466,6 +1028,15 @@ def main():
                       lambda: session.set_constraint(constraint_gs, "Lighting",
                                                      value="DirectSun"),
                       requires={"facility": constraint_gs})
+        def _offnadir_refused_on_facility():
+            try:
+                session.set_constraint(constraint_gs, "OffNadirAngle", maximum=45)
+            except ValueError:
+                return True
+            raise AssertionError("off-nadir on a facility was guessed as 90 - x")
+        results.check("off-nadir refused on a facility (no flat 90-x)",
+                      _offnadir_refused_on_facility,
+                      requires={"facility": constraint_gs})
         roi = results.check(
             "area target from a boundary",
             lambda: session.new_area_target(
@@ -488,6 +1059,49 @@ def main():
         results.check("figure of merit (revisit time)",
                       lambda: session.add_figure_of_merit(cov, "Revisit"),
                       requires={"coverage": cov})
+        results.check(
+            "Walker tool: Delta matches ours, Star spans 180, payload copied, no seed",
+            lambda: _assert_walker_tool(session))
+        results.check(
+            "Astrogator: Hohmann to GEO, exact on point mass, real orbit on HPOP",
+            lambda: _assert_astrogator_transfer(session))
+        results.check(
+            "orbit state from a J2000 state vector: exact round trip",
+            lambda: _assert_state_round_trip(session))
+        results.check(
+            "attitude: nadir vs velocity alignment differ on an eccentric orbit",
+            lambda: _assert_attitude_eccentric(session))
+        results.check(
+            "orbital lifetime: 3U presets, mass scaling, no-decay case",
+            lambda: _assert_lifetime(session))
+        results.check(
+            "propagators and drag: SSO plane drift, decay scales with area/mass",
+            lambda: _assert_propagator_physics(session))
+        results.check(
+            "Orbit Wizard: SSO local time, GEO longitude, silent traps refused",
+            lambda: _assert_orbit_wizard(session))
+        results.check(
+            "bent pipe and interference: both legs, real C/(N+I)",
+            lambda: _assert_relay_and_rfi(session))
+        results.check(
+            "link budget: tracking antenna, real gain, every pass",
+            lambda: _assert_link_budget(session))
+        results.check(
+            "read_data: any provider kind, events as rows",
+            lambda: _assert_read_data(session))
+        results.check(
+            "area target from a built-in country outline",
+            lambda: _assert_country_area_target(session))
+        results.check(
+            "output_dir() supports both os.path.join and pathlib's /",
+            lambda: _assert_output_dir_join(session))
+        results.check(
+            "area target from a shapefile polygon",
+            lambda: _assert_shapefile_area_target(session))
+        results.check(
+            "coverage grid confined to an area target (polygon, not a box)",
+            lambda: _assert_coverage_regions(session, sat, roi, cov),
+            requires={"satellite": sat, "area target": roi, "coverage": cov})
         # Use the area target, which the check above proved has access, so a
         # zero-pass result means the CSV writer is broken rather than the
         # geometry being unlucky.
@@ -503,6 +1117,15 @@ def main():
         results.check(
             "an Earth facility created after a lunar one stays on Earth",
             lambda: _assert_body_not_sticky(session))
+
+        # Bodies beyond Earth and the Moon: radii read from STK rather than
+        # hardcoded, so any of the 31 bodies works without a magic number.
+        results.check("STK's central bodies are enumerable",
+                      lambda: _assert_bodies(session))
+        results.check("radii come from STK (Earth, Moon, Mars)",
+                      lambda: _assert_radii(session))
+        results.check("an object can be built on Mars",
+                      lambda: _assert_mars(session))
 
         # --- STK reports and graphs ---------------------------------------
         results.check("report styles are discoverable",

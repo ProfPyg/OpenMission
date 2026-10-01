@@ -80,24 +80,36 @@ def _signature(node: ast.FunctionDef) -> str:
     return "%s(%s)" % (node.name, ", ".join(parts))
 
 
-def _summary(node: ast.FunctionDef, max_lines: int = 6) -> list[str]:
-    """The docstring's opening paragraphs, trimmed for the prompt.
+def _summary(node: ast.FunctionDef, max_lines: int = 14) -> list[str]:
+    """The docstring, kept whole enough to carry its warnings.
 
-    Docstrings carry the reasoning behind measured behaviour -- that nadir is
-    +90, that a TLE needs its span checked -- so they are worth including,
-    but not in full.
+    This used to stop at the first blank line. That silently dropped
+    everything after the opening sentence -- including, on new_facility, the
+    paragraph saying it works on any central body and that
+    "New / */CentralBody/Moon Facility ..." is not real syntax. The agent
+    then invented that exact command, twice. Once the API section is
+    generated from docstrings, a docstring IS the instruction, so paragraph
+    breaks are preserved and the text is kept.
     """
     doc = ast.get_docstring(node) or ""
     if not doc:
         return []
     out: list[str] = []
+    blank_pending = False
     for line in doc.strip().splitlines():
         stripped = line.strip()
-        if not stripped and out:
-            break                      # first blank line ends the summary
-        if stripped:
-            out.append(stripped)
+        if not stripped:
+            blank_pending = bool(out)      # remember, but do not emit yet
+            continue
+        # doctest-style example blocks add bulk without instruction
+        if stripped.startswith(">>>"):
+            break
+        if blank_pending:
+            out.append("")
+            blank_pending = False
+        out.append(stripped)
         if len(out) >= max_lines:
+            out.append("...")
             break
     return out
 
@@ -132,6 +144,30 @@ def generate(module_path: str, include_constants: bool = True) -> str:
     lines.append("the code does. Call these and nothing else; anything starting")
     lines.append("with an underscore is internal and may change.")
     lines.append("")
+
+    # only the helpers that CREATE something on a body -- find_data_file also
+    # takes central_body, but it locates gravity files and listing it here
+    # would imply it builds an object somewhere
+    takes_body = sorted(name for name, node in methods.items()
+                        if name.startswith("new_")
+                        and any(a.arg == "central_body" for a in node.args.args))
+    if takes_body:
+        lines.append("**Objects away from Earth.** STK 11 knows 31 central bodies")
+        lines.append("(Mars, Venus, Titan, Europa, Phobos, Jupiter, ... as well as")
+        lines.append("Earth and the Moon), and facilities and satellites were")
+        lines.append("verified on Mars as well as the Moon. These helpers take")
+        lines.append("`central_body=\"<body>\"` and build the object THERE. There is")
+        lines.append("no separate command and no other syntax:")
+        lines.append("")
+        for name in takes_body:
+            lines.append("    session.%s(..., central_body=\"Moon\")" % name)
+        lines.append("")
+        lines.append("Omitting `central_body` means EARTH.")
+        lines.append("")
+        lines.append("For an altitude above a body other than Earth or the Moon,")
+        lines.append("use `session.sma_for_altitude(alt_km, central_body=\"Mars\")`,")
+        lines.append("which reads the radius from STK. Do not hardcode radii.")
+        lines.append("")
 
     if functions:
         lines.append("### Module-level helpers (`stk.<name>`)")
