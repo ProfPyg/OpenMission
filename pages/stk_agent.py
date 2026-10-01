@@ -235,14 +235,17 @@ with bar[0].container(key="logo"):
             _save()
         S.mission = S.agent = None
         st.rerun()
-with bar[1].popover("Missions"):
+@st.fragment
+def _missions_menu():
+    """Runs on its own: clicking a bin redraws only this list, so the menu
+    stays open instead of the whole page reloading."""
     listed = missions.list_missions()
     if not listed:
         st.caption("No missions yet.")
     for mid, title, usd in listed[:20]:
         c_name, c_bin = st.columns([5, 1], vertical_alignment="center", gap="small")
         if c_name.button(title, key="pm_" + mid, use_container_width=True):
-            _open_mission(mid); st.rerun()
+            _open_mission(mid); st.rerun()                     # opening needs the full page
         asking = S.get("confirm_del") == "pm" + mid
         with c_bin.container(key="bin_" + ("ask_" if asking else "") + "pm" + mid):
             if st.button("Delete?" if asking else "🗑", key="pdel_" + mid,
@@ -250,12 +253,18 @@ with bar[1].popover("Missions"):
                 current = S.get("mission") or {}
                 if not asking:
                     S.confirm_del = "pm" + mid
+                    st.rerun(scope="fragment")
                 elif not (_busy() and mid == current.get("id")):
                     missions.delete(mid)
                     S.confirm_del = None
                     if mid == current.get("id"):
                         S.mission = S.agent = None
-                st.rerun()
+                        st.rerun()
+                    st.rerun(scope="fragment")
+
+
+with bar[1].popover("Missions"):
+    _missions_menu()
 with bar[2].popover("Guide"):
     st.markdown(
         "**How it works**\n\n"
@@ -440,24 +449,29 @@ with side:                       # the missions list, as before
             if not _busy():
                 _save()
             S.mission = S.agent = None; st.rerun()
-    with st.container(key="mlist"):
-        for mid, title, usd in missions.list_missions()[:15]:
-            label = ("▎" if mid == mission["id"] else "") + title
-            c_name, c_bin = st.columns([5, 1], vertical_alignment="center", gap="small")
-            if c_name.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
-                _save(); _open_mission(mid); st.rerun()
-            asking = S.get("confirm_del") == mid
-            with c_bin.container(key="bin_" + ("ask_" if asking else "") + mid):
-                if st.button("Delete?" if asking else "🗑", key="del_" + mid,
-                             help="Click again to delete for good" if asking else "Delete this mission"):
-                    if not asking:
-                        S.confirm_del = mid                  # first click: ask
-                    elif not (_busy() and mid == mission["id"]):
-                        missions.delete(mid)                 # second click: delete
-                        S.confirm_del = None
-                        if mid == mission["id"]:
-                            S.mission = S.agent = None
-                    st.rerun()
+    @st.fragment
+    def _side_list():
+        with st.container(key="mlist"):
+            for mid, title, usd in missions.list_missions()[:15]:
+                label = ("▎" if mid == mission["id"] else "") + title
+                c_name, c_bin = st.columns([5, 1], vertical_alignment="center", gap="small")
+                if c_name.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
+                    _save(); _open_mission(mid); st.rerun()
+                asking = S.get("confirm_del") == mid
+                with c_bin.container(key="bin_" + ("ask_" if asking else "") + mid):
+                    if st.button("Delete?" if asking else "🗑", key="del_" + mid,
+                                 help="Click again to delete for good" if asking else "Delete this mission"):
+                        if not asking:
+                            S.confirm_del = mid
+                            st.rerun(scope="fragment")
+                        elif not (_busy() and mid == mission["id"]):
+                            missions.delete(mid)
+                            S.confirm_del = None
+                            if mid == mission["id"]:
+                                S.mission = S.agent = None
+                                st.rerun()
+                            st.rerun(scope="fragment")
+    _side_list()
 
 steps = [e for e in mission["log"] if e["kind"] == "step" and e.get("tool") == "run_stk_step"]
 retried = sum(1 for e in steps if e.get("status") not in ("ok", "running"))
