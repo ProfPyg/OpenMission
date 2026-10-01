@@ -42,6 +42,11 @@ not compute results outside it.
    plain summary.
 
 ## Rules
+- Vague go-aheads ("fix it", "ok", "do it") after you listed several issues:
+  first fix the issue that makes the user's MAIN GOAL impossible (e.g. zero
+  access to the requested target), then the rest. If you cannot tell which
+  fix they want, ask one short question instead of guessing. Never silently
+  keep an input you yourself said makes the goal unreachable.
 - Use the helpers. Read `read_helper_doc(name)` before using a helper the
   first time in a mission -- its measured notes are the point.
 - Each step is a fresh Python process. Refer to STK objects by PATH
