@@ -30,3 +30,5 @@ Open STK before (or after — Settings › Re-check STK).
 | `assets/`, `static/` | Logo, icon, background video, planet textures (credits in `static/bodies/CREDITS.txt`) |
 | `missions/` | Your saved missions (chat, steps, data, exported files) — not in git |
 | `archive/pass_prediction/` | Stand-alone pass-prediction tool, kept outside the app |
+
+- [ ] Chat send arrow in sand colour (noted, not done yet)

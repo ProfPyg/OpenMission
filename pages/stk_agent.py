@@ -236,11 +236,22 @@ with bar[2].popover("Guide"):
                 '<a href="https://www.solarsystemscope.com/textures/" target="_blank">Solar System Scope</a>, '
                 'CC BY 4.0, based on NASA data.</div>', unsafe_allow_html=True)
 with bar[3].popover("Settings"):
-    st.text_input("Anthropic API key", key="api_key", type="password", autocomplete="off",
-                  help="Saved only on this computer (.streamlit/secrets.toml, never in git).")
-    if S.api_key and S.api_key != _saved_key() and st.button("Remember on this computer"):
-        _remember_key(S.api_key)
-        st.success("Saved. You won't be asked again on this computer.")
+    # A plain text field masked by CSS: a real password field makes the
+    # browser offer to save it (Google Passwords).
+    with st.container(key="keybox"):
+        st.text_input("Anthropic API key", key="api_key", autocomplete="off",
+                      help="Stored only on this computer (.streamlit/secrets.toml, never in git).")
+    saved = bool(S.api_key) and S.api_key == _saved_key()
+
+    def _toggle_remember():
+        if S.remember_key and S.api_key:
+            _remember_key(S.api_key)
+        elif not S.remember_key:
+            _remember_key("")              # forget
+    st.checkbox("Remember this key on this computer", value=saved, key="remember_key",
+                on_change=_toggle_remember, disabled=not S.api_key)
+    if saved:
+        st.markdown('<div class="pr-dlg-small">Saved on this computer ✓</div>', unsafe_allow_html=True)
     st.selectbox("Model", list(MODELS), key="model", format_func=lambda k: MODELS[k]["label"])
     st.toggle("Moving background", key="motion")     # bound by key: one click = one change
     if st.button("Re-check STK"):
@@ -378,7 +389,7 @@ _sig = (mission["id"], len(json.dumps(_f, default=str)) if _f else 0)
 if _f and S.get("findings_sig") != _sig:      # new results arrived: open the panel once
     S.findings_sig = _sig
     S.show_out = True
-if S.show_out:
+if S.show_out and _f:            # the panel exists only once there are results
     side, chat, out = st.columns([1, 2.2, 2.9], gap="medium")
 else:
     side, chat = st.columns([1, 5.1], gap="medium")
@@ -414,7 +425,9 @@ with chat:
                    MODELS.get(agent.model, {}).get("label", agent.model).split(" (")[0]),
                 unsafe_allow_html=True)
     with st.container(key="outtoggle"):
-        if S.show_out:
+        if not _f:
+            _lbl = "Results · not ready yet"
+        elif S.show_out:
             _lbl = "Hide results ›"
         elif _f:
             _n = len(_f.get("metrics") or [])
@@ -422,7 +435,8 @@ with chat:
             _lbl = "‹ Show results · %d numbers%s" % (_n, (" · %d charts" % _c) if _c else "")
         else:
             _lbl = "‹ Show results"
-        if st.button(_lbl, key="tog_out"):
+        if st.button(_lbl, key="tog_out", disabled=not _f,
+                     help=None if _f else "Results appear here when the agent finishes"):
             S.show_out = not S.show_out; st.rerun()
     st.markdown('<div class="pr-q" style="margin-top:6px">Chat</div>', unsafe_allow_html=True)
     if True:

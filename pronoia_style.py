@@ -73,6 +73,9 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 /* inputs */
 .stTextArea textarea,.stTextInput input{background:rgba(20,20,17,.8)!important;color:var(--ink)!important;border-color:#37352c!important}
 
+/* API key: masked text field (not a password field -> no browser save prompt) */
+.st-key-keybox input{-webkit-text-security:disc!important;text-security:disc!important}
+.st-key-outtoggle button:disabled p{color:var(--dim)!important;font-weight:500!important}
 /* results show/hide */
 .st-key-outtoggle{align-items:flex-end}
 .st-key-outtoggle button{background:transparent!important;border:none!important;padding:0!important;min-height:0!important;box-shadow:none!important}
