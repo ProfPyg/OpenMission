@@ -157,6 +157,13 @@ def parse_utcg(epoch):
     return _datetime(int(year), month, int(day), int(hour), int(minute), whole, micro)
 
 
+def _same_time(x, y):
+    try:
+        return abs((parse_utcg(str(x)[:24]) - parse_utcg(str(y)[:24])).total_seconds()) < 1
+    except Exception:
+        return False
+
+
 def julian_centuries(epoch):
     """Julian centuries from J2000.0 for a UTCG epoch."""
     when = epoch if isinstance(epoch, _datetime) else parse_utcg(epoch)
@@ -3234,9 +3241,42 @@ class StkSession(object):
             access._label = "%s -> %s" % (tx_path, rx_path)
         except Exception:
             pass
-        return self.read_data(access, "Link Information",
-                              elements=list(elements) if elements else ["Time"] + list(self.LINK_KEYS),
-                              start=start, stop=stop, step_sec=step_sec)
+        els = list(elements) if elements else ["Time"] + list(self.LINK_KEYS)
+        a, b = start or self._start, stop or self._stop
+        if not (a and b):
+            return self.read_data(access, "Link Information", elements=els,
+                                  start=start, stop=stop, step_sec=step_sec)
+        # One day per read. A month of link budget in ONE request crashed
+        # STK 11.2 outright (mission 1001, 30 d at 15 s); day-sized reads
+        # keep the data provider's memory small and give the same rows.
+        import datetime as _dt
+        t, end = parse_utcg(a), parse_utcg(b)
+        out = None
+        while t < end:
+            u = min(end, t + _dt.timedelta(days=1))
+            f = lambda x: "%d %s %d %02d:%02d:%02d.000" % (      # not strftime: locale
+                x.day, _MONTHS[x.month - 1], x.year, x.hour, x.minute, x.second)
+            r = self.read_data(access, "Link Information", elements=els,
+                               start=f(t), stop=f(u), step_sec=step_sec)
+            if out is None:
+                out = r
+            else:
+                n0 = len(next(iter(out.columns.values()), []))
+                for k, v in r.columns.items():
+                    out.columns.setdefault(k, []).extend(v)
+                out.intervals = list(out.intervals or []) + list(r.intervals or [])
+                segs = list(out.segments or [])
+                for s0, s1, first, cnt in (r.segments or []):
+                    # a pass cut by the day boundary is joined back into one
+                    if segs and first == 0 and _same_time(segs[-1][1], f(t)) \
+                            and _same_time(s0, f(t)):
+                        p0, _, pf, pc = segs[-1]
+                        segs[-1] = (p0, s1, pf, pc + cnt)
+                    else:
+                        segs.append((s0, s1, first + n0, cnt))
+                out.segments = segs
+            t = u
+        return out
 
     def link_passes(self, tx_path, rx_path, step_sec=10.0, min_margin_db=None):
         """One summary per pass: start, stop, peak Eb/No, worst margin, min range.
