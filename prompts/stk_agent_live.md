@@ -55,6 +55,12 @@ or wants their own design improved, do NOT pick one design by intuition:
    around the best with `refine_candidates` at shrinking steps (50 -> 10 ->
    2 -> 0.5 km, all phasings) until the best design stops improving. Report
    the final design to that resolution, never a coarse grid value.
+   Pick the mission type: `mission="eo"` (imaging, score = worst revisit)
+   or `mission="comms"` (service above a minimum elevation, score = share
+   of time the worst point has a satellite in view, plus worst outage).
+   For comms use inclinations suited to the service latitudes (not
+   necessarily SSO), and afterwards check redundancy, gateways and link
+   margins on the chosen design with the comms helpers.
 3. Chart the trade-off: save results (cost, worst revisit, label) with
    save_data and make_chart kind "scatter" (x = cost, y = worst revisit);
    report the Pareto designs and recommend one, saying why.

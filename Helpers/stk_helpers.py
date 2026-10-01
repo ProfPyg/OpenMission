@@ -4866,7 +4866,7 @@ class StkSession(object):
 
     def trade_study(self, name, candidates, regions=(), box=None, resolution_deg=2.0,
                     sensor_half_angle_deg=30.0, budget_s=140.0, state_file=None,
-                    plane_cost=2.0):
+                    plane_cost=2.0, mission="eo", min_elevation_deg=10.0):
         """Search constellation architectures and score each one in STK.
 
         ``candidates``  list of dicts (see :meth:`candidate_grid`): altitude_km,
@@ -4882,6 +4882,20 @@ class StkSession(object):
           time_covered_pct    mean share of the period a point is seen
           cost                total_sats + plane_cost * planes (simple proxy:
                               each plane ~ one launch; change plane_cost)
+        ``mission``
+          "eo"     imaging: a nadir camera of ``half_angle_deg``; the score is
+                   the WORST REVISIT (largest gap between looks).
+          "comms"  communications: each satellite serves everyone who sees it
+                   above ``min_elevation_deg`` (the beam is sized exactly to
+                   that elevation: sin(eta) = R cos(el)/(R+h)). Scores:
+                   worst_point_time_pct  share of time the WORST grid point
+                                         has at least one satellite in view
+                                         (100 = continuous service)
+                   worst_outage_h        longest gap with no satellite in view
+                   The score is 100 - worst_point_time_pct (lower is better).
+          Redundancy (>= 2 in view), link margins and gateways are checked on
+          the chosen design afterwards with the comms helpers.
+
         Returns {"done", "evaluated", "remaining", "results" (sorted by cost),
         "pareto" (non-dominated in cost vs worst revisit, full coverage only),
         "state_file"}. Call again with the same ``state_file`` until done.
@@ -4932,7 +4946,12 @@ class StkSession(object):
             alt = cand["altitude_km"]
             inc = self.sso_inclination_deg(alt) if str(cand.get("inclination")).lower() == "sso" \
                 else float(cand["inclination"])
-            half = cand.get("half_angle_deg") or sensor_half_angle_deg
+            if str(mission).lower() == "comms":
+                half = round(math.degrees(math.asin(
+                    EARTH_RADIUS_KM * math.cos(math.radians(float(min_elevation_deg)))
+                    / (EARTH_RADIUS_KM + alt))), 4)
+            else:
+                half = cand.get("half_angle_deg") or sensor_half_angle_deg
             tag = "TS%d" % (len(state["results"]) + 1)
             T, P, F = int(cand["total_sats"]), int(cand["planes"]), int(cand["phase_f"])
             row = {"candidate": cand, "inclination_deg": round(inc, 3),
@@ -4972,6 +4991,14 @@ class StkSession(object):
                     "mean_revisit_h": round(revisit["avg"] / 3600.0, 2) if full else None,
                     "time_covered_pct": round(float(ctime.get("avg", 0.0)), 3),
                     "cost": cand["total_sats"] + float(plane_cost) * cand["planes"]})
+                if str(mission).lower() == "comms":
+                    worst_pt = float(ctime.get("min", 0.0))
+                    row.update({"worst_point_time_pct": round(worst_pt, 3),
+                                "worst_outage_h": row["worst_revisit_h"],
+                                "min_elevation_deg": float(min_elevation_deg),
+                                "score": round(100.0 - worst_pt, 3) if full else None})
+                else:
+                    row["score"] = row["worst_revisit_h"]
             except Exception as exc:
                 row["error"] = str(exc)[:300]
             finally:
@@ -4988,13 +5015,13 @@ class StkSession(object):
                   % (tag, cand, row.get("coverage_pct"), row.get("worst_revisit_h"),
                      row.get("cost"), (" ERROR " + row["error"]) if "error" in row else ""))
 
-        ok = [r for r in state["results"] if r.get("worst_revisit_h") is not None]
-        ok.sort(key=lambda r: (r["cost"], r["worst_revisit_h"]))
+        ok = [r for r in state["results"] if r.get("score") is not None]
+        ok.sort(key=lambda r: (r["cost"], r["score"]))
         pareto, best = [], math.inf
         for r in ok:
-            if r["worst_revisit_h"] < best - 1e-9:
+            if r["score"] < best - 1e-9:
                 pareto.append(r)
-                best = r["worst_revisit_h"]
+                best = r["score"]
         remaining = len([c for c in candidates
                          if key(c) not in {key(r["candidate"]) for r in state["results"]}])
         return {"done": remaining == 0, "evaluated": len(state["results"]),
