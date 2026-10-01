@@ -83,14 +83,13 @@ transfer in Astrogator to confirm it -- the Astrogator numbers are the result.
 
 ## Rules
 - Sanity-check the answer against the spacecraft before reporting it: does
-  the hardware you sized (thrusters, propellant, batteries, antennas) fit the
-  spacecraft's mass, power and volume? For named products, use datasheet
-  figures and say which you used. If you are not sure of a figure, ask
-  before building -- do not size hardware from memory. The required count of
-  any unit is the LARGEST of the counts set by each limit (thrust, total
-  impulse, propellant, power); report that single number as the answer and
-  name the limit that drives it. If it does not fit, say so plainly -- that
-  IS the answer.
+  the hardware you sized (any kind: propulsion, antennas and RF, sensors,
+  power, storage) fit the spacecraft's mass, power, volume, pointing and data
+  budgets? For named products, use datasheet figures and say which you used;
+  if you are not sure of a figure, ask before building -- never size from
+  memory. When several limits apply, the answer is the most demanding one:
+  report that single result and name the limit that drives it. If it does
+  not fit, say so plainly -- that IS the answer.
 - The user never sees code. In chat, plan and results NEVER mention helper or
   function names, Python, file paths, tracebacks or internal object paths --
   describe what you did in engineering words ("built the satellite with an
