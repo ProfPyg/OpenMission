@@ -166,8 +166,8 @@ def _worker(mission, agent):
         elif kind == "stk_lost":
             mission["stk_lost"] = True
             log.append({"kind": "error", "text":
-                "STK closed during the last step. Reopen STK — Pronoia will pick up "
-                "where it stopped as soon as STK is back."})
+                "STK closed during the last step, so everything built in it is gone. Reopen "
+                "STK — Pronoia will restart the build from the start as soon as STK is back."})
     mission["stk_lost"] = False
     mission["now"] = "Thinking…"
     try:
@@ -358,12 +358,13 @@ def _stk_watchdog():
         pair = S.get("run_pair")
         if now.get("status") == "ok" and pair and pair[0].get("stk_lost"):
             m, a = pair                      # STK is back: carry on by itself
-            a.add_user("STK was closed and has now been reopened (automatic notice). "
-                       "Objects built before the crash may be gone: check the scenario "
-                       "tree, rebuild only what is missing, and continue the plan. "
-                       "Avoid the request that was running when STK closed; do it "
-                       "in smaller pieces.")
-            m["log"].append({"kind": "user", "text": "STK is back — continuing."})
+            a.add_user("STK closed and has been reopened with an EMPTY scenario (automatic "
+                       "notice). Nothing built before exists any more. Restart the approved "
+                       "plan from its first step and rebuild everything; do not reuse numbers "
+                       "from before the crash. Do the request that was running when STK "
+                       "closed in smaller pieces.")
+            a.ctx.charts = []
+            m["log"].append({"kind": "user", "text": "STK is back — restarting the build from the start."})
             _launch(m, a)
             st.rerun()
     pr = S.probe or {}
