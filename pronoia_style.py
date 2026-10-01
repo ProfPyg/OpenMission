@@ -131,6 +131,7 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 [data-testid="stAlert"] svg,[data-testid="stAlertDynamicIcon"]{display:none!important}
 [data-testid="stException"] pre,[data-testid="stException"] code{font-size:12px!important;color:var(--dim)!important}
 /* loader: the app icon */
+.pr-clock{color:var(--dim);font-variant-numeric:tabular-nums;}
 .pr-loader{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:13px;letter-spacing:.03em;padding:6px 0}
 .pr-loader.big{flex-direction:column;justify-content:center;gap:14px;padding:9vh 0 7vh;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
 /* chat + log */

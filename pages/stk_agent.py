@@ -36,9 +36,13 @@ S = st.session_state
 SECRETS = ROOT / ".streamlit" / "secrets.toml"      # git-ignored; stays on this computer
 
 
-def _plain_reason(text):
+def _plain_reason(text, status=None):
     """One plain sentence from a failed step -- no code, paths or tracebacks.
     Internals stay internal; the full detail is in the developer view."""
+    if status == "no_stk":
+        return "STK stopped responding (closed or crashed)."
+    if status == "timeout":
+        return "STK took longer than 3 minutes on this step, so it was stopped."
     lines = [l.strip() for l in str(text).splitlines() if l.strip()]
     for l in lines:
         if "Error:" in l and not l.startswith("File "):
@@ -515,13 +519,26 @@ with chat:
                 st.markdown(e["text"])
             elif e["kind"] == "error":
                 st.warning(e["text"])
+        if not _busy():
+            S.pop("busy_mid", None)
         if _busy():
             @st.fragment(run_every=1.5)
             def _progress():
                 if not _busy():
                     st.rerun()
                 first = not any(e["kind"] in ("text", "user") for e in shown)
-                st.markdown(ps.loader(html.escape(mission.get("now") or "Working…"), big=first),
+                now_txt = mission.get("now") or "Working…"
+                t = time.time()
+                if S.get("busy_mid") != mission["id"]:
+                    S.busy_mid, S.busy_t0 = mission["id"], t
+                if S.get("now_txt") != now_txt:
+                    S.now_txt, S.now_t0 = now_txt, t
+                fmt = lambda x: "%d:%02d" % divmod(int(x), 60)
+                clock = fmt(t - S.busy_t0)
+                if t - S.now_t0 > 20 and t - S.now_t0 < t - S.busy_t0 - 1:
+                    clock += " · this step " + fmt(t - S.now_t0)
+                st.markdown(ps.loader(html.escape(now_txt)
+                                      + '<span class="pr-clock"> · %s</span>' % clock, big=first),
                             unsafe_allow_html=True)
             _progress()
 
@@ -568,7 +585,7 @@ with chat:
             t, color = tag.get(e.get("status"), (str(e.get("status")).upper(), "var(--dim)"))
             reason = ""
             if e.get("status") not in ("ok", "running") and e.get("output"):
-                reason = _plain_reason(e["output"])
+                reason = _plain_reason(e["output"], e.get("status"))
             lines.append('<div class="pr-logline"><span style="color:%s">%s</span>%d · %s%s</div>'
                          % (color, t, i, html.escape(e.get("purpose") or ""),
                             ('<br><small style="color:var(--dim);margin-left:64px">%s</small>'
