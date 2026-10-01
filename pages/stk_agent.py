@@ -227,11 +227,19 @@ with bar[1].popover("Missions"):
         if st.button(title, key="pm_" + mid, use_container_width=True):
             _open_mission(mid); st.rerun()
 with bar[2].popover("Guide"):
-    st.markdown("**How it works**\n\n1. Open STK on this computer.\n2. Describe the mission.\n"
-                "3. The agent asks what it needs and shows a plan with a cost estimate.\n"
-                "4. Say yes — it builds the scenario in your STK step by step.\n"
-                "5. Read the conclusion, numbers and charts; ask follow-ups.\n\n"
-                "The agent never closes or overwrites your work without asking.")
+    st.markdown(
+        "**How it works**\n\n"
+        "1. Open STK on this computer. Pronoia links to it by itself.\n"
+        "2. Describe the mission, or pick an example. Name the scenario if you like.\n"
+        "3. Pronoia asks only what it needs, then shows a short plan with its assumptions.\n"
+        "4. **Build it** runs the plan in your STK, step by step. **Change the plan** lets you "
+        "adjust it first.\n"
+        "5. Read the answer in **Results** (conclusion, numbers with their STK source, notes) "
+        "and **Visuals**; ask follow-ups in the chat.\n\n"
+        "**Ask for advice, too:** \"what is the best constellation for…\", \"can my design be "
+        "cheaper?\", \"when should I launch to Mars?\". Pronoia searches the options in STK "
+        "and recommends one.\n\n"
+        "Every number comes from STK. Pronoia never closes or overwrites your work without asking.")
     st.markdown('<div class="pr-dlg-small">Planet and Moon textures: '
                 '<a href="https://www.solarsystemscope.com/textures/" target="_blank">Solar System Scope</a>, '
                 'CC BY 4.0, based on NASA data.</div>', unsafe_allow_html=True)
