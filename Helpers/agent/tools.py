@@ -62,10 +62,10 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "plan": {"type": "string", "description": "Markdown: objects, settings, analyses, outputs."},
+                "plan": {"type": "string", "description": "Short markdown for an engineer (10-15 lines): Goal / What I'll build / How I'll find the answer / You'll get / Assumptions. No function names, code or internals."},
                 "estimated_steps": {"type": "integer"},
                 "concerns": {"type": "string",
-                             "description": "Incorrect or risky inputs and suggested improvements, if any."},
+                             "description": "2-3 lines: inputs that look wrong or risky, and the suggested fix."},
             },
             "required": ["plan", "estimated_steps"],
         },
