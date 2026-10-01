@@ -345,18 +345,19 @@ if agent is None:                     # half-started (interrupted): rebuild from
         S.mission = None
         st.rerun()
 st.markdown('<div class="pr-rule"></div>', unsafe_allow_html=True)
-side, main = st.columns([1, 4.2], gap="large")
+rail, chat, out = st.columns([0.32, 2.3, 3.1], gap="medium")
 
-with side:
-    with st.container(key="newm"):
-        if st.button("\\+ New mission", use_container_width=True):
+with rail:                       # missions, folded: + and one short tag per mission
+    with st.container(key="rail"):
+        if st.button("\\+", key="rail_new", help="New mission"):
             if not _busy():
                 _save()
             S.mission = S.agent = None; st.rerun()
-    with st.container(key="mlist"):
-        for mid, title, usd in missions.list_missions()[:15]:
-            label = ("▎" if mid == mission["id"] else "") + title
-            if st.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
+        for mid, title, usd in missions.list_missions()[:12]:
+            tag = "".join(w[0] for w in re.findall(r"[A-Za-z0-9]+", title)[:2]).upper() or "·"
+            on = mid == mission["id"]
+            if st.button(tag, key="ml_" + mid, help=title, type="primary" if on else "secondary") \
+                    and not on:
                 _save(); _open_mission(mid); st.rerun()
 
 steps = [e for e in mission["log"] if e["kind"] == "step" and e.get("tool") == "run_stk_step"]
@@ -370,16 +371,14 @@ else:
     state_txt = "<b>Completed</b>"
 minutes = ((mission.get("finished") or time.time()) - (mission.get("started") or time.time())) / 60
 
-with main:
+with chat:
     st.markdown('<div class="pr-title">%s</div><div class="pr-meta">%s · scenario %s · %d steps%s · %s</div>'
                 % (html.escape(mission["title"]), state_txt, html.escape(mission["scenario"]), len(steps),
                    (" · %.0f min" % minutes) if mission.get("started") else "",
                    MODELS.get(agent.model, {}).get("label", agent.model).split(" (")[0]),
                 unsafe_allow_html=True)
-    tab_chat, tab_res, tab_vis = st.tabs(["Chat", "Results", "Visuals"])
-
-    # ── Chat ────────────────────────────────────────────────────────────────
-    with tab_chat:
+    st.markdown('<div class="pr-q" style="margin-top:18px">Chat</div>', unsafe_allow_html=True)
+    if True:
         shown = [e for i, e in enumerate(mission["log"]) if not (i == 0 and e["kind"] == "user")]
         for e in shown:            # the first prompt is not repeated here: the plan speaks for it
             if e["kind"] == "user":
@@ -431,59 +430,7 @@ with main:
             mission["finished"] = None
             _launch(); st.rerun()
 
-    # ── Results ─────────────────────────────────────────────────────────────
-    def _rich(text):
-        return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(text or ""))
-
-    with tab_res:
-        f = agent.ctx.findings
-        if not f:
-            st.markdown('<div class="pr-concl" style="color:var(--dim)">Results appear here when the '
-                        'agent finishes the build.</div>', unsafe_allow_html=True)
-        else:
-            left, right = st.columns([1.05, 1], gap="large")
-            notes = "".join('<div><span class="%s">%s</span>%s%s</div>'
-                            % (i.get("status", "info"),
-                               {"fixed": "FIXED", "needs_user": "NEEDS YOU"}.get(i.get("status"), "NOTE"),
-                               html.escape(i["what"]),
-                               (" — " + html.escape(i["why"])) if i.get("why") else "")
-                            for i in f.get("issues") or [])
-            left.markdown('<div class="pr-q">Conclusion</div><div class="pr-concl">%s</div>'
-                          '%s' % (_rich(f.get("summary")),
-                                   ('<div class="pr-q pr-notes-h">Notes</div><div class="pr-notes">%s</div>' % notes)
-                                   if notes else ""),
-                          unsafe_allow_html=True)
-            groups = {}
-            for m in f.get("metrics") or []:
-                groups.setdefault(m.get("group") or "Key numbers", []).append(m)
-            blocks = []
-            for q, rows in groups.items():
-                body = "".join('<div class="pr-r"><div class="l">%s<small>%s</small></div>'
-                               '<div class="v%s">%s<u>%s</u></div></div>'
-                               % (html.escape(m["name"]), html.escape(m.get("note") or ""),
-                                  " long" if len(str(m["value"])) > 14 else "",
-                                  html.escape(str(m["value"])), html.escape(m.get("unit") or ""))
-                               for m in rows)
-                blocks.append('<div class="pr-q">%s</div><div class="pr-read">%s</div>' % (html.escape(q), body))
-            right.markdown("".join(blocks), unsafe_allow_html=True)
-
-    # ── Visuals ─────────────────────────────────────────────────────────────
-    with tab_vis:
-        specs = [c for c in agent.ctx.charts if c.get("kind") != "orbit_3d"]   # 3D dropped: STK has it
-        if not specs:
-            st.markdown('<div class="pr-concl" style="color:var(--dim)">Charts appear here — ask for one '
-                        'in the chat at any time.</div>', unsafe_allow_html=True)
-        else:
-            titles = [s["title"] for s in specs]
-            pick = st.segmented_control("Chart", titles, default=titles[0], label_visibility="collapsed")
-            spec = specs[titles.index(pick or titles[0])]
-            try:
-                st.plotly_chart(charts.build(spec, agent.ctx.dataset(spec["dataset"])),
-                                use_container_width=True)
-            except Exception as exc:          # noqa: BLE001
-                st.caption("Chart '%s' could not be drawn: %s" % (spec.get("title"), exc))
-
-    # ── Process log (one small drop-down) ───────────────────────────────────
+    # ── Process log (one small drop-down, under the chat) ───────────────────
     label = "Process log · %d steps%s" % (len(steps), (" · %d retried" % retried) if retried else "")
     with st.expander(label):
         tag = {"ok": ("DONE", "var(--olive)"), "error": ("RETRIED", "var(--clay)"),
@@ -503,3 +450,55 @@ with main:
                 st.code(e["code"], language="python")
             if e.get("output"):
                 st.text(e["output"][:6000])
+
+with out:
+    tab_res, tab_vis = st.tabs(["Results", "Visuals"])
+
+    def _rich(text):
+        return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(text or ""))
+
+    with tab_res:
+        f = agent.ctx.findings
+        if not f:
+            st.markdown('<div class="pr-concl" style="color:var(--dim)">Results appear here when the '
+                        'agent finishes the build.</div>', unsafe_allow_html=True)
+        else:
+            notes = "".join('<div><span class="%s">%s</span>%s%s</div>'
+                            % (i.get("status", "info"),
+                               {"fixed": "FIXED", "needs_user": "NEEDS YOU"}.get(i.get("status"), "NOTE"),
+                               html.escape(i["what"]),
+                               (" — " + html.escape(i["why"])) if i.get("why") else "")
+                            for i in f.get("issues") or [])
+            groups = {}
+            for m in f.get("metrics") or []:
+                groups.setdefault(m.get("group") or "Key numbers", []).append(m)
+            blocks = []
+            for q, rows in groups.items():
+                body = "".join('<div class="pr-r"><div class="l">%s<small>%s</small></div>'
+                               '<div class="v%s">%s<u>%s</u></div></div>'
+                               % (html.escape(m["name"]), html.escape(m.get("note") or ""),
+                                  " long" if len(str(m["value"])) > 14 else "",
+                                  html.escape(str(m["value"])), html.escape(m.get("unit") or ""))
+                               for m in rows)
+                blocks.append('<div class="pr-q">%s</div><div class="pr-read">%s</div>' % (html.escape(q), body))
+            st.markdown('<div class="pr-q">Conclusion</div><div class="pr-concl">%s</div>%s%s'
+                        % (_rich(f.get("summary")), "".join(blocks),
+                           ('<div class="pr-q pr-notes-h">Notes</div><div class="pr-notes">%s</div>' % notes)
+                           if notes else ""),
+                        unsafe_allow_html=True)
+
+    # ── Visuals ─────────────────────────────────────────────────────────────
+    with tab_vis:
+        specs = [c for c in agent.ctx.charts if c.get("kind") != "orbit_3d"]   # 3D dropped: STK has it
+        if not specs:
+            st.markdown('<div class="pr-concl" style="color:var(--dim)">Charts appear here — ask for one '
+                        'in the chat at any time.</div>', unsafe_allow_html=True)
+        else:
+            titles = [s["title"] for s in specs]
+            pick = st.segmented_control("Chart", titles, default=titles[0], label_visibility="collapsed")
+            spec = specs[titles.index(pick or titles[0])]
+            try:
+                st.plotly_chart(charts.build(spec, agent.ctx.dataset(spec["dataset"])),
+                                use_container_width=True)
+            except Exception as exc:          # noqa: BLE001
+                st.caption("Chart '%s' could not be drawn: %s" % (spec.get("title"), exc))

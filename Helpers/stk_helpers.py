@@ -2555,6 +2555,11 @@ class StkSession(object):
         drag OFF (bridge job 0082). Mean elements remove the short-period
         terms. ``theory``: "Brouwer-Lyd Mean Short", "Brouwer-Lyd Mean Long",
         "Kozai-Izsak Mean".
+
+        MEASURED (Pronoia runs): STK REFUSES mean elements for a satellite on
+        the J2Perturbation propagator. J2 there is already secular-only (no
+        short-period terms), so read "Classical Elements" instead -- they are
+        effectively mean. Use this on HPOP / SGP4 / Astrogator satellites.
         """
         return self.read_data(sat_path, theory, group=frame, step_sec=step_sec,
                               start=start, stop=stop)

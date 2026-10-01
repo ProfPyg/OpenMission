@@ -116,7 +116,7 @@ TOOLS = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "summary": {"type": "string", "description": "3-4 sentence conclusion in plain words; wrap the 1-3 most important phrases in **bold**."},
+                "summary": {"type": "string", "description": "The answer in at most 3 sentences / 60 words, plain words; wrap the 1-3 most important phrases in **bold**. Supporting numbers go in metrics, caveats in issues -- not here."},
                 "metrics": {"type": "array", "items": {
                     "type": "object",
                     "properties": {"group": {"type": "string",

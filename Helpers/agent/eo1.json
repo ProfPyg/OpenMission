@@ -1,0 +1,1600 @@
+{
+ "results": [
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 2,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "2/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 23.98,
+   "mean_revisit_h": 19.88,
+   "time_covered_pct": 0.12,
+   "cost": 4.0,
+   "score": 23.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 2,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 180.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "2/2/1"
+   },
+   "coverage_pct": 75.47,
+   "worst_revisit_h": null,
+   "mean_revisit_h": null,
+   "time_covered_pct": 0.165,
+   "cost": 6.0,
+   "score": null
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 23.98,
+   "mean_revisit_h": 13.5,
+   "time_covered_pct": 0.171,
+   "cost": 5.0,
+   "score": 23.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 23.98,
+   "mean_revisit_h": 17.78,
+   "time_covered_pct": 0.173,
+   "cost": 9.0,
+   "score": 23.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.84,
+   "mean_revisit_h": 12.71,
+   "time_covered_pct": 0.237,
+   "cost": 6.0,
+   "score": 12.84
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 90.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 23.16,
+   "mean_revisit_h": 16.6,
+   "time_covered_pct": 0.238,
+   "cost": 8.0,
+   "score": 23.16
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 4,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 90.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 90.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/4/1"
+   },
+   "coverage_pct": 75.47,
+   "worst_revisit_h": null,
+   "mean_revisit_h": null,
+   "time_covered_pct": 0.33,
+   "cost": 12.0,
+   "score": null
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 60.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.9,
+   "mean_revisit_h": 12.61,
+   "time_covered_pct": 0.352,
+   "cost": 8.0,
+   "score": 12.9
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.98,
+   "mean_revisit_h": 11.12,
+   "time_covered_pct": 0.342,
+   "cost": 10.0,
+   "score": 11.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 16.24,
+   "mean_revisit_h": 12.09,
+   "time_covered_pct": 0.352,
+   "cost": 12.0,
+   "score": 16.24
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 6,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 60.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/6/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.98,
+   "mean_revisit_h": 9.56,
+   "time_covered_pct": 0.343,
+   "cost": 18.0,
+   "score": 11.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 8,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 45.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "8/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.76,
+   "mean_revisit_h": 12.52,
+   "time_covered_pct": 0.472,
+   "cost": 10.0,
+   "score": 12.76
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 8,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 45.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "8/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.16,
+   "mean_revisit_h": 11.07,
+   "time_covered_pct": 0.473,
+   "cost": 12.0,
+   "score": 11.16
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 8,
+    "planes": 4,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 90.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 45.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "8/4/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 16.93,
+   "mean_revisit_h": 10.3,
+   "time_covered_pct": 0.474,
+   "cost": 16.0,
+   "score": 16.93
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 8,
+    "planes": 8,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 45.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 45.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "8/8/1"
+   },
+   "coverage_pct": 75.47,
+   "worst_revisit_h": null,
+   "mean_revisit_h": null,
+   "time_covered_pct": 0.66,
+   "cost": 24.0,
+   "score": null
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 30.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.65,
+   "mean_revisit_h": 12.47,
+   "time_covered_pct": 0.707,
+   "cost": 14.0,
+   "score": 12.65
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 60.0,
+    "phase_offset_deg": 30.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.01,
+   "mean_revisit_h": 10.87,
+   "time_covered_pct": 0.707,
+   "cost": 16.0,
+   "score": 11.01
+  },
+  {
+   "candidate": {
+    "altitude_km": 561.0,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561.0,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 30.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 4.98,
+   "mean_revisit_h": 4.9,
+   "time_covered_pct": 0.709,
+   "cost": 18.0,
+   "score": 4.98
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 40.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 7.8,
+   "mean_revisit_h": 5.27,
+   "time_covered_pct": 0.529,
+   "cost": 15.0,
+   "score": 7.8
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 80.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 8.15,
+   "mean_revisit_h": 5.27,
+   "time_covered_pct": 0.531,
+   "cost": 15.0,
+   "score": 8.15
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.07,
+   "mean_revisit_h": 4.82,
+   "time_covered_pct": 0.707,
+   "cost": 18.0,
+   "score": 5.07
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 15,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 72.0,
+    "phase_offset_deg": 24.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "15/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 4.97,
+   "mean_revisit_h": 4.72,
+   "time_covered_pct": 0.883,
+   "cost": 21.0,
+   "score": 4.97
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 15,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 72.0,
+    "phase_offset_deg": 48.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "15/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.05,
+   "mean_revisit_h": 4.76,
+   "time_covered_pct": 0.885,
+   "cost": 21.0,
+   "score": 5.05
+  },
+  {
+   "candidate": {
+    "altitude_km": 561,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 97.635,
+   "orbit": {
+    "altitude_km": 561,
+    "sma_km": 6939.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 97.635,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 15.72,
+   "mean_revisit_h": 10.9,
+   "time_covered_pct": 0.355,
+   "cost": 12.0,
+   "score": 15.72
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 40.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.0,
+   "mean_revisit_h": 4.87,
+   "time_covered_pct": 0.755,
+   "cost": 15.0,
+   "score": 5.0
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 80.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.18,
+   "mean_revisit_h": 5.08,
+   "time_covered_pct": 0.75,
+   "cost": 15.0,
+   "score": 5.18
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 30.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.05,
+   "mean_revisit_h": 4.87,
+   "time_covered_pct": 1.001,
+   "cost": 18.0,
+   "score": 5.05
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 12,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "12/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.15,
+   "mean_revisit_h": 4.83,
+   "time_covered_pct": 1.001,
+   "cost": 18.0,
+   "score": 5.15
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 15,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 72.0,
+    "phase_offset_deg": 24.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "15/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 4.81,
+   "mean_revisit_h": 4.76,
+   "time_covered_pct": 1.251,
+   "cost": 21.0,
+   "score": 4.81
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 15,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 72.0,
+    "phase_offset_deg": 48.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "15/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 4.88,
+   "mean_revisit_h": 4.74,
+   "time_covered_pct": 1.251,
+   "cost": 21.0,
+   "score": 4.88
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 27.58,
+   "mean_revisit_h": 15.43,
+   "time_covered_pct": 0.5,
+   "cost": 12.0,
+   "score": 27.58
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.72,
+   "mean_revisit_h": 9.08,
+   "time_covered_pct": 0.5,
+   "cost": 12.0,
+   "score": 12.72
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 28.81,
+   "mean_revisit_h": 21.11,
+   "time_covered_pct": 0.249,
+   "cost": 9.0,
+   "score": 28.81
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 240.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 35.5,
+   "mean_revisit_h": 20.29,
+   "time_covered_pct": 0.249,
+   "cost": 9.0,
+   "score": 35.5
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.52,
+   "mean_revisit_h": 11.05,
+   "time_covered_pct": 0.501,
+   "cost": 10.0,
+   "score": 11.52
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 90.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 35.52,
+   "mean_revisit_h": 20.09,
+   "time_covered_pct": 0.334,
+   "cost": 8.0,
+   "score": 35.52
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 13.08,
+   "mean_revisit_h": 12.76,
+   "time_covered_pct": 0.334,
+   "cost": 6.0,
+   "score": 13.08
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 5,
+    "planes": 5,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 72.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 72.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "5/5/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 22.71,
+   "mean_revisit_h": 17.85,
+   "time_covered_pct": 0.417,
+   "cost": 15.0,
+   "score": 22.71
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 5,
+    "planes": 5,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 72.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 144.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "5/5/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.03,
+   "mean_revisit_h": 10.15,
+   "time_covered_pct": 0.42,
+   "cost": 15.0,
+   "score": 11.03
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 6,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 60.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/6/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.03,
+   "mean_revisit_h": 9.3,
+   "time_covered_pct": 0.5,
+   "cost": 18.0,
+   "score": 11.03
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 6,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 60.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/6/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 10.99,
+   "mean_revisit_h": 9.38,
+   "time_covered_pct": 0.499,
+   "cost": 18.0,
+   "score": 10.99
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 37.52,
+   "mean_revisit_h": 10.55,
+   "time_covered_pct": 0.598,
+   "cost": 12.0,
+   "score": 37.52
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.1,
+   "mean_revisit_h": 8.2,
+   "time_covered_pct": 0.554,
+   "cost": 12.0,
+   "score": 11.1
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 120.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 29.02,
+   "mean_revisit_h": 21.55,
+   "time_covered_pct": 0.253,
+   "cost": 9.0,
+   "score": 29.02
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 3,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 240.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "3/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 45.48,
+   "mean_revisit_h": 16.39,
+   "time_covered_pct": 0.3,
+   "cost": 9.0,
+   "score": 45.48
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 60.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.11,
+   "mean_revisit_h": 11.03,
+   "time_covered_pct": 0.553,
+   "cost": 10.0,
+   "score": 11.11
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 90.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 48.6,
+   "mean_revisit_h": 15.27,
+   "time_covered_pct": 0.398,
+   "cost": 8.0,
+   "score": 48.6
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 1,
+    "phase_f": 0
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 360.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/1/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.81,
+   "mean_revisit_h": 12.76,
+   "time_covered_pct": 0.372,
+   "cost": 6.0,
+   "score": 12.81
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 5,
+    "planes": 5,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 72.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 72.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "5/5/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 22.87,
+   "mean_revisit_h": 18.31,
+   "time_covered_pct": 0.433,
+   "cost": 15.0,
+   "score": 22.87
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 5,
+    "planes": 5,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 72.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 144.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "5/5/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 13.56,
+   "mean_revisit_h": 11.11,
+   "time_covered_pct": 0.474,
+   "cost": 15.0,
+   "score": 13.56
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 40.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.03,
+   "mean_revisit_h": 4.99,
+   "time_covered_pct": 0.83,
+   "cost": 15.0,
+   "score": 5.03
+  },
+  {
+   "candidate": {
+    "altitude_km": 700,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 9,
+    "planes": 3,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.188,
+   "orbit": {
+    "altitude_km": 700,
+    "sma_km": 7078.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.188,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 120.0,
+    "phase_offset_deg": 80.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "9/3/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 5.21,
+   "mean_revisit_h": 5.15,
+   "time_covered_pct": 0.831,
+   "cost": 15.0,
+   "score": 5.21
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 6,
+    "planes": 3,
+    "phase_f": 0
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 120.0,
+    "in_plane_spacing_deg": 180.0,
+    "phase_offset_deg": 0.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "6/3/0"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 12.66,
+   "mean_revisit_h": 8.66,
+   "time_covered_pct": 0.5,
+   "cost": 12.0,
+   "score": 12.66
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 8,
+    "planes": 2,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 180.0,
+    "in_plane_spacing_deg": 90.0,
+    "phase_offset_deg": 45.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "8/2/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 11.35,
+   "mean_revisit_h": 10.95,
+   "time_covered_pct": 0.667,
+   "cost": 12.0,
+   "score": 11.35
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 4,
+    "phase_f": 1
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 90.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 90.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/4/1"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 42.55,
+   "mean_revisit_h": 32.68,
+   "time_covered_pct": 0.334,
+   "cost": 12.0,
+   "score": 42.55
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 4,
+    "phase_f": 2
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 90.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 180.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/4/2"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 24.99,
+   "mean_revisit_h": 18.26,
+   "time_covered_pct": 0.334,
+   "cost": 12.0,
+   "score": 24.99
+  },
+  {
+   "candidate": {
+    "altitude_km": 666,
+    "inclination": "sso",
+    "half_angle_deg": null,
+    "total_sats": 4,
+    "planes": 4,
+    "phase_f": 3
+   },
+   "inclination_deg": 98.05,
+   "orbit": {
+    "altitude_km": 666,
+    "sma_km": 7044.137,
+    "eccentricity": 0.0,
+    "inclination_deg": 98.05,
+    "raan_spacing_deg": 90.0,
+    "in_plane_spacing_deg": 360.0,
+    "phase_offset_deg": 270.0,
+    "sensor_half_angle_deg": 30.0,
+    "walker": "4/4/3"
+   },
+   "coverage_pct": 100.0,
+   "worst_revisit_h": 17.58,
+   "mean_revisit_h": 12.32,
+   "time_covered_pct": 0.334,
+   "cost": 12.0,
+   "score": 17.58
+  }
+ ]
+}

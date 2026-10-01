@@ -73,6 +73,11 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 /* inputs */
 .stTextArea textarea,.stTextInput input{background:rgba(20,20,17,.8)!important;color:var(--ink)!important;border-color:#37352c!important}
 
+/* mission rail */
+.st-key-rail{gap:10px}
+.st-key-rail button{width:38px!important;height:38px!important;min-height:0!important;padding:0!important;border-radius:10px!important;font-size:11px!important;letter-spacing:.06em}
+.st-key-rail button[kind="primary"]{background:transparent!important;border:1px solid var(--sand)!important;color:var(--sand)!important}
+.st-key-rail button p{color:inherit!important}
 /* mission list */
 .st-key-mlist button{justify-content:space-between!important;width:100%;border:none!important;border-radius:8px!important;background:transparent!important;color:var(--mute)!important;text-align:left}
 .st-key-mlist button p{width:100%;text-align:left}
@@ -91,19 +96,19 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 
 /* results readout */
 .pr-q{font-size:11px;letter-spacing:.2em;color:var(--olive);text-transform:uppercase;margin:6px 0 10px}
-.pr-concl{font-size:19px;line-height:1.6;font-weight:300;color:var(--ink)}
+.pr-concl{font-size:18px;line-height:1.6;font-weight:300;color:var(--ink);margin-bottom:22px}
 .pr-concl b{font-weight:500;color:var(--sand)}
 .pr-read{border-top:1px solid var(--line);margin-bottom:26px}
 .pr-r{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line);gap:20px}
-.pr-r .l{font-size:14px;color:var(--mute)}
-.pr-r .l small{display:block;font-size:11px;color:var(--dim);margin-top:3px}
-.pr-r .v{font-size:26px;font-weight:300;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pr-r .l{font-size:14.5px;color:var(--ink)}
+.pr-r .l small{display:block;font-size:11px;color:var(--mute);margin-top:3px}
+.pr-r .v{font-size:30px;font-weight:300;white-space:nowrap;font-variant-numeric:tabular-nums;color:#f6f1e6}
 .pr-r .v.long{font-size:15px;white-space:normal;text-align:right;max-width:62%;line-height:1.45}
 .pr-r .v u{text-decoration:none;font-size:14px;color:var(--mute);margin-left:4px}
-.pr-notes-h{margin-top:34px}
-.pr-notes{font-size:14.5px;line-height:1.75;color:#cfc8b8;border-left:1px solid #37352c;padding-left:16px}
-.pr-notes > div{margin-bottom:12px}
-.pr-notes span{font-size:10.5px;letter-spacing:.16em;margin-right:10px;font-weight:600}
+.pr-notes-h{margin-top:30px;color:var(--dim)!important}
+.pr-notes{font-size:12.5px;line-height:1.65;color:var(--dim);border-left:1px solid #2a2a24;padding-left:14px}
+.pr-notes > div{margin-bottom:9px}
+.pr-notes span{font-size:9.5px;letter-spacing:.16em;margin-right:8px;font-weight:600;opacity:.85}
 .pr-notes .fixed{color:var(--clay)} .pr-notes .needs_user{color:#d9826b} .pr-notes .info{color:var(--dim)}
 
 /* messages and errors in Pronoia's own style, never big coloured boxes */

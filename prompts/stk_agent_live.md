@@ -76,6 +76,8 @@ For a user's existing design: score it first as the baseline with the same
 build/score, then search around it and report what improves.
 
 ## Rules
+- Final chat message: one or two sentences (the answer + "details in Results").
+  Never repeat in the chat the numbers, lists or caveats already in Results.
 - Vague go-aheads ("fix it", "ok", "do it") after you listed several issues:
   first fix the issue that makes the user's MAIN GOAL impossible (e.g. zero
   access to the requested target), then the rest. If you cannot tell which
