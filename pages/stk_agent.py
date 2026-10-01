@@ -9,6 +9,7 @@ copy-paste page is pages/stk_agent_legacy.py.
 from __future__ import annotations
 
 import html
+import json
 import os
 import re
 import sys
@@ -346,6 +347,11 @@ if agent is None:                     # half-started (interrupted): rebuild from
         st.rerun()
 st.markdown('<div class="pr-rule"></div>', unsafe_allow_html=True)
 S.setdefault("show_out", True)
+_f = agent.ctx.findings
+_sig = (mission["id"], len(json.dumps(_f, default=str)) if _f else 0)
+if _f and S.get("findings_sig") != _sig:      # new results arrived: open the panel once
+    S.findings_sig = _sig
+    S.show_out = True
 if S.show_out:
     side, chat, out = st.columns([1, 2.2, 2.9], gap="medium")
 else:
@@ -382,7 +388,15 @@ with chat:
                    MODELS.get(agent.model, {}).get("label", agent.model).split(" (")[0]),
                 unsafe_allow_html=True)
     with st.container(key="outtoggle"):
-        if st.button("Hide results ›" if S.show_out else "‹ Show results", key="tog_out"):
+        if S.show_out:
+            _lbl = "Hide results ›"
+        elif _f:
+            _n = len(_f.get("metrics") or [])
+            _c = len([c for c in agent.ctx.charts if c.get("kind") != "orbit_3d"])
+            _lbl = "‹ Show results · %d numbers%s" % (_n, (" · %d charts" % _c) if _c else "")
+        else:
+            _lbl = "‹ Show results"
+        if st.button(_lbl, key="tog_out"):
             S.show_out = not S.show_out; st.rerun()
     st.markdown('<div class="pr-q" style="margin-top:6px">Chat</div>', unsafe_allow_html=True)
     if True:
