@@ -48,3 +48,12 @@ def list_missions():
             except Exception:
                 pass
     return out
+
+
+def delete(mission_id):
+    """Remove a mission folder (chat, data, outputs). Only inside missions/."""
+    import shutil
+    path = os.path.realpath(os.path.join(ROOT, mission_id))
+    if os.path.dirname(path) != os.path.realpath(ROOT) or mission_id.startswith("_"):
+        raise ValueError("not a mission: %r" % mission_id)
+    shutil.rmtree(path, ignore_errors=True)

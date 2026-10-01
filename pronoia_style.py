@@ -86,6 +86,11 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 .st-key-rail button{width:38px!important;height:38px!important;min-height:0!important;padding:0!important;border-radius:10px!important;font-size:11px!important;letter-spacing:.06em}
 .st-key-rail button[kind="primary"]{background:transparent!important;border:1px solid var(--sand)!important;color:var(--sand)!important}
 .st-key-rail button p{color:inherit!important}
+/* mission list: delete bin */
+[class*="st-key-bin_"] button{background:transparent!important;border:none!important;padding:0 4px!important;min-height:0!important;box-shadow:none!important;opacity:.35}
+[class*="st-key-bin_"] button:hover{opacity:1}
+[class*="st-key-bin_ask_"] button{opacity:1}
+[class*="st-key-bin_ask_"] button p{color:var(--clay)!important;font-size:11px!important;letter-spacing:.06em}
 /* mission list */
 .st-key-mlist button{justify-content:space-between!important;width:100%;border:none!important;border-radius:8px!important;background:transparent!important;color:var(--mute)!important;text-align:left}
 .st-key-mlist button p{width:100%;text-align:left}

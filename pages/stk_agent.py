@@ -429,8 +429,21 @@ with side:                       # the missions list, as before
     with st.container(key="mlist"):
         for mid, title, usd in missions.list_missions()[:15]:
             label = ("▎" if mid == mission["id"] else "") + title
-            if st.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
+            c_name, c_bin = st.columns([5, 1], vertical_alignment="center", gap="small")
+            if c_name.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
                 _save(); _open_mission(mid); st.rerun()
+            asking = S.get("confirm_del") == mid
+            with c_bin.container(key="bin_" + ("ask_" if asking else "") + mid):
+                if st.button("Delete?" if asking else "🗑", key="del_" + mid,
+                             help="Click again to delete for good" if asking else "Delete this mission"):
+                    if not asking:
+                        S.confirm_del = mid                  # first click: ask
+                    elif not (_busy() and mid == mission["id"]):
+                        missions.delete(mid)                 # second click: delete
+                        S.confirm_del = None
+                        if mid == mission["id"]:
+                            S.mission = S.agent = None
+                    st.rerun()
 
 steps = [e for e in mission["log"] if e["kind"] == "step" and e.get("tool") == "run_stk_step"]
 retried = sum(1 for e in steps if e.get("status") not in ("ok", "running"))
