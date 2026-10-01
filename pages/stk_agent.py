@@ -178,15 +178,29 @@ def _launch():
     import threading
     t = threading.Thread(target=_worker, args=(S.mission, S.agent), daemon=True)
     t.start()
-    S.worker = t
+    S.worker, S.run_mid, S.run_pair = t, S.mission["id"], (S.mission, S.agent)
 
 
-def _busy():
+def _stk_busy():
+    """True while ANY mission's agent is running: STK is in use."""
     t = S.get("worker")
     return bool(t and t.is_alive())
 
 
+def _running_mid():
+    return S.get("run_mid") if _stk_busy() else None
+
+
+def _busy():
+    """True while the mission on screen is the one running. Other missions
+    can be browsed meanwhile; the run carries on in the background."""
+    return bool(S.get("mission") and _running_mid() == S.mission.get("id"))
+
+
 def _open_mission(mid):
+    if mid == _running_mid():           # back to the live run: its in-memory copy
+        S.mission, S.agent = S.run_pair
+        return
     state = missions.load(mid)
     S.mission = {k: state.get(k) for k in ("id", "title", "scenario", "profile", "reference",
                                            "log", "allow_open", "started", "finished")}
@@ -213,6 +227,10 @@ def _start(prompt, profile, reference, allow_open, scenario, title=None):
     # mission without its agent
     S.mission, S.agent = mission, agent
     _save(mission, agent)
+    if _stk_busy():                    # one STK, one agent at a time
+        mission["log"].append({"kind": "error", "text":
+            "Another mission is still using STK. This one is saved; send any message here once it finishes."})
+        return
     _launch()
 
 
@@ -258,7 +276,7 @@ def _missions_menu():
                 if not asking:
                     S.confirm_del = "pm" + mid
                     st.rerun(scope="fragment")
-                elif not (_busy() and mid == current.get("id")):
+                elif mid != _running_mid():
                     missions.delete(mid)
                     S.confirm_del = None
                     if mid == current.get("id"):
@@ -318,7 +336,7 @@ def _stk_watchdog():
     dropping) or a module becoming available shows up without a reload.
     Skipped while the agent is running a step -- STK is busy then, and the
     step itself reports any failure."""
-    if not _busy():
+    if not _stk_busy():
         before = S.probe or {}
         now = StkLink(WORK_DIR).probe()
         S.probe = now
@@ -468,7 +486,7 @@ with side:                       # the missions list, as before
                         if not asking:
                             S.confirm_del = mid
                             st.rerun(scope="fragment")
-                        elif not (_busy() and mid == mission["id"]):
+                        elif mid != _running_mid():
                             missions.delete(mid)
                             S.confirm_del = None
                             if mid == mission["id"]:
@@ -560,13 +578,18 @@ with chat:
                     agent.ctx.pending_confirmation = None
                     agent.add_user("Yes, proceed with the plan.")
                     mission["log"].append({"kind": "user", "text": "Approved — build it."})
-                    _launch(); st.rerun()
+                    if not _stk_busy():
+                        _launch()
+                    st.rerun()
                 if c2.button("Change the plan", use_container_width=True):
                     agent.ctx.pending_confirmation = None
                     S.await_changes = True; st.rerun()
 
-        text = st.chat_input("Answer, ask for changes, or ask a follow-up…", disabled=_busy())
-        if text and not _busy():
+        _other = _stk_busy() and not _busy()
+        text = st.chat_input("Another mission is using STK — wait until it finishes…" if _other
+                             else "Answer, ask for changes, or ask a follow-up…",
+                             disabled=_stk_busy())
+        if text and not _stk_busy():
             agent.ctx.pending_confirmation = None
             prefix = "The user wants changes to the plan: " if S.pop("await_changes", False) else ""
             agent.add_user(prefix + text)
