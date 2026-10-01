@@ -4742,6 +4742,170 @@ class StkSession(object):
                     print("      %s" % description)
         return outputs
 
+    # -- architecture trade studies -------------------------------------------
+    #
+    # "What is the best constellation for X?" is answered by SEARCHING, not
+    # guessing: every candidate is built in STK (Walker from a seed with a
+    # nadir sensor) and scored by STK's own figures of merit over the region.
+    # The coverage grid is built ONCE; only the assets change between
+    # candidates. Work is chunked by a time budget and saved to a JSON state
+    # file, so a search of any size fits the 180 s step limit: call again with
+    # the same state_file until it returns done=True.
+
+    @staticmethod
+    def sso_inclination_deg(altitude_km):
+        """Sun-synchronous inclination for a circular orbit (J2 nodal drift
+        matched to 360 deg per tropical year)."""
+        import math
+        mu, re, j2 = 398600.4418, EARTH_RADIUS_KM, 1.08262668e-3
+        a = re + float(altitude_km)
+        n = math.sqrt(mu / a ** 3)
+        target = 2 * math.pi / (365.2422 * 86400.0)
+        c = -target / (1.5 * n * j2 * (re / a) ** 2)
+        if not -1.0 <= c <= 1.0:
+            raise StkError("no sun-synchronous orbit at %.0f km" % altitude_km)
+        return math.degrees(math.acos(c))
+
+    @staticmethod
+    def candidate_grid(altitudes_km, total_sats, planes, inclinations_deg=("sso",),
+                       half_angles_deg=(None,), phase_f=(None,)):
+        """All Walker candidates from lists of options. Plane counts that do
+        not divide the satellite total are skipped. inclination "sso" = the
+        sun-synchronous value for that altitude. phase_f None = 1 (or 0 for
+        one plane)."""
+        out = []
+        for alt in altitudes_km:
+            for inc in inclinations_deg:
+                for half in half_angles_deg:
+                    for t in total_sats:
+                        for p in planes:
+                            if p > t or t % p:
+                                continue
+                            for f in phase_f:
+                                ff = (1 if p > 1 else 0) if f is None else int(f)
+                                if not 0 <= ff < p:
+                                    continue
+                                out.append({"altitude_km": float(alt), "inclination": inc,
+                                            "half_angle_deg": half, "total_sats": int(t),
+                                            "planes": int(p), "phase_f": ff})
+        return out
+
+    def trade_study(self, name, candidates, regions=(), box=None, resolution_deg=2.0,
+                    sensor_half_angle_deg=30.0, budget_s=140.0, state_file=None,
+                    plane_cost=2.0):
+        """Search constellation architectures and score each one in STK.
+
+        ``candidates``  list of dicts (see :meth:`candidate_grid`): altitude_km,
+                        inclination (deg or "sso"), total_sats, planes, phase_f,
+                        half_angle_deg (None = ``sensor_half_angle_deg``).
+        ``regions``     area-target paths (e.g. from new_area_target_from_country)
+                        or ``box`` = (lat_min, lat_max, lon_min, lon_max).
+
+        Per candidate (all from STK, over the scenario period):
+          coverage_pct        share of grid points seen at least once
+          worst_revisit_h     largest per-point maximum gap (Revisit Time FOM)
+          mean_revisit_h      grid average of the per-point maximum gaps
+          time_covered_pct    mean share of the period a point is seen
+          cost                total_sats + plane_cost * planes (simple proxy:
+                              each plane ~ one launch; change plane_cost)
+        Returns {"done", "evaluated", "remaining", "results" (sorted by cost),
+        "pareto" (non-dominated in cost vs worst revisit, full coverage only),
+        "state_file"}. Call again with the same ``state_file`` until done.
+        Revisit is a WORST GAP and includes the period edges: use >= 2 days
+        for meaningful numbers. Candidates that miss part of the region get
+        worst_revisit_h = None and never enter the Pareto front.
+        """
+        import json, time, math
+        started = time.time()
+        state_file = state_file or os.path.join(self.output_dir(), "trade_%s.json" % name)
+        state = {"results": []}
+        if os.path.exists(state_file):
+            with open(state_file, "r", encoding="utf-8") as handle:
+                state = json.load(handle)
+        key = lambda c: json.dumps(c, sort_keys=True)
+        done_keys = {key(r["candidate"]) for r in state["results"]}
+        todo = [c for c in candidates if key(c) not in done_keys]
+
+        cov = "*/CoverageDefinition/TS_%s" % name
+        if not self.exists(cov):
+            if regions:
+                self.new_coverage("TS_%s" % name, regions=list(regions),
+                                  resolution_deg=resolution_deg, compute=False)
+            elif box:
+                self.new_coverage("TS_%s" % name, *box, resolution_deg=resolution_deg, compute=False)
+            else:
+                raise StkError("give regions (area targets) or a lat/lon box")
+            for fom in ("Revisit Time", "Simple Coverage", "Coverage Time"):
+                self.add_figure_of_merit(cov, fom.replace(" ", ""), fom)
+        cov_obj = self.obj(cov)
+
+        for idx, cand in enumerate(todo):
+            if time.time() - started > float(budget_s):
+                break
+            alt = cand["altitude_km"]
+            inc = self.sso_inclination_deg(alt) if str(cand.get("inclination")).lower() == "sso" \
+                else float(cand["inclination"])
+            half = cand.get("half_angle_deg") or sensor_half_angle_deg
+            tag = "TS%d" % (len(state["results"]) + 1)
+            row = {"candidate": cand, "inclination_deg": round(inc, 3)}
+            members, constellation = [], None
+            try:
+                seed = self.new_satellite(tag, altitude_to_sma(alt), inc, 0.0,
+                                          propagator="J2Perturbation")
+                sensor = self.add_sensor_conic(seed, "Cam", half)
+                self.point_nadir(sensor)
+                members, constellation = self.walker_constellation(
+                    seed, "Delta", num_planes=cand["planes"], total_sats=cand["total_sats"],
+                    phase_f=cand["phase_f"], constellation_name=tag + "_C")
+                try:
+                    cov_obj.AssetList.RemoveAll()
+                except Exception:
+                    pass
+                for m in members:
+                    sp = (m + "/Sensor/Cam").lstrip("*/")
+                    cov_obj.AssetList.Add(sp)
+                cov_obj.ComputeAccesses()
+                simple = self.fom_values(cov + "/FigureOfMerit/SimpleCoverage")
+                revisit = self.fom_values(cov + "/FigureOfMerit/RevisitTime")
+                ctime = self.fom_values(cov + "/FigureOfMerit/CoverageTime")
+                coverage = 100.0 * float(simple.get("avg", 0.0))
+                full = coverage >= 99.999
+                row.update({
+                    "coverage_pct": round(coverage, 2),
+                    "worst_revisit_h": round(revisit["max"] / 3600.0, 2) if full else None,
+                    "mean_revisit_h": round(revisit["avg"] / 3600.0, 2) if full else None,
+                    "time_covered_pct": round(float(ctime.get("avg", 0.0)), 3),
+                    "cost": cand["total_sats"] + float(plane_cost) * cand["planes"]})
+            except Exception as exc:
+                row["error"] = str(exc)[:300]
+            finally:
+                for m in members:
+                    self.cmd("Unload / %s" % m, label="remove candidate", fatal=False)
+                if constellation:
+                    self.cmd("Unload / %s" % constellation, label="remove candidate", fatal=False)
+                if self.exists("*/Satellite/%s" % tag):
+                    self.cmd("Unload / */Satellite/%s" % tag, label="remove seed", fatal=False)
+            state["results"].append(row)
+            with open(state_file, "w", encoding="utf-8") as handle:
+                json.dump(state, handle, indent=1)
+            print("[trade] %s %s -> coverage %s%%, worst revisit %s h, cost %s%s"
+                  % (tag, cand, row.get("coverage_pct"), row.get("worst_revisit_h"),
+                     row.get("cost"), (" ERROR " + row["error"]) if "error" in row else ""))
+
+        ok = [r for r in state["results"] if r.get("worst_revisit_h") is not None]
+        ok.sort(key=lambda r: (r["cost"], r["worst_revisit_h"]))
+        pareto, best = [], math.inf
+        for r in ok:
+            if r["worst_revisit_h"] < best - 1e-9:
+                pareto.append(r)
+                best = r["worst_revisit_h"]
+        remaining = len([c for c in candidates
+                         if key(c) not in {key(r["candidate"]) for r in state["results"]}])
+        return {"done": remaining == 0, "evaluated": len(state["results"]),
+                "remaining": remaining, "state_file": state_file,
+                "results": sorted(state["results"], key=lambda r: (r.get("cost") or 1e9)),
+                "pareto": pareto}
+
     def fom_values(self, fom_path):
         """Grid-wide statistics of a figure of merit, straight from STK.
 

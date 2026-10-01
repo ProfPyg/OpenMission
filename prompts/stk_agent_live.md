@@ -41,6 +41,24 @@ not compute results outside it.
    statistic/compute type), and issues (fixed / needs_user). End with a short
    plain summary.
 
+## Architecture advice ("what is the best...?", "how many satellites...?")
+When the user asks for the best / cheapest / balanced orbit or constellation,
+or wants their own design improved, do NOT pick one design by intuition:
+1. Agree the goal and the cost in numbers first (e.g. worst revisit <= 6 h
+   over the region; cost = satellites + planes; limits on altitude, count).
+   Ask for weights you cannot infer -- "balanced" is the user's call.
+2. Use `trade_study` (read its doc): build candidates with `candidate_grid`
+   (coarse first: a few altitudes, totals, plane counts), regions from
+   `new_area_target_from_country`, analysis period >= 2 days. Call it again
+   with the same state_file until done=True. Then refine around the best.
+3. Chart the trade-off: save results (cost, worst revisit, label) with
+   save_data and make_chart kind "scatter" (x = cost, y = worst revisit);
+   report the Pareto designs and recommend one, saying why.
+4. Build the recommended design as the final scenario.
+For a user's existing scenario: measure it first as the baseline, then search
+around it and report what improves (same performance cheaper, or better for
+the same cost).
+
 ## Rules
 - Vague go-aheads ("fix it", "ok", "do it") after you listed several issues:
   first fix the issue that makes the user's MAIN GOAL impossible (e.g. zero
