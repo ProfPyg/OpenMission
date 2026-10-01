@@ -125,8 +125,8 @@ TOOLS = [
                                    "value": {"type": "string", "description": "Number only, e.g. '6.8' or '31–37'"},
                                    "unit": {"type": "string"},
                                    "note": {"type": "string",
-                                            "description": "compute type / statistic / assumption, short: 'worst gap · avg of 54 grid points'"}},
-                    "required": ["name", "value"]}},
+                                            "description": "WHERE IN STK the number came from + statistic, short: 'Revisit Time FOM, worst gap, avg of 54 points' or 'STK Maneuver Summary'. A textbook value may appear only as a comparison, never as the result."}},
+                    "required": ["name", "value", "note"]}},
                 "issues": {"type": "array", "items": {
                     "type": "object",
                     "properties": {"what": {"type": "string"}, "why": {"type": "string"},

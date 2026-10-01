@@ -81,7 +81,9 @@ def run_one(mission, client, link, probe, model):
     log = []
     started = time.time()
     for _ in range(4):
-        agent.run(lambda k, d: log.append(k) if k in ("error",) else None)
+        agent.run(lambda k, d: log.append(str(d)) if k == "error" else None)
+        if log and agent.meter.calls == []:
+            break                                   # the model was never reached
         if not agent.waiting_for_user:
             break
         agent.ctx.pending_confirmation = None
@@ -91,7 +93,7 @@ def run_one(mission, client, link, probe, model):
     return {"name": mission["name"], "passed": all(c["ok"] for c in checks), "checks": checks,
             "findings": ctx.findings, "usd": round(agent.meter.total_usd, 4),
             "tokens": agent.meter.total_tokens, "calls": len(agent.meter.calls),
-            "minutes": round((time.time() - started) / 60, 1), "errors": log.count("error")}
+            "minutes": round((time.time() - started) / 60, 1), "errors": log}
 
 
 def main(names):
@@ -104,6 +106,8 @@ def main(names):
     if probe.get("scenario") and not str(probe["scenario"]).startswith("Bench_"):
         sys.exit("Scenario '%s' is open. Save and close it first: the benchmark opens and "
                  "closes its own scenarios." % probe["scenario"])
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        sys.exit("ANTHROPIC_API_KEY is not set in this window: set ANTHROPIC_API_KEY=sk-ant-...")
     client = anthropic.Anthropic()
     model = os.environ.get("PRONOIA_MODEL", DEFAULT_MODEL)
     out = []
@@ -113,6 +117,8 @@ def main(names):
         out.append(r)
         print("   %s  $%.3f  %d calls  %.1f min" % ("PASS" if r["passed"] else "FAIL",
               r["usd"], r["calls"], r["minutes"]), flush=True)
+        for e in r["errors"]:
+            print("     error: %s" % e[:400], flush=True)
         for c in r["checks"]:
             print("     %s %s -> %s" % ("ok " if c["ok"] else "BAD", c["check"], c.get("value")), flush=True)
     os.makedirs(os.path.join(ROOT, "tests", "results"), exist_ok=True)
