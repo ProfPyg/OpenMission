@@ -4953,7 +4953,11 @@ class StkSession(object):
 
     def planet_state(self, body, when, step_s=600.0):
         """Heliocentric ICRF position (km) and velocity (km/s) of ``body`` at
-        ``when`` (UTCG), from STK's ephemeris. Velocity by central difference."""
+        ``when`` (UTCG), from STK's ephemeris. Velocity by central difference.
+
+        MEASURED (job 0132, STK 11.2): Analysis Workbench Center point located
+        in the Sun's ICRF system works for every central body. 29 Nov 2028:
+        Earth 0.9864 AU (near perihelion, correct), Mars 1.6528 AU."""
         cbs = self.root.CentralBodies
         sun_icrf = cbs.Item("Sun").Vgt.Systems.Item("ICRF")
         point = cbs.Item(body).Vgt.Points.Item("Center")
