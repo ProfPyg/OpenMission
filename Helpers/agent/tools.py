@@ -82,7 +82,11 @@ TOOLS = [
             "(lat/lon/value columns, e.g. FOM per grid point). For ground_track "
             "and map_heat ALWAYS set body (Earth, Moon, Mars...): only Earth gets "
             "coastlines; other bodies get a lat/lon grid. Add targets to mark "
-            "sites. No 3D views: the user has STK's own 3D window."),
+            "sites. No 3D views: the user has STK's own 3D window. 'scatter' with a "
+            "'value' column colours each point by that value and stars the best "
+            "('best': min|max) -- use it for porkchops (x = departure DATE as UTCG, "
+            "y = flight time, value = C3) and trade studies; a scatter without value "
+            "only shows where samples were taken."),
         "input_schema": {
             "type": "object",
             "properties": {
@@ -99,6 +103,7 @@ TOOLS = [
                 "x": {"type": "string"}, "y": {"type": "array", "items": {"type": "string"}},
                 "lat": {"type": "string"}, "lon": {"type": "string"},
                 "value": {"type": "string"}, "z": {"type": "string"},
+                "value_title": {"type": "string"}, "best": {"type": "string", "enum": ["min", "max"]},
                 "start": {"type": "string"}, "stop": {"type": "string"},
                 "label": {"type": "string"},
                 "x_title": {"type": "string"}, "y_title": {"type": "string"},

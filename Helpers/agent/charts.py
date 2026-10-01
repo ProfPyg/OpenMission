@@ -109,7 +109,31 @@ def build(spec, data):
     cols = data["columns"]
     kind = spec["kind"]
     fig = go.Figure()
-    if kind in ("line", "scatter", "bar"):
+    if kind == "scatter" and spec.get("value"):
+        # a value plotted as COLOUR over two variables -- e.g. a porkchop
+        # (departure date x flight time -> C3) or cost vs revisit coloured by
+        # altitude. Without the colour such a plot only shows where samples
+        # were taken, which reads as noise.
+        x = _as_time(cols[spec["x"]])
+        y = cols[spec["y"][0]] if spec.get("y") else cols["y"]
+        v = cols[spec["value"]]
+        pairs = [(i, val) for i, val in enumerate(v) if val is not None]
+        lo, hi = (min(p[1] for p in pairs), max(p[1] for p in pairs)) if pairs else (0, 1)
+        fig.add_scatter(x=x, y=y, mode="markers", name=spec["value"],
+                        text=[str(val) for val in v],
+                        hovertemplate="%{x}<br>%{y}<br>" + spec["value"] + " %{text}<extra></extra>",
+                        marker={"color": v, "size": 8, "cmin": lo, "cmax": hi,
+                                "colorscale": [[0, "#f3e7c4"], [0.35, "#b08a5a"],
+                                               [0.7, "#5d6440"], [1, "#22261a"]],
+                                "colorbar": {"title": spec.get("value_title") or spec["value"]}})
+        if pairs:
+            best = min(pairs, key=lambda p: p[1]) if spec.get("best", "min") == "min" \
+                else max(pairs, key=lambda p: p[1])
+            fig.add_scatter(x=[x[best[0]]], y=[y[best[0]]], mode="markers+text",
+                            text=["best"], textposition="top center", showlegend=False,
+                            marker={"symbol": "star", "size": 16, "color": "#f6f1e6",
+                                    "line": {"width": 1, "color": "#0b0d0c"}})
+    elif kind in ("line", "scatter", "bar"):
         x = _as_time(cols[spec["x"]]) if spec.get("x") else None
         for y in spec.get("y") or []:
             if kind == "bar":
