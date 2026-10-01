@@ -32,3 +32,4 @@ Open STK before (or after — Settings › Re-check STK).
 | `archive/pass_prediction/` | Stand-alone pass-prediction tool, kept outside the app |
 
 - [ ] Chat send arrow in sand colour (noted, not done yet)
+- [ ] Bold text in the plan box in sand colour (noted, not done yet)
