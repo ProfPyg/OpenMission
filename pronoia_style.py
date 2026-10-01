@@ -76,7 +76,7 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 /* results show/hide */
 .st-key-outtoggle{align-items:flex-end}
 .st-key-outtoggle button{background:transparent!important;border:none!important;padding:0!important;min-height:0!important;box-shadow:none!important}
-.st-key-outtoggle button p{font-size:11px!important;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)!important}
+.st-key-outtoggle button p{font-size:12px!important;font-weight:600!important;letter-spacing:.16em;text-transform:uppercase;color:var(--olive)!important}
 .st-key-outtoggle button:hover p{color:var(--sand)!important}
 /* mission rail */
 .st-key-rail{gap:10px}
