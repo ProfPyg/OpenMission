@@ -4811,8 +4811,16 @@ class StkSession(object):
         Returns {"done", "evaluated", "remaining", "results" (sorted by cost),
         "pareto" (non-dominated in cost vs worst revisit, full coverage only),
         "state_file"}. Call again with the same ``state_file`` until done.
-        Revisit is a WORST GAP and includes the period edges: use >= 2 days
-        for meaningful numbers. Candidates that miss part of the region get
+        Each result also carries ``orbit``: altitude, sma, e, inclination and
+        the Walker geometry (RAAN spacing, in-plane spacing, phase offset).
+
+        Revisit is a WORST GAP and includes the period edges: use >= 3 days
+        for meaningful numbers. MEASURED (check run, 550 km SSO, Europe, 2 d):
+        worst revisit is NOT monotonic in satellite count -- 6 sats/2 planes
+        (23.7 h) was worse than 4 sats/2 planes (23.1 h), 6 planes worse than
+        2 -- because Walker Delta spreads SSO planes over all local times and
+        the phasing changes with T. Search phasing (phase_f) and plane count,
+        not only the total; never assume more satellites is better. Candidates that miss part of the region get
         worst_revisit_h = None and never enter the Pareto front.
         """
         import json, time, math
@@ -4847,7 +4855,16 @@ class StkSession(object):
                 else float(cand["inclination"])
             half = cand.get("half_angle_deg") or sensor_half_angle_deg
             tag = "TS%d" % (len(state["results"]) + 1)
-            row = {"candidate": cand, "inclination_deg": round(inc, 3)}
+            T, P, F = int(cand["total_sats"]), int(cand["planes"]), int(cand["phase_f"])
+            row = {"candidate": cand, "inclination_deg": round(inc, 3),
+                   # the design itself, as a reader wants it: orbit + Walker geometry
+                   "orbit": {"altitude_km": alt, "sma_km": round(altitude_to_sma(alt), 3),
+                             "eccentricity": 0.0, "inclination_deg": round(inc, 3),
+                             "raan_spacing_deg": round(360.0 / P, 3),
+                             "in_plane_spacing_deg": round(360.0 / (T // P), 3),
+                             "phase_offset_deg": round(F * 360.0 / T, 3),
+                             "sensor_half_angle_deg": half,
+                             "walker": "%d/%d/%d" % (T, P, F)}}
             members, constellation = [], None
             try:
                 seed = self.new_satellite(tag, altitude_to_sma(alt), inc, 0.0,

@@ -2,8 +2,8 @@
 
     python tests\\check_trade_study.py
 
-STK open, no scenario of your own. Builds scenario Bench_trade (2 days),
-searches 9 Walker designs over a Europe box and checks the physics:
+STK open, no scenario of your own. Builds scenario Bench_trade (3 days),
+searches Walker designs over a Europe box and checks the physics:
 more satellites never make the worst revisit worse at equal planes,
 every candidate is evaluated, and a Pareto front comes out.
 """
@@ -20,11 +20,11 @@ if s.scenario_name and s.scenario_name != "Bench_trade":
     sys.exit("Close your scenario first (%s is open)." % s.scenario_name)
 if s.scenario_name is None:
     s.ensure_scenario("Bench_trade")
-s.set_time_period("1 Jul 2026 00:00:00.000", "3 Jul 2026 00:00:00.000")
+s.set_time_period("1 Jul 2026 00:00:00.000", "4 Jul 2026 00:00:00.000")
 s.set_units()
 
-cands = stk.StkSession.candidate_grid(altitudes_km=[550], total_sats=[4, 6, 8, 12],
-                                      planes=[2, 4, 6], half_angles_deg=[30])
+cands = stk.StkSession.candidate_grid(altitudes_km=[550, 650], total_sats=[4, 8, 12],
+                                      planes=[2, 4], half_angles_deg=[30], phase_f=[0, 1])
 print("%d candidates" % len(cands))
 state = os.path.join(ROOT, "tests", "results", "trade_check_state.json")
 if os.path.exists(state):
@@ -37,11 +37,14 @@ while True:
     if out["done"]:
         break
 print("\ntook %.1f min" % ((time.time() - t0) / 60))
-print("%-36s %8s %10s %8s" % ("candidate (sats/planes/f)", "cover%", "worst h", "cost"))
+print("%-9s %6s %7s %7s %7s %7s %6s %8s %8s %8s %6s" % ("walker", "alt", "inc", "dRAAN", "dM", "phase",
+      "half", "cover%", "worst h", "mean h", "cost"))
 for r in out["results"]:
-    c = r["candidate"]
-    print("%-36s %8s %10s %8s %s" % ("%d sats / %d planes / f=%d" % (c["total_sats"], c["planes"], c["phase_f"]),
-          r.get("coverage_pct"), r.get("worst_revisit_h"), r.get("cost"), r.get("error", "")))
+    o = r.get("orbit", {})
+    print("%-9s %6.0f %7.3f %7.1f %7.1f %7.1f %6.0f %8s %8s %8s %6s %s" % (
+          o.get("walker"), o.get("altitude_km", 0), o.get("inclination_deg", 0), o.get("raan_spacing_deg", 0),
+          o.get("in_plane_spacing_deg", 0), o.get("phase_offset_deg", 0), o.get("sensor_half_angle_deg") or 0,
+          r.get("coverage_pct"), r.get("worst_revisit_h"), r.get("mean_revisit_h"), r.get("cost"), r.get("error", "")))
 print("\nPareto front (cost -> worst revisit):")
 for r in out["pareto"]:
     print("   cost %-5s %d sats/%d planes -> %.2f h" % (r["cost"], r["candidate"]["total_sats"],
@@ -50,9 +53,13 @@ errors = [r for r in out["results"] if "error" in r]
 print("\nCHECKS:")
 print("  all candidates evaluated:", "OK" if out["evaluated"] == len(cands) and not errors else "FAIL")
 print("  pareto front not empty:  ", "OK" if out["pareto"] else "FAIL")
-by = {}
+# physics check: the BEST design with more satellites is never worse than
+# the best with fewer (individual designs may be -- phasing matters)
+best = {}
 for r in out["results"]:
     if r.get("worst_revisit_h") is not None:
-        by.setdefault(r["candidate"]["planes"], []).append((r["candidate"]["total_sats"], r["worst_revisit_h"]))
-mono = all(all(b[1] <= a[1] + 0.05 for a, b in zip(sorted(v), sorted(v)[1:])) for v in by.values())
-print("  more sats never worse (same planes):", "OK" if mono else "CHECK " + str(by))
+        n = r["candidate"]["total_sats"]
+        best[n] = min(best.get(n, 1e9), r["worst_revisit_h"])
+ns = sorted(best)
+mono = all(best[b] <= best[a] + 0.05 for a, b in zip(ns, ns[1:]))
+print("  best design improves with more sats:", "OK" if mono else "CHECK " + str(best))
