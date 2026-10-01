@@ -1,0 +1,32 @@
+{
+  "_about": "Standard missions with known answers. Run: python tests/run_benchmark.py [name ...]. Each check finds a reported metric whose name/group/note contains ALL 'match' words (case-insensitive) and compares its first number with 'expect' +- 'tol'.",
+  "missions": [
+    {
+      "name": "hohmann_geo",
+      "prompt": "Plan a Hohmann transfer from a 300 km circular equatorial orbit to GEO with Astrogator, full gravity. Report both burns and the total delta-v in km/s.",
+      "checks": [{"match": ["total"], "expect": 3.89, "tol": 0.05, "unit_hint": "km/s"}]
+    },
+    {
+      "name": "deorbit",
+      "prompt": "A 150 kg satellite in a 500 km circular orbit (51.6 deg) with a 20 N thruster, Isp 220 s. Plan a retrograde finite burn that lowers perigee to 150 km. Report the delta-v in m/s and the fuel used in kg.",
+      "checks": [{"match": ["delta"], "expect": 100.0, "tol": 6.0, "unit_hint": "m/s"},
+                 {"match": ["fuel"], "expect": 6.8, "tol": 0.6, "unit_hint": "kg"}]
+    },
+    {
+      "name": "geo_contact",
+      "prompt": "One GEO satellite at 25 deg E and a ground station in Athens with 10 deg minimum elevation. Over 1 day, what share of time is the satellite in contact with Athens? Report it in percent.",
+      "checks": [{"match": ["athens"], "expect": 100.0, "tol": 0.5, "unit_hint": "%"}]
+    },
+    {
+      "name": "lunar_shackleton",
+      "prompt": "A 150 kg satellite in a 100 km circular orbit around the Moon at 86 deg inclination, starting 12 June 2030, with a nadir camera of 1 deg x 1 deg. Over 7 days, how many access passes does the camera get over Shackleton crater (89.54 S, 129.78 E)? Report the number of passes.",
+      "checks": [{"match": ["pass"], "min": 1}]
+    },
+    {
+      "name": "sensor_elevation_trap",
+      "prompt": "A 550 km sun-synchronous satellite with a 45 deg half-angle nadir camera. The camera should only count targets above 40 deg elevation measured from the sensor. Facility in Athens. Report the total access time of the camera to Athens over 1 day in seconds.",
+      "checks": [{"match": ["access"], "min": 1}],
+      "expect_issue": "elevation"
+    }
+  ]
+}

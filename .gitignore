@@ -62,3 +62,7 @@ missions/
 
 # Cowork scratch
 Claude outputs/
+
+# Benchmark runs
+missions/_bench/
+tests/results/
