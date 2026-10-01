@@ -73,6 +73,11 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 /* inputs */
 .stTextArea textarea,.stTextInput input{background:rgba(20,20,17,.8)!important;color:var(--ink)!important;border-color:#37352c!important}
 
+/* results show/hide */
+.st-key-outtoggle{align-items:flex-end}
+.st-key-outtoggle button{background:transparent!important;border:none!important;padding:0!important;min-height:0!important;box-shadow:none!important}
+.st-key-outtoggle button p{font-size:11px!important;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)!important}
+.st-key-outtoggle button:hover p{color:var(--sand)!important}
 /* mission rail */
 .st-key-rail{gap:10px}
 .st-key-rail button{width:38px!important;height:38px!important;min-height:0!important;padding:0!important;border-radius:10px!important;font-size:11px!important;letter-spacing:.06em}

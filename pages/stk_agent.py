@@ -345,19 +345,23 @@ if agent is None:                     # half-started (interrupted): rebuild from
         S.mission = None
         st.rerun()
 st.markdown('<div class="pr-rule"></div>', unsafe_allow_html=True)
-rail, chat, out = st.columns([0.32, 2.3, 3.1], gap="medium")
+S.setdefault("show_out", True)
+if S.show_out:
+    side, chat, out = st.columns([1, 2.2, 2.9], gap="medium")
+else:
+    side, chat = st.columns([1, 5.1], gap="medium")
+    out = None
 
-with rail:                       # missions, folded: + and one short tag per mission
-    with st.container(key="rail"):
-        if st.button("\\+", key="rail_new", help="New mission"):
+with side:                       # the missions list, as before
+    with st.container(key="newm"):
+        if st.button("\\+ New mission", use_container_width=True):
             if not _busy():
                 _save()
             S.mission = S.agent = None; st.rerun()
-        for mid, title, usd in missions.list_missions()[:12]:
-            tag = "".join(w[0] for w in re.findall(r"[A-Za-z0-9]+", title)[:2]).upper() or "·"
-            on = mid == mission["id"]
-            if st.button(tag, key="ml_" + mid, help=title, type="primary" if on else "secondary") \
-                    and not on:
+    with st.container(key="mlist"):
+        for mid, title, usd in missions.list_missions()[:15]:
+            label = ("▎" if mid == mission["id"] else "") + title
+            if st.button(label, key="ml_" + mid, use_container_width=True) and mid != mission["id"]:
                 _save(); _open_mission(mid); st.rerun()
 
 steps = [e for e in mission["log"] if e["kind"] == "step" and e.get("tool") == "run_stk_step"]
@@ -377,7 +381,10 @@ with chat:
                    (" · %.0f min" % minutes) if mission.get("started") else "",
                    MODELS.get(agent.model, {}).get("label", agent.model).split(" (")[0]),
                 unsafe_allow_html=True)
-    st.markdown('<div class="pr-q" style="margin-top:18px">Chat</div>', unsafe_allow_html=True)
+    with st.container(key="outtoggle"):
+        if st.button("Hide results ›" if S.show_out else "‹ Show results", key="tog_out"):
+            S.show_out = not S.show_out; st.rerun()
+    st.markdown('<div class="pr-q" style="margin-top:6px">Chat</div>', unsafe_allow_html=True)
     if True:
         shown = [e for i, e in enumerate(mission["log"]) if not (i == 0 and e["kind"] == "user")]
         for e in shown:            # the first prompt is not repeated here: the plan speaks for it
@@ -451,7 +458,8 @@ with chat:
             if e.get("output"):
                 st.text(e["output"][:6000])
 
-with out:
+if out is not None:
+  with out:
     tab_res, tab_vis = st.tabs(["Results", "Visuals"])
 
     def _rich(text):
