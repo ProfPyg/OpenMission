@@ -203,6 +203,17 @@ class Agent:
                 failed = record.get("status") not in ("ok", "waiting")
                 results.append({"type": "tool_result", "tool_use_id": use["id"],
                                 "content": text, "is_error": failed})
+                if record.get("status") == "no_stk":
+                    # STK closed or crashed: stop here, without another model
+                    # call. The app tells the user and resumes once STK is back.
+                    done = {r["tool_use_id"] for r in results}
+                    for other in tool_uses:
+                        if other["id"] not in done:
+                            results.append({"type": "tool_result", "tool_use_id": other["id"],
+                                            "content": "Not run: STK closed.", "is_error": True})
+                    self.messages.append({"role": "user", "content": results})
+                    on_event("stk_lost", use)
+                    return "stk_lost"
             if pause_id:
                 # Results of the other tools are sent together with the user's
                 # answer (see add_user) -- keep them ready.

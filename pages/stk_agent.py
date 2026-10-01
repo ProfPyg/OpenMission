@@ -163,6 +163,12 @@ def _worker(mission, agent):
             mission["now"] = "STK is busy — waiting (%.0f s)…" % data["waited_s"]
         elif kind == "error":
             log.append({"kind": "error", "text": data})
+        elif kind == "stk_lost":
+            mission["stk_lost"] = True
+            log.append({"kind": "error", "text":
+                "STK closed during the last step. Reopen STK — Pronoia will pick up "
+                "where it stopped as soon as STK is back."})
+    mission["stk_lost"] = False
     mission["now"] = "Thinking…"
     try:
         agent.run(on_event)
@@ -174,11 +180,12 @@ def _worker(mission, agent):
     _save(mission, agent)
 
 
-def _launch():
+def _launch(mission=None, agent=None):
     import threading
-    t = threading.Thread(target=_worker, args=(S.mission, S.agent), daemon=True)
+    mission, agent = mission or S.mission, agent or S.agent
+    t = threading.Thread(target=_worker, args=(mission, agent), daemon=True)
     t.start()
-    S.worker, S.run_mid, S.run_pair = t, S.mission["id"], (S.mission, S.agent)
+    S.worker, S.run_mid, S.run_pair = t, mission["id"], (mission, agent)
 
 
 def _stk_busy():
@@ -348,6 +355,17 @@ def _stk_watchdog():
             S.stk_alert = "Licence change: %s no longer available." % ", ".join(lost)
         elif now.get("status") == "ok":
             S.stk_alert = None
+        pair = S.get("run_pair")
+        if now.get("status") == "ok" and pair and pair[0].get("stk_lost"):
+            m, a = pair                      # STK is back: carry on by itself
+            a.add_user("STK was closed and has now been reopened (automatic notice). "
+                       "Objects built before the crash may be gone: check the scenario "
+                       "tree, rebuild only what is missing, and continue the plan. "
+                       "Avoid the request that was running when STK closed; do it "
+                       "in smaller pieces.")
+            m["log"].append({"kind": "user", "text": "STK is back — continuing."})
+            _launch(m, a)
+            st.rerun()
     pr = S.probe or {}
     if pr.get("status") == "ok":
         have, _ = module_summary(pr.get("licenses"))
