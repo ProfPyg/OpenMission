@@ -34,9 +34,9 @@ Open STK before (or after — Settings › Re-check STK).
 - [x] Chat send arrow in sand colour
 - [x] Bold text in the plan box in sand colour
 - [x] Setup: add pywin32 to requirements (Windows-only marker) and simplify install steps for a new PC
-- [ ] Closing Pronoia stops the running STK step immediately (kill the step process, no orphan python.exe)
-- [ ] Page refresh keeps the live mission: reattach to the running run (live log, timer), never show a stale plan or allow a second Build it
-- [ ] Process log updates live while the agent runs
+- [x] Closing Pronoia stops the running STK step immediately (kill the step process, no orphan python.exe)
+- [ ] (after UI migration) Page refresh keeps the live mission: reattach to the running run (live log, timer), never show a stale plan or allow a second Build it
+- [ ] (after UI migration) Process log updates live while the agent runs
 - [ ] Downloads: results (numbers as CSV/Excel, charts as PNG, a mission report PDF) and the STK scenario itself (saved .vdf package with all objects), plus the step scripts for full reproducibility
 - [ ] Windows installer: one PronoiaSetup.exe with embedded Python + all libraries (Inno Setup), desktop icon, nothing installed by hand
 - [ ] Charts readable: bigger fonts, thicker lines, target line (e.g. 6 h), best design highlighted
@@ -44,4 +44,4 @@ Open STK before (or after — Settings › Re-check STK).
 - [ ] Plan states the optimisation objective and tie-breakers
 - [ ] After validation: UI to a desktop app (Tauri + React/Svelte); backend stays Python (FastAPI)
 - [ ] Lifetime: bundle + auto-update CelesTrak space-weather file (SW-All.txt) so STK uses real solar flux
-- [ ] Stop button while the agent runs: stops the model loop and kills the running STK step at once; mission saved as "Stopped", user can resume, change the plan, or restart
+- [x] Stop button while the agent runs: stops the model loop and kills the running STK step at once; mission saved as "Stopped", user can resume, change the plan, or restart

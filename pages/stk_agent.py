@@ -296,7 +296,7 @@ def _missions_menu():
                     st.rerun(scope="fragment")
 
 
-with bar[1].popover("Missions"):
+with bar[1].popover("Your Missions"):
     _missions_menu()
 with bar[2].popover("Guide"):
     st.markdown(
@@ -412,7 +412,9 @@ if S.mission is None:
                 '<span>—</span>transfers<span>—</span>link budgets</div>', unsafe_allow_html=True)
     _, mid_col, _ = st.columns([1, 2.2, 1])
     with mid_col:
-        with st.container(key="promptbox"):
+        with st.container(key="promptbox"), st.form("promptform", border=False):
+            # A form: typing never reruns the page, so the first click on any
+            # field (e.g. Scenario name) lands instead of being eaten by a rerun.
             prompt = st.text_area("Mission", key="prompt_text", height=110, label_visibility="collapsed",
                                   placeholder="e.g. A 12-satellite Walker at 700 km plus an SSO imaging pair "
                                               "and a GEO relay. Revisit over Greece and contact windows with Athens.")
@@ -425,7 +427,7 @@ if S.mission is None:
             with row[2].popover("\\+ References"):
                 st.text_area("Reference material", key="reference_text", height=140,
                              placeholder="TLEs, datasheets, ground-station lists…")
-            go = row[3].button("Start mission →", type="primary", use_container_width=True)
+            go = row[3].form_submit_button("Start mission →", type="primary", use_container_width=True)
         def _fill_example():
             picked = S.get("ex_pick")
             if picked:

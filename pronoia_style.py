@@ -64,9 +64,9 @@ a{color:var(--sand)}
 .st-key-examples [data-testid="stHorizontalBlock"]{justify-content:center}
 
 /* buttons */
-button[kind="primary"],[data-testid="stBaseButton-primary"]{background:var(--sand)!important;color:#15140f!important;border:none!important;border-radius:99px!important;font-weight:600!important;padding:.55rem 1.4rem!important}
-button[kind="primary"] p{white-space:nowrap}
-button[kind="primary"]:hover{background:#e6d9b8!important}
+button[kind="primary"],button[kind="primaryFormSubmit"],[data-testid="stBaseButton-primary"],[data-testid="stBaseButton-primaryFormSubmit"]{background:var(--sand)!important;color:#15140f!important;border:none!important;border-radius:99px!important;font-weight:600!important;padding:.55rem 1.4rem!important}
+button[kind="primaryFormSubmit"] p,button[kind="primary"] p{white-space:nowrap}
+button[kind="primaryFormSubmit"]:hover,button[kind="primary"]:hover{background:#e6d9b8!important}
 button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:transparent!important;border:1px solid #4a4638!important;color:var(--ink)!important;border-radius:99px!important}
 [data-testid="stPopover"] > div > button{background:transparent!important;border:none!important;color:var(--mute)!important;font-size:14px!important}
 
