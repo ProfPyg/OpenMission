@@ -43,3 +43,4 @@ Open STK before (or after — Settings › Re-check STK).
 - [ ] Stop the agent's working notes leaking into chat
 - [ ] Plan states the optimisation objective and tie-breakers
 - [ ] After validation: UI to a desktop app (Tauri + React/Svelte); backend stays Python (FastAPI)
+- [ ] Lifetime: bundle + auto-update CelesTrak space-weather file (SW-All.txt) so STK uses real solar flux
