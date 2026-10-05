@@ -1,5 +1,5 @@
 """
-access.py — Access window computation for OpenMission using Skyfield (SGP4).
+access.py — Access window computation for Pronoia using Skyfield (SGP4).
 
 Upgraded to use:
   1. Skyfield's timescale for accurate Earth Precession and Nutation.

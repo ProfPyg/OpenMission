@@ -1,6 +1,6 @@
 """pronoia_style.py -- the Pronoia look: Earth palette, centred landing, video background.
 
-Kept apart from styles.py (the older OpenMission theme used by the other
+Kept apart from styles.py (the older theme used by the other
 pages) so the two can coexist while the rest of the app is migrated.
 """
 

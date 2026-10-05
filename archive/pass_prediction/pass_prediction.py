@@ -1,5 +1,5 @@
 """
-pages/pass_prediction.py — Satellite Pass Prediction for OpenMission.
+pages/pass_prediction.py — Satellite Pass Prediction for Pronoia.
 
 TLE-based pass prediction using Skyfield SGP4 propagation.
 Single satellite, single ground location, configurable time window.
@@ -28,7 +28,7 @@ from access import _detect_windows
 # Page config
 # ─────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Pass Prediction — OpenMission",
+    page_title="Pass Prediction — Pronoia",
     page_icon="\U0001f6f0",
     layout="wide",
     initial_sidebar_state="expanded",

@@ -1,5 +1,5 @@
 """
-styles.py — Shared design-system constants for OpenMission.
+styles.py — Shared design-system constants for Pronoia.
 
 Import in all three Streamlit pages:
     from styles import _CSS, _BG_SVG, _WATERMARK_HTML, emblem_html
@@ -1044,7 +1044,7 @@ def emblem_html(subtitle: str = "", variant: str = "orbit") -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # User Guide link — fixed top-right, links to the PDF served from static/.
 # Requires enableStaticServing=true in .streamlit/config.toml and the PDF at
-# static/OpenMission_User_Guide.pdf. Streamlit serves static/ under app/static/.
+# static/Pronoia_User_Guide.pdf. Streamlit serves static/ under app/static/.
 # Render in app.py with: st.markdown(_USER_GUIDE_LINK, unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 _USER_GUIDE_URL = "https://github.com/ProfPyg/OpenMission/blob/main/OpenMission_User_Guide.pdf"

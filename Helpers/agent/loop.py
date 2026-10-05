@@ -64,6 +64,18 @@ def estimate_usd(model, steps, context_tokens=20000):
     return per_step * steps
 
 
+def _friendly_api_error(exc):
+    """Plain message for the chat instead of a raw API dump."""
+    msg = str(exc).lower()
+    if "credit balance" in msg:
+        return "Renew the credits to keep launching!"
+    if "authentication" in msg or "invalid x-api-key" in msg or "401" in msg:
+        return "The API key was not accepted. Check it in Settings."
+    if "overloaded" in msg or "529" in msg or "rate limit" in msg or "429" in msg:
+        return "The AI service is busy right now. Wait a minute, then say 'continue'."
+    return "API error: %s" % exc
+
+
 def _blocks_to_dicts(content):
     out = []
     for block in content:
@@ -172,7 +184,7 @@ class Agent:
                              "cache_control": {"type": "ephemeral"}}],
                     tools=TOOLS, messages=self._payload_messages())
             except Exception as exc:          # surface API errors as-is
-                on_event("error", "API error: %s" % exc)
+                on_event("error", _friendly_api_error(exc))
                 return "error"
             on_event("usage", self.meter.add(self.model, response.usage))
             content = _blocks_to_dicts(response.content)
