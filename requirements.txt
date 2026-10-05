@@ -3,4 +3,5 @@ streamlit==1.43.0
 plotly==5.24.1
 anthropic>=0.60
 pillow
-# STK automation: see Helpers/requirements-stk.txt (pywin32)
+# STK automation (COM link to STK). Installed only on Windows; skipped elsewhere.
+pywin32>=306; sys_platform == "win32"

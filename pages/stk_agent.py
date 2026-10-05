@@ -582,7 +582,7 @@ with chat:
         conf = agent.ctx.pending_confirmation
         if conf and agent.waiting_for_user and not _busy():
             steps_est = int(conf.get("estimated_steps") or 10)
-            with st.container(border=True):
+            with st.container(border=True, key="planbox"):
                 st.markdown('<div class="pr-q">The plan</div>', unsafe_allow_html=True)
                 st.markdown(conf.get("plan", ""))
                 if conf.get("concerns"):

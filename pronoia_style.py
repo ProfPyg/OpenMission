@@ -147,6 +147,9 @@ button[kind="secondary"],[data-testid="stBaseButton-secondary"]{background:trans
 .pr-logline{font-size:13px;color:var(--mute);padding:3px 0;border-bottom:1px solid #1d1d19}
 .pr-logline span{display:inline-block;width:64px;font-size:10.5px;letter-spacing:.12em}
 .pr-plan{background:var(--panel);border:1px solid #37352c;border-radius:14px;padding:18px 22px;margin:10px 0}
+.pr-plan strong,.pr-plan b,.st-key-planbox strong,.st-key-planbox b{color:var(--sand)!important}
+[data-testid="stChatInputSubmitButton"] svg{color:var(--sand)!important;fill:var(--sand)!important}
+[data-testid="stChatInputSubmitButton"]:disabled svg{opacity:.35}
 [data-testid="stExpander"]{border:1px solid var(--line)!important;border-radius:10px!important;background:rgba(14,14,12,.75)}
 [data-testid="stSidebar"]{background:#0e0e0c!important;border-right:1px solid var(--line)}
 </style>

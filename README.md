@@ -8,7 +8,7 @@ approve the plan.
 
 ```cmd
 venv\Scripts\activate.bat
-pip install -r requirements.txt -r Helpers\requirements-stk.txt
+pip install -r requirements.txt
 set ANTHROPIC_API_KEY=sk-ant-...
 streamlit run app.py
 ```
@@ -31,5 +31,15 @@ Open STK before (or after — Settings › Re-check STK).
 | `missions/` | Your saved missions (chat, steps, data, exported files) — not in git |
 | `archive/pass_prediction/` | Stand-alone pass-prediction tool, kept outside the app |
 
-- [ ] Chat send arrow in sand colour (noted, not done yet)
-- [ ] Bold text in the plan box in sand colour (noted, not done yet)
+- [x] Chat send arrow in sand colour
+- [x] Bold text in the plan box in sand colour
+- [x] Setup: add pywin32 to requirements (Windows-only marker) and simplify install steps for a new PC
+- [ ] Closing Pronoia stops the running STK step immediately (kill the step process, no orphan python.exe)
+- [ ] Page refresh keeps the live mission: reattach to the running run (live log, timer), never show a stale plan or allow a second Build it
+- [ ] Process log updates live while the agent runs
+- [ ] Downloads: results (numbers as CSV/Excel, charts as PNG, a mission report PDF) and the STK scenario itself (saved .vdf package with all objects), plus the step scripts for full reproducibility
+- [ ] Windows installer: one PronoiaSetup.exe with embedded Python + all libraries (Inno Setup), desktop icon, nothing installed by hand
+- [ ] Charts readable: bigger fonts, thicker lines, target line (e.g. 6 h), best design highlighted
+- [ ] Stop the agent's working notes leaking into chat
+- [ ] Plan states the optimisation objective and tie-breakers
+- [ ] After validation: UI to a desktop app (Tauri + React/Svelte); backend stays Python (FastAPI)
