@@ -10,4 +10,4 @@ expected values) and compares its STK results with a published analysis.
 Planned: orbital lifetime vs altitude (drag), Walker constellation coverage, transfer ΔV.
 
 - [Case 02 — Lunar frozen orbit](case02_lunar_frozen_orbit.md): PASS on behaviour, OPEN on magnitude
-- [Case 03 — CubeSat lifetime, GuaraníSat-1](case03_cubesat_lifetime_guaranisat1.md): MISS +21%, cause = no real solar flux; re-run pending
+- [Case 03 — CubeSat lifetime, GuaraníSat-1](case03_cubesat_lifetime_guaranisat1.md): PASS −7.8% with real solar flux (+21% with STK's old forecast)

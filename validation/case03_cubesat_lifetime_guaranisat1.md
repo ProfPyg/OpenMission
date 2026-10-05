@@ -1,6 +1,6 @@
 # Case 03 — CubeSat orbital lifetime (GuaraníSat-1, real decay)
 
-**Verdict: MISS (+21%) — known cause: no real solar-flux data in STK. Re-run pending.**
+**Verdict: PASS (−7.8%) with real observed solar flux.** First run with STK's 2017 forecast flux: +21% (explained below).
 
 ## Ground truth (measured, not another tool)
 - Satellite: GuaraníSat-1, 1U, 1.3 kg, released from the ISS (NORAD 47931, catalogued as 1998-067SH because ISS-deployed objects use the ISS designator).
@@ -34,8 +34,18 @@ API cost: low (single lifetime tool runs).
 - Reported sensitivity to flux and density model instead of a single number.
 - Flagged the missing-data limitation unprompted.
 
-## To close
-Load the real space-weather file (CelesTrak `SW-All.txt`, CSSI format; free) into STK's Lifetime tool and re-run the nominal case. Expected to move the result toward ~473 d. If within ±15% (400–545 d) → PASS.
+## Re-run with real solar flux → PASS
+Built `SolFlx_CSSI_real.dat` (in this folder): STK's CSSI format, 2021+ months replaced by monthly means of observed F10.7, 81-day centred F10.7 and Ap (CelesTrak SW CSV). Real flux in early 2022 was 20–30% above STK's 2017 forecast (e.g. Apr 2022: 131 vs 100).
+
+| Case | Re-entry | Lifetime | vs real 473 d |
+|---|---|---|---|
+| Nominal (Jacchia 70, real flux) | 29 May 2022 | 436 d | **−7.8% ✅** |
+| Range over 5 density models | 10 May – 13 Aug 2022 | ~417–512 d | real value inside the range ✅ |
+
+The only change between the runs was the flux file, and the result moved 135 days. So STK did use the new file.
+
+## Conclusion
+Pronoia set the problem up correctly (geometry, A/m, Cd, TLE, cheap lifetime tool). The remaining error is set by the solar-flux input, which is the dominant uncertainty in any lifetime prediction.
 
 ## Product action
-Pronoia should ship/auto-update the CelesTrak space-weather file so lifetime runs always use real past flux and the latest forecast.
+Pronoia should ship/auto-update the CelesTrak space-weather data (converted to STK's flux format) so lifetime runs always use real past flux and the latest forecast.

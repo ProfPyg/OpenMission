@@ -44,3 +44,4 @@ Open STK before (or after — Settings › Re-check STK).
 - [ ] Plan states the optimisation objective and tie-breakers
 - [ ] After validation: UI to a desktop app (Tauri + React/Svelte); backend stays Python (FastAPI)
 - [ ] Lifetime: bundle + auto-update CelesTrak space-weather file (SW-All.txt) so STK uses real solar flux
+- [ ] Stop button while the agent runs: stops the model loop and kills the running STK step at once; mission saved as "Stopped", user can resume, change the plan, or restart

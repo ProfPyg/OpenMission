@@ -158,10 +158,12 @@ class Agent:
         "wait" (STK busy), "pause" (needs user), "done", "error".
         """
         self.stop_requested = False
+        if getattr(self.ctx, "link", None) is not None:
+            self.ctx.link.cancelled = False
         self._repair()
         for _ in range(self.max_calls_per_turn):
             if self.stop_requested:
-                on_event("error", "Stopped by the user.")
+                on_event("stopped", None)
                 return "stopped"
             try:
                 response = self.client.messages.create(
@@ -197,6 +199,20 @@ class Agent:
                     use["name"], use.get("input") or {},
                     on_wait=lambda n, s: on_event("wait", {"attempt": n, "waited_s": s}))
                 on_event("tool_end", {"use": use, "record": record, "text": text})
+                if self.stop_requested:
+                    # Stop button: close every open tool call so the chat stays
+                    # valid, then hand control back to the user.
+                    done = {r["tool_use_id"] for r in results}
+                    results.append({"type": "tool_result", "tool_use_id": use["id"],
+                                    "content": text, "is_error": True})
+                    for other in tool_uses:
+                        if other["id"] not in done and other["id"] != use["id"]:
+                            results.append({"type": "tool_result", "tool_use_id": other["id"],
+                                            "content": "Not run: stopped by the user.",
+                                            "is_error": True})
+                    self.messages.append({"role": "user", "content": results})
+                    on_event("stopped", use)
+                    return "stopped"
                 if pause:
                     pause_id = use["id"]
                     continue

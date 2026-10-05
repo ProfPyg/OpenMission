@@ -15,6 +15,17 @@ import sys
 import tempfile
 import time
 import uuid
+import atexit
+import weakref
+
+_LIVE = weakref.WeakSet()
+
+
+@atexit.register
+def _kill_all():
+    """Pronoia closing: never leave a step process behind."""
+    for link in list(_LIVE):
+        link.cancel()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RUNNER = os.path.join(HERE, "step_runner.py")
@@ -40,6 +51,19 @@ class StkLink:
         self.python = python or sys.executable
         self.step_timeout = step_timeout
         self.ping_timeout = ping_timeout
+        self.cancelled = False
+        self._proc = None
+        _LIVE.add(self)
+
+    def cancel(self):
+        """Stop button / app closing: kill the running step at once."""
+        self.cancelled = True
+        proc = self._proc
+        if proc and proc.poll() is None:
+            try:
+                proc.kill()
+            except OSError:
+                pass
 
     # -- low level ------------------------------------------------------------
     def _spawn(self, policy, code, timeout):
@@ -52,14 +76,28 @@ class StkLink:
         with open(code_path, "w", encoding="utf-8") as handle:
             handle.write(code or "")
         started = time.time()
-        try:
-            subprocess.run([self.python, RUNNER, policy_path, code_path, result_path],
-                           timeout=timeout, cwd=HERE,
-                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        except subprocess.TimeoutExpired:
-            return {"status": "timeout", "seconds": round(time.time() - started, 1),
-                    "error": "step exceeded %d s and was stopped" % timeout,
+        if self.cancelled:
+            return {"status": "stopped", "seconds": 0, "error": "stopped by the user",
                     "stdout": "", "datasets": {}}
+        self._proc = subprocess.Popen(
+            [self.python, RUNNER, policy_path, code_path, result_path], cwd=HERE,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        try:
+            while self._proc.poll() is None:
+                if self.cancelled:
+                    self._proc.kill()
+                    self._proc.wait()
+                    return {"status": "stopped", "seconds": round(time.time() - started, 1),
+                            "error": "stopped by the user", "stdout": "", "datasets": {}}
+                if time.time() - started > timeout:
+                    self._proc.kill()
+                    self._proc.wait()
+                    return {"status": "timeout", "seconds": round(time.time() - started, 1),
+                            "error": "step exceeded %d s and was stopped" % timeout,
+                            "stdout": "", "datasets": {}}
+                time.sleep(0.2)
+        finally:
+            self._proc = None
         try:
             with open(result_path, "r", encoding="utf-8") as handle:
                 return json.load(handle)
@@ -86,6 +124,8 @@ class StkLink:
         waited = 0.0
         attempt = 0
         while waited < give_up_s:
+            if self.cancelled:
+                return False
             attempt += 1
             if on_wait:
                 on_wait(attempt, waited)

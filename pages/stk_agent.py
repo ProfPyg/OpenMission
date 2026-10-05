@@ -163,6 +163,10 @@ def _worker(mission, agent):
             mission["now"] = "STK is busy — waiting (%.0f s)…" % data["waited_s"]
         elif kind == "error":
             log.append({"kind": "error", "text": data})
+        elif kind == "stopped":
+            log.append({"kind": "error", "text":
+                "Stopped. Everything finished before the stop is still in STK. Type "
+                "'continue' to go on from the last finished step, or tell me what to change."})
         elif kind == "stk_lost":
             mission["stk_lost"] = True
             log.append({"kind": "error", "text":
@@ -577,6 +581,12 @@ with chat:
                 st.markdown(ps.loader(html.escape(now_txt)
                                       + '<span class="pr-clock"> · %s</span>' % clock, big=first),
                             unsafe_allow_html=True)
+                if agent.stop_requested:
+                    st.caption("Stopping…")
+                elif st.button("Stop", key="stop_run"):
+                    agent.stop_requested = True
+                    agent.ctx.link.cancel()
+                    mission["now"] = "Stopping…"
             _progress()
 
         conf = agent.ctx.pending_confirmation
