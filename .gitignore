@@ -66,3 +66,4 @@ Claude outputs/
 # Benchmark runs
 missions/_bench/
 tests/results/
+Helpers/agent/*.json
